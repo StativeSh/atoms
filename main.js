@@ -214,7 +214,7 @@ const atomGroup = new THREE.Group();
 scene.add(atomGroup);
 
 let nucleusGroup = null;
-let orbitalClouds = [];   // { points, subshellLabel, basePositions }
+let orbitalClouds = [];   // { points, subshellLabel }
 let labelSprites = [];
 
 // ─── Circular Dot Sprite Texture ─────────────────────────────────
@@ -672,7 +672,7 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
 
     const posArray = new Float32Array(particleCount * 3);
     const colArray = new Float32Array(particleCount * 3);
-    const basePos = new Float32Array(particleCount * 3);
+    const particleIndexArray = new Float32Array(particleCount);
 
     // Find max density for normalization
     let maxDensity = 0;
@@ -686,9 +686,7 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
         posArray[i * 3] = p.x;
         posArray[i * 3 + 1] = p.y;
         posArray[i * 3 + 2] = p.z;
-        basePos[i * 3] = p.x;
-        basePos[i * 3 + 1] = p.y;
-        basePos[i * 3 + 2] = p.z;
+        particleIndexArray[i] = i;
 
         // Heatmap coloring based on probability density
         // Apply gamma for more contrast (boosts mid-range visibility)
@@ -702,6 +700,7 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(colArray, 3));
+    geo.setAttribute('particleIndex', new THREE.BufferAttribute(particleIndexArray, 1));
 
     const mat = new THREE.PointsMaterial({
         size: 0.065,
@@ -714,6 +713,42 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
         depthWrite: false,
     });
 
+    mat.onBeforeCompile = (shader) => {
+        shader.uniforms.uTime = { value: 0 };
+        shader.uniforms.uSpeed = { value: state.animationSpeed };
+        shader.uniforms.uN = { value: n };
+        shader.uniforms.uL = { value: l };
+
+        mat.userData.shader = shader;
+
+        shader.vertexShader = shader.vertexShader.replace(
+            '#include <common>',
+            `
+            #include <common>
+            uniform float uTime;
+            uniform float uSpeed;
+            uniform float uN;
+            uniform float uL;
+            attribute float particleIndex;
+            `
+        );
+
+        shader.vertexShader = shader.vertexShader.replace(
+            '#include <begin_vertex>',
+            `
+            vec3 transformed = vec3( position );
+            float phase = uTime * uSpeed * 0.8 + uN * 1.3 + uL * 0.7;
+            float breathe = 1.0 + sin(phase) * 0.04;
+            float jitterScale = 0.03 * uSpeed;
+            float i = particleIndex * 3.0;
+
+            transformed.x = position.x * breathe + (sin(uTime * 2.3 + i) * jitterScale);
+            transformed.y = position.y * breathe + (cos(uTime * 1.7 + i) * jitterScale);
+            transformed.z = position.z * breathe + (sin(uTime * 3.1 + i + 1.0) * jitterScale);
+            `
+        );
+    };
+
     const points = new THREE.Points(geo, mat);
     points.userData = {
         subshellLabel: `${n}${SUBSHELL_LABELS[l]}`,
@@ -721,7 +756,7 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
         isOrbitalCloud: true,
     };
 
-    return { points, basePositions: basePos };
+    return { points };
 }
 
 /** Create a text sprite label */
@@ -795,10 +830,10 @@ function rebuildAtom() {
                 if (eInThis <= 0) break;
                 electronsLeft -= eInThis;
 
-                const { points, basePositions } = buildOrbitalCloud(sub.n, sub.l, ml, eInThis, densityMult);
+                const { points } = buildOrbitalCloud(sub.n, sub.l, ml, eInThis, densityMult);
                 if (!isHighlighted) points.material.opacity = 0.15;
                 atomGroup.add(points);
-                orbitalClouds.push({ points, basePositions, label: sub.label, n: sub.n, l: sub.l, ml });
+                orbitalClouds.push({ points, label: sub.label, n: sub.n, l: sub.l, ml });
             }
         } else {
             // Combined cloud for whole subshell: distribute among mₗ values
@@ -808,10 +843,10 @@ function rebuildAtom() {
                 if (eInThis <= 0) break;
                 electronsLeft -= eInThis;
 
-                const { points, basePositions } = buildOrbitalCloud(sub.n, sub.l, ml, eInThis, densityMult);
+                const { points } = buildOrbitalCloud(sub.n, sub.l, ml, eInThis, densityMult);
                 if (!isHighlighted) points.material.opacity = 0.15;
                 atomGroup.add(points);
-                orbitalClouds.push({ points, basePositions, label: sub.label, n: sub.n, l: sub.l, ml });
+                orbitalClouds.push({ points, label: sub.label, n: sub.n, l: sub.l, ml });
             }
         }
 
@@ -1036,21 +1071,14 @@ function animate() {
 
     // Orbital cloud breathing animation (quantum uncertainty visualization)
     orbitalClouds.forEach(cloud => {
-        const positions = cloud.points.geometry.attributes.position.array;
-        const base = cloud.basePositions;
         const speed = state.animationSpeed;
         const phase = elapsed * speed * 0.8 + cloud.n * 1.3 + cloud.l * 0.7;
 
-        // Gentle pulsing — expand and contract
-        const breathe = 1.0 + Math.sin(phase) * 0.04;
-        // Slight jitter to represent inherent quantum uncertainty
-        for (let i = 0; i < positions.length; i += 3) {
-            const jitterScale = 0.03 * speed;
-            positions[i] = base[i] * breathe + (Math.sin(elapsed * 2.3 + i) * jitterScale);
-            positions[i + 1] = base[i + 1] * breathe + (Math.cos(elapsed * 1.7 + i) * jitterScale);
-            positions[i + 2] = base[i + 2] * breathe + (Math.sin(elapsed * 3.1 + i + 1) * jitterScale);
+        // Update shader uniforms
+        if (cloud.points.material.userData.shader) {
+            cloud.points.material.userData.shader.uniforms.uTime.value = elapsed;
+            cloud.points.material.userData.shader.uniforms.uSpeed.value = speed;
         }
-        cloud.points.geometry.attributes.position.needsUpdate = true;
 
         // Subtle opacity pulse
         const opacityBase = (state.highlightSubshell === 'all' || state.highlightSubshell === cloud.label) ? 0.7 : 0.12;
