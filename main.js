@@ -239,36 +239,39 @@ const dotTexture = new THREE.CanvasTexture(dotCanvas);
  * @param {number} t - normalized density (0 = sparse, 1 = peak)
  * @returns {THREE.Color}
  */
-function densityToHeatmap(t) {
-    // Clamp
+/**
+ * Heatmap color ramp: maps a normalized density (0–1) to a
+ * purple → magenta → orange → white gradient.
+ * Optimized to write directly to a Float32Array.
+ */
+function fillDensityHeatmapColor(t, colArray, index) {
     t = Math.max(0, Math.min(1, t));
     let r, g, b;
     if (t < 0.25) {
-        // deep purple → magenta
         const s = t / 0.25;
-        r = 0.15 + s * 0.55;  // 0.15 → 0.7
-        g = 0.0 + s * 0.0;   // 0 → 0
-        b = 0.3 + s * 0.4;   // 0.3 → 0.7
+        r = 0.15 + s * 0.55;
+        g = 0.0;
+        b = 0.3 + s * 0.4;
     } else if (t < 0.5) {
-        // magenta → orange
         const s = (t - 0.25) / 0.25;
-        r = 0.7 + s * 0.3;   // 0.7 → 1.0
-        g = 0.0 + s * 0.45;  // 0 → 0.45
-        b = 0.7 - s * 0.6;   // 0.7 → 0.1
+        r = 0.7 + s * 0.3;
+        g = 0.0 + s * 0.45;
+        b = 0.7 - s * 0.6;
     } else if (t < 0.75) {
-        // orange → yellow
         const s = (t - 0.5) / 0.25;
         r = 1.0;
-        g = 0.45 + s * 0.45;  // 0.45 → 0.9
-        b = 0.1 - s * 0.05;  // 0.1 → 0.05
+        g = 0.45 + s * 0.45;
+        b = 0.1 - s * 0.05;
     } else {
-        // yellow → white
         const s = (t - 0.75) / 0.25;
         r = 1.0;
-        g = 0.9 + s * 0.1;   // 0.9 → 1.0
-        b = 0.05 + s * 0.95;  // 0.05 → 1.0
+        g = 0.9 + s * 0.1;
+        b = 0.05 + s * 0.95;
     }
-    return new THREE.Color(r, g, b);
+    const i3 = index * 3;
+    colArray[i3] = r;
+    colArray[i3 + 1] = g;
+    colArray[i3 + 2] = b;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -360,35 +363,29 @@ function sampleRadius(n, l) {
  * Sample a position from an s-orbital (l=0, spherical symmetry).
  * |ψ_ns|² ∝ R²_ns(r) — spherically symmetric with (n-1) radial nodes.
  */
-function sampleSOrbital(n) {
+function fillSOrbital(n, ml, index, posArray, densities) {
     const { r, radialDensity } = sampleRadius(n, 0);
     // Uniform direction on sphere
     const theta = Math.random() * 2 * Math.PI;
     const cosP = 2 * Math.random() - 1;
     const sinP = Math.sqrt(1 - cosP * cosP);
-    // s-orbitals are spherically symmetric, so angular part is uniform
-    return {
-        pos: new THREE.Vector3(
-            r * sinP * Math.cos(theta),
-            r * cosP,
-            r * sinP * Math.sin(theta)
-        ),
-        density: radialDensity
-    };
+
+    const i3 = index * 3;
+    posArray[i3] = r * sinP * Math.cos(theta);
+    posArray[i3 + 1] = r * cosP;
+    posArray[i3 + 2] = r * sinP * Math.sin(theta);
+    densities[index] = radialDensity;
 }
 
 /**
  * Sample a position from a p-orbital (l=1).
- * Angular part Y_1^m has strong dumbbell character:
- * - pz (ml=0): |Y|² ∝ cos²θ  → along Y axis
- * - px (ml=1): |Y|² ∝ sin²θ cos²φ → along X axis
- * - py (ml=-1): |Y|² ∝ sin²θ sin²φ → along Z axis
- * Angular rejection power raised to enforce clean nodal plane separation.
+ * Angular part Y_1^m has strong dumbbell character.
+ * Writes directly to Float32Array buffers.
  */
-function samplePOrbital(n, ml) {
+function fillPOrbital(n, ml, index, posArray, densities) {
     const { r, radialDensity } = sampleRadius(n, 1);
 
-    // Angular rejection sampling — very strong rejection for crisp dumbbell shape
+    // Angular rejection sampling
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
@@ -407,34 +404,32 @@ function samplePOrbital(n, ml) {
         } else {
             angularVal = z * z;
         }
-        // Power 3.5 for very wide, clean nodal gap
         const angularProb = Math.pow(angularVal, 3.5);
         if (Math.random() < angularProb) { accepted = true; break; }
     }
-    // Fallback: force direction along the lobe axis to avoid nodal leakage
     if (!accepted) {
         const sign = Math.random() < 0.5 ? 1 : -1;
-        const spread = 0.15; // small random spread around lobe axis
+        const spread = 0.15;
         if (ml === 0) { x = (Math.random() - 0.5) * spread; y = sign; z = (Math.random() - 0.5) * spread; }
         else if (ml === 1) { x = sign; y = (Math.random() - 0.5) * spread; z = (Math.random() - 0.5) * spread; }
         else { x = (Math.random() - 0.5) * spread; y = (Math.random() - 0.5) * spread; z = sign; }
         const len = Math.sqrt(x * x + y * y + z * z);
         x /= len; y /= len; z /= len;
-        angularVal = 0.9; // high density since we're on the lobe
+        angularVal = 0.9;
     }
 
-    return {
-        pos: new THREE.Vector3(x * r, y * r, z * r),
-        density: radialDensity * angularVal
-    };
+    const i3 = index * 3;
+    posArray[i3] = x * r;
+    posArray[i3 + 1] = y * r;
+    posArray[i3 + 2] = z * r;
+    densities[index] = radialDensity * angularVal;
 }
 
 /**
  * Sample a position from a d-orbital (l=2).
- * 5 orientations with four-lobed (cloverleaf) or toroidal shapes.
- * Each uses the proper spherical harmonic angular distribution.
+ * Writes directly to Float32Array buffers.
  */
-function sampleDOrbital(n, ml) {
+function fillDOrbital(n, ml, index, posArray, densities) {
     const { r, radialDensity } = sampleRadius(n, 2);
 
     let x, y, z;
@@ -452,25 +447,25 @@ function sampleDOrbital(n, ml) {
         const cos2T = cosT * cosT;
 
         switch (ml) {
-            case 0: // dz²: (3cos²θ - 1)² — donut + lobes along Y
+            case 0:
                 angularVal = Math.pow(3 * cos2T - 1, 2) / 4;
                 break;
-            case 1: { // dxz: lobes in XY plane
+            case 1: {
                 const cosPhi = Math.cos(phi);
                 angularVal = sin2T * cos2T * cosPhi * cosPhi * 4;
                 break;
             }
-            case -1: { // dyz: lobes in ZY plane
+            case -1: {
                 const sinPhi = Math.sin(phi);
                 angularVal = sin2T * cos2T * sinPhi * sinPhi * 4;
                 break;
             }
-            case 2: { // dxy: cloverleaf in XZ plane
+            case 2: {
                 const sin2Phi = Math.sin(2 * phi);
                 angularVal = sin2T * sin2T * sin2Phi * sin2Phi;
                 break;
             }
-            case -2: { // dx²-y²: cloverleaf in XZ plane, rotated 45°
+            case -2: {
                 const cos2Phi = Math.cos(2 * phi);
                 angularVal = sin2T * sin2T * cos2Phi * cos2Phi;
                 break;
@@ -478,11 +473,9 @@ function sampleDOrbital(n, ml) {
             default:
                 angularVal = 1;
         }
-        // Raise to power 2.5 for crisp cloverleaf/donut shapes
         const angularProb = Math.min(Math.pow(angularVal, 2.5), 1);
         if (Math.random() < angularProb) { accepted = true; break; }
     }
-    // Fallback: place particle at a peak-density direction
     if (!accepted) {
         const sign = Math.random() < 0.5 ? 1 : -1;
         if (ml === 0) { x = 0; y = sign; z = 0; }
@@ -490,18 +483,18 @@ function sampleDOrbital(n, ml) {
         angularVal = 0.8;
     }
 
-    return {
-        pos: new THREE.Vector3(x * r, y * r, z * r),
-        density: radialDensity * angularVal
-    };
+    const i3 = index * 3;
+    posArray[i3] = x * r;
+    posArray[i3 + 1] = y * r;
+    posArray[i3 + 2] = z * r;
+    densities[index] = radialDensity * angularVal;
 }
 
 /**
  * Sample a position from an f-orbital (l=3).
- * 7 orientations with multi-lobed character.
- * Uses simplified but faithful angular patterns.
+ * Writes directly to Float32Array buffers.
  */
-function sampleFOrbital(n, ml) {
+function fillFOrbital(n, ml, index, posArray, densities) {
     const { r, radialDensity } = sampleRadius(n, 3);
 
     let x, y, z;
@@ -518,37 +511,36 @@ function sampleFOrbital(n, ml) {
         const sin2T = sinT * sinT;
         const cos2T = cosT * cosT;
 
-        // 7 distinct f-orbital angular patterns
         switch (ml) {
-            case 0: // fz³: cosθ(5cos²θ - 3)
+            case 0:
                 angularVal = Math.pow(y * (5 * cos2T - 3), 2) * 0.1;
                 break;
-            case 1: { // fxz²: sinθ·(5cos²θ - 1)·cosφ
+            case 1: {
                 const cosPhi = Math.cos(phi);
                 angularVal = sin2T * Math.pow(5 * cos2T - 1, 2) * cosPhi * cosPhi * 0.08;
                 break;
             }
-            case -1: { // fyz²: sinθ·(5cos²θ - 1)·sinφ
+            case -1: {
                 const sinPhi = Math.sin(phi);
                 angularVal = sin2T * Math.pow(5 * cos2T - 1, 2) * sinPhi * sinPhi * 0.08;
                 break;
             }
-            case 2: { // fxyz: sin²θ·cosθ·sin2φ
+            case 2: {
                 const sin2Phi = Math.sin(2 * phi);
                 angularVal = sin2T * sin2T * cos2T * sin2Phi * sin2Phi * 2;
                 break;
             }
-            case -2: { // fz(x²-y²): sin²θ·cosθ·cos2φ
+            case -2: {
                 const cos2Phi = Math.cos(2 * phi);
                 angularVal = sin2T * sin2T * cos2T * cos2Phi * cos2Phi * 2;
                 break;
             }
-            case 3: { // fx(x²-3y²): sin³θ·cos3φ
+            case 3: {
                 const cos3Phi = Math.cos(3 * phi);
                 angularVal = sin2T * sin2T * sin2T * cos3Phi * cos3Phi;
                 break;
             }
-            case -3: { // fy(3x²-y²): sin³θ·sin3φ
+            case -3: {
                 const sin3Phi = Math.sin(3 * phi);
                 angularVal = sin2T * sin2T * sin2T * sin3Phi * sin3Phi;
                 break;
@@ -556,44 +548,38 @@ function sampleFOrbital(n, ml) {
             default:
                 angularVal = 0.5;
         }
-        // Raise to power 2.0 for crisp multi-lobed shapes
         const angularProb = Math.min(Math.pow(angularVal, 2.0), 1);
         if (Math.random() < angularProb) { accepted = true; break; }
     }
-    // Fallback: place along Y axis (common lobe direction for f-orbitals)
     if (!accepted) {
         const sign = Math.random() < 0.5 ? 1 : -1;
         x = 0; y = sign; z = 0;
         angularVal = 0.7;
     }
 
-    return {
-        pos: new THREE.Vector3(x * r, y * r, z * r),
-        density: radialDensity * angularVal
-    };
+    const i3 = index * 3;
+    posArray[i3] = x * r;
+    posArray[i3 + 1] = y * r;
+    posArray[i3 + 2] = z * r;
+    densities[index] = radialDensity * angularVal;
 }
 
 /**
  * Master sampler: generate N points for a given subshell.
- * @param {number} n - principal quantum number
- * @param {number} l - angular momentum quantum number
- * @param {number} ml - magnetic quantum number (-l to +l)
- * @param {number} count - number of points to generate
+ * Optimized to fill pre-allocated Float32Arrays.
  */
-function sampleOrbitalPositions(n, l, ml, count) {
-    const results = [];  // array of { pos: Vector3, density: number }
-    for (let i = 0; i < count; i++) {
-        let sample;
-        switch (l) {
-            case 0: sample = sampleSOrbital(n); break;
-            case 1: sample = samplePOrbital(n, ml); break;
-            case 2: sample = sampleDOrbital(n, ml); break;
-            case 3: sample = sampleFOrbital(n, ml); break;
-            default: sample = sampleSOrbital(n); break;
-        }
-        results.push(sample);
+function fillOrbitalPositions(n, l, ml, count, posArray, densities) {
+    let fillFn;
+    switch (l) {
+        case 0: fillFn = fillSOrbital; break;
+        case 1: fillFn = fillPOrbital; break;
+        case 2: fillFn = fillDOrbital; break;
+        case 3: fillFn = fillFOrbital; break;
+        default: fillFn = fillSOrbital; break;
     }
-    return results;
+    for (let i = 0; i < count; i++) {
+        fillFn(n, ml, i, posArray, densities);
+    }
 }
 
 
@@ -668,36 +654,28 @@ function getSubshellColor(l) {
  */
 function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
     const particleCount = Math.round(electronCount * 5000 * densityMultiplier);
-    const samples = sampleOrbitalPositions(n, l, ml, particleCount);
 
     const posArray = new Float32Array(particleCount * 3);
+    const densities = new Float32Array(particleCount);
     const colArray = new Float32Array(particleCount * 3);
-    const basePos = new Float32Array(particleCount * 3);
+
+    fillOrbitalPositions(n, l, ml, particleCount, posArray, densities);
 
     // Find max density for normalization
     let maxDensity = 0;
-    for (let i = 0; i < samples.length; i++) {
-        if (samples[i].density > maxDensity) maxDensity = samples[i].density;
+    for (let i = 0; i < particleCount; i++) {
+        if (densities[i] > maxDensity) maxDensity = densities[i];
     }
     if (maxDensity === 0) maxDensity = 1;
 
-    samples.forEach((sample, i) => {
-        const p = sample.pos;
-        posArray[i * 3] = p.x;
-        posArray[i * 3 + 1] = p.y;
-        posArray[i * 3 + 2] = p.z;
-        basePos[i * 3] = p.x;
-        basePos[i * 3 + 1] = p.y;
-        basePos[i * 3 + 2] = p.z;
-
+    for (let i = 0; i < particleCount; i++) {
         // Heatmap coloring based on probability density
         // Apply gamma for more contrast (boosts mid-range visibility)
-        const t = Math.pow(sample.density / maxDensity, 0.6);
-        const heatColor = densityToHeatmap(t);
-        colArray[i * 3] = heatColor.r;
-        colArray[i * 3 + 1] = heatColor.g;
-        colArray[i * 3 + 2] = heatColor.b;
-    });
+        const t = Math.pow(densities[i] / maxDensity, 0.6);
+        fillDensityHeatmapColor(t, colArray, i);
+    }
+
+    const basePos = new Float32Array(posArray);
 
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
