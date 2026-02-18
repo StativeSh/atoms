@@ -146,6 +146,35 @@ const ORBITAL_COLORS = {
     },
 };
 
+// ─── Simulation & Sampling Configuration ──────────────────────────
+const SIMULATION_CONFIG = {
+    // Radial distribution
+    RADIAL_SCALE_BASE: 2.5,
+    RADIAL_SCALE_STEP: 2.0,
+    RHO_MAX_N_MULT: 3,
+    RHO_MAX_OFFSET: 4,
+    PROB_MAX_ITERATIONS: 200,
+    PROB_MAX_MARGIN: 1.05,
+    REJECTION_MAX_ATTEMPTS: 500,
+    FALLBACK_RADIUS_MULT: 0.5,
+    FALLBACK_RADIAL_DENSITY: 0.3,
+
+    // Angular distribution
+    P_ORBITAL_ANGULAR_POWER: 3.5,
+    D_ORBITAL_ANGULAR_POWER: 2.5,
+    F_ORBITAL_ANGULAR_POWER: 2.0,
+    FALLBACK_SPREAD: 0.15,
+    FALLBACK_P_ANGULAR_VAL: 0.9,
+    FALLBACK_D_ANGULAR_VAL: 0.8,
+    FALLBACK_F_ANGULAR_VAL: 0.7,
+
+    // Cloud construction
+    POINTS_PER_ELECTRON: 5000,
+    DENSITY_GAMMA: 0.6,
+    PARTICLE_SIZE: 0.065,
+    PARTICLE_OPACITY: 0.85,
+};
+
 // ─── State ───────────────────────────────────────────────────────
 const state = {
     elementZ: 6,
@@ -282,7 +311,7 @@ function densityToHeatmap(t) {
 
 /** Radial scale factor — target visual radius in scene units for the peak lobe */
 function radialScale(n) {
-    return 2.5 + (n - 1) * 2.0;
+    return SIMULATION_CONFIG.RADIAL_SCALE_BASE + (n - 1) * SIMULATION_CONFIG.RADIAL_SCALE_STEP;
 }
 
 /**
@@ -328,20 +357,20 @@ function radialProbability(n, l, rho) {
 function sampleRadius(n, l) {
     const R = radialScale(n);
     // rhoMax: tight upper bound — cut the tail for compact shapes
-    const rhoMax = 3 * n + 4;
+    const rhoMax = SIMULATION_CONFIG.RHO_MAX_N_MULT * n + SIMULATION_CONFIG.RHO_MAX_OFFSET;
 
     // Find approximate maximum of the probability for rejection sampling
     let probMax = 0;
-    for (let i = 0; i <= 200; i++) {
-        const rho = (i / 200) * rhoMax;
+    for (let i = 0; i <= SIMULATION_CONFIG.PROB_MAX_ITERATIONS; i++) {
+        const rho = (i / SIMULATION_CONFIG.PROB_MAX_ITERATIONS) * rhoMax;
         const p = radialProbability(n, l, rho);
         if (p > probMax) probMax = p;
     }
-    probMax *= 1.05; // safety margin
+    probMax *= SIMULATION_CONFIG.PROB_MAX_MARGIN; // safety margin
 
     // Rejection sampling — return both radius and density
     let rho;
-    for (let attempt = 0; attempt < 500; attempt++) {
+    for (let attempt = 0; attempt < SIMULATION_CONFIG.REJECTION_MAX_ATTEMPTS; attempt++) {
         rho = Math.random() * rhoMax;
         const prob = radialProbability(n, l, rho);
         if (Math.random() * probMax < prob) {
@@ -353,7 +382,7 @@ function sampleRadius(n, l) {
         }
     }
     // Fallback
-    return { r: R * 0.5, radialDensity: 0.3 };
+    return { r: R * SIMULATION_CONFIG.FALLBACK_RADIUS_MULT, radialDensity: SIMULATION_CONFIG.FALLBACK_RADIAL_DENSITY };
 }
 
 /**
@@ -392,7 +421,7 @@ function samplePOrbital(n, ml) {
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SIMULATION_CONFIG.REJECTION_MAX_ATTEMPTS; i++) {
         const theta = Math.random() * 2 * Math.PI;
         const cosP = 2 * Math.random() - 1;
         const sinP = Math.sqrt(1 - cosP * cosP);
@@ -407,20 +436,20 @@ function samplePOrbital(n, ml) {
         } else {
             angularVal = z * z;
         }
-        // Power 3.5 for very wide, clean nodal gap
-        const angularProb = Math.pow(angularVal, 3.5);
+        // Power for very wide, clean nodal gap
+        const angularProb = Math.pow(angularVal, SIMULATION_CONFIG.P_ORBITAL_ANGULAR_POWER);
         if (Math.random() < angularProb) { accepted = true; break; }
     }
     // Fallback: force direction along the lobe axis to avoid nodal leakage
     if (!accepted) {
         const sign = Math.random() < 0.5 ? 1 : -1;
-        const spread = 0.15; // small random spread around lobe axis
+        const spread = SIMULATION_CONFIG.FALLBACK_SPREAD; // small random spread around lobe axis
         if (ml === 0) { x = (Math.random() - 0.5) * spread; y = sign; z = (Math.random() - 0.5) * spread; }
         else if (ml === 1) { x = sign; y = (Math.random() - 0.5) * spread; z = (Math.random() - 0.5) * spread; }
         else { x = (Math.random() - 0.5) * spread; y = (Math.random() - 0.5) * spread; z = sign; }
         const len = Math.sqrt(x * x + y * y + z * z);
         x /= len; y /= len; z /= len;
-        angularVal = 0.9; // high density since we're on the lobe
+        angularVal = SIMULATION_CONFIG.FALLBACK_P_ANGULAR_VAL; // high density since we're on the lobe
     }
 
     return {
@@ -440,7 +469,7 @@ function sampleDOrbital(n, ml) {
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SIMULATION_CONFIG.REJECTION_MAX_ATTEMPTS; i++) {
         const phi = Math.random() * 2 * Math.PI;
         const cosT = 2 * Math.random() - 1;
         const sinT = Math.sqrt(1 - cosT * cosT);
@@ -478,8 +507,8 @@ function sampleDOrbital(n, ml) {
             default:
                 angularVal = 1;
         }
-        // Raise to power 2.5 for crisp cloverleaf/donut shapes
-        const angularProb = Math.min(Math.pow(angularVal, 2.5), 1);
+        // Raise to power for crisp cloverleaf/donut shapes
+        const angularProb = Math.min(Math.pow(angularVal, SIMULATION_CONFIG.D_ORBITAL_ANGULAR_POWER), 1);
         if (Math.random() < angularProb) { accepted = true; break; }
     }
     // Fallback: place particle at a peak-density direction
@@ -487,7 +516,7 @@ function sampleDOrbital(n, ml) {
         const sign = Math.random() < 0.5 ? 1 : -1;
         if (ml === 0) { x = 0; y = sign; z = 0; }
         else { x = sign * 0.707; y = 0; z = sign * 0.707; }
-        angularVal = 0.8;
+        angularVal = SIMULATION_CONFIG.FALLBACK_D_ANGULAR_VAL;
     }
 
     return {
@@ -507,7 +536,7 @@ function sampleFOrbital(n, ml) {
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SIMULATION_CONFIG.REJECTION_MAX_ATTEMPTS; i++) {
         const phi = Math.random() * 2 * Math.PI;
         const cosT = 2 * Math.random() - 1;
         const sinT = Math.sqrt(1 - cosT * cosT);
@@ -556,15 +585,15 @@ function sampleFOrbital(n, ml) {
             default:
                 angularVal = 0.5;
         }
-        // Raise to power 2.0 for crisp multi-lobed shapes
-        const angularProb = Math.min(Math.pow(angularVal, 2.0), 1);
+        // Raise to power for crisp multi-lobed shapes
+        const angularProb = Math.min(Math.pow(angularVal, SIMULATION_CONFIG.F_ORBITAL_ANGULAR_POWER), 1);
         if (Math.random() < angularProb) { accepted = true; break; }
     }
     // Fallback: place along Y axis (common lobe direction for f-orbitals)
     if (!accepted) {
         const sign = Math.random() < 0.5 ? 1 : -1;
         x = 0; y = sign; z = 0;
-        angularVal = 0.7;
+        angularVal = SIMULATION_CONFIG.FALLBACK_F_ANGULAR_VAL;
     }
 
     return {
@@ -667,7 +696,7 @@ function getSubshellColor(l) {
  * and distributes electrons accordingly.
  */
 function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
-    const particleCount = Math.round(electronCount * 5000 * densityMultiplier);
+    const particleCount = Math.round(electronCount * SIMULATION_CONFIG.POINTS_PER_ELECTRON * densityMultiplier);
     const samples = sampleOrbitalPositions(n, l, ml, particleCount);
 
     const posArray = new Float32Array(particleCount * 3);
@@ -692,7 +721,7 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
 
         // Heatmap coloring based on probability density
         // Apply gamma for more contrast (boosts mid-range visibility)
-        const t = Math.pow(sample.density / maxDensity, 0.6);
+        const t = Math.pow(sample.density / maxDensity, SIMULATION_CONFIG.DENSITY_GAMMA);
         const heatColor = densityToHeatmap(t);
         colArray[i * 3] = heatColor.r;
         colArray[i * 3 + 1] = heatColor.g;
@@ -704,11 +733,11 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
     geo.setAttribute('color', new THREE.BufferAttribute(colArray, 3));
 
     const mat = new THREE.PointsMaterial({
-        size: 0.065,
+        size: SIMULATION_CONFIG.PARTICLE_SIZE,
         map: dotTexture,
         vertexColors: true,
         transparent: true,
-        opacity: 0.85,
+        opacity: SIMULATION_CONFIG.PARTICLE_OPACITY,
         sizeAttenuation: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
