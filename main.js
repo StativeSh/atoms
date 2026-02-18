@@ -108,6 +108,20 @@ function configToString(config) {
     }).join(' ');
 }
 
+// ─── Simulation Configuration ────────────────────────────────────
+const SIMULATION_CONFIG = {
+    sampling: {
+        maxAttempts: 500,       // Max rejection sampling attempts
+        probMaxSteps: 200,      // Steps to find approximate max probability
+        safetyMargin: 1.05,     // Safety margin for rejection sampling
+        rhoMaxSlope: 3,         // Slope for rhoMax calculation (3*n + 4)
+        rhoMaxOffset: 4,        // Offset for rhoMax calculation
+    },
+    cloud: {
+        particlesPerElectron: 5000, // Points per electron for cloud density
+    }
+};
+
 // ─── Orbital Color Scheme ────────────────────────────────────────
 // Colors by orbital TYPE (s, p, d, f) — the quantum mechanical way
 const ORBITAL_COLORS = {
@@ -328,20 +342,21 @@ function radialProbability(n, l, rho) {
 function sampleRadius(n, l) {
     const R = radialScale(n);
     // rhoMax: tight upper bound — cut the tail for compact shapes
-    const rhoMax = 3 * n + 4;
+    const { rhoMaxSlope, rhoMaxOffset, probMaxSteps, safetyMargin, maxAttempts } = SIMULATION_CONFIG.sampling;
+    const rhoMax = rhoMaxSlope * n + rhoMaxOffset;
 
     // Find approximate maximum of the probability for rejection sampling
     let probMax = 0;
-    for (let i = 0; i <= 200; i++) {
-        const rho = (i / 200) * rhoMax;
+    for (let i = 0; i <= probMaxSteps; i++) {
+        const rho = (i / probMaxSteps) * rhoMax;
         const p = radialProbability(n, l, rho);
         if (p > probMax) probMax = p;
     }
-    probMax *= 1.05; // safety margin
+    probMax *= safetyMargin; // safety margin
 
     // Rejection sampling — return both radius and density
     let rho;
-    for (let attempt = 0; attempt < 500; attempt++) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
         rho = Math.random() * rhoMax;
         const prob = radialProbability(n, l, rho);
         if (Math.random() * probMax < prob) {
@@ -392,7 +407,7 @@ function samplePOrbital(n, ml) {
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SIMULATION_CONFIG.sampling.maxAttempts; i++) {
         const theta = Math.random() * 2 * Math.PI;
         const cosP = 2 * Math.random() - 1;
         const sinP = Math.sqrt(1 - cosP * cosP);
@@ -440,7 +455,7 @@ function sampleDOrbital(n, ml) {
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SIMULATION_CONFIG.sampling.maxAttempts; i++) {
         const phi = Math.random() * 2 * Math.PI;
         const cosT = 2 * Math.random() - 1;
         const sinT = Math.sqrt(1 - cosT * cosT);
@@ -507,7 +522,7 @@ function sampleFOrbital(n, ml) {
     let x, y, z;
     let angularVal = 0;
     let accepted = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < SIMULATION_CONFIG.sampling.maxAttempts; i++) {
         const phi = Math.random() * 2 * Math.PI;
         const cosT = 2 * Math.random() - 1;
         const sinT = Math.sqrt(1 - cosT * cosT);
@@ -667,7 +682,7 @@ function getSubshellColor(l) {
  * and distributes electrons accordingly.
  */
 function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
-    const particleCount = Math.round(electronCount * 5000 * densityMultiplier);
+    const particleCount = Math.round(electronCount * SIMULATION_CONFIG.cloud.particlesPerElectron * densityMultiplier);
     const samples = sampleOrbitalPositions(n, l, ml, particleCount);
 
     const posArray = new Float32Array(particleCount * 3);
