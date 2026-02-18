@@ -724,18 +724,32 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
     return { points, basePositions: basePos };
 }
 
+const labelTextureCache = {};
+
+function clearLabelCache() {
+    Object.values(labelTextureCache).forEach(t => t.dispose());
+    for (const key in labelTextureCache) delete labelTextureCache[key];
+}
+
 /** Create a text sprite label */
 function createLabel(text, position, color) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 300;
-    canvas.height = 64;
-    ctx.font = 'bold 26px Inter, sans-serif';
-    ctx.fillStyle = color;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(text, 150, 32);
-    const texture = new THREE.CanvasTexture(canvas);
+    const key = text + '__' + color;
+    let texture = labelTextureCache[key];
+
+    if (!texture) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 300;
+        canvas.height = 64;
+        ctx.font = 'bold 26px Inter, sans-serif';
+        ctx.fillStyle = color;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 150, 32);
+        texture = new THREE.CanvasTexture(canvas);
+        labelTextureCache[key] = texture;
+    }
+
     const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0.85 });
     const sprite = new THREE.Sprite(mat);
     sprite.position.copy(position);
@@ -1170,6 +1184,7 @@ document.querySelectorAll('.color-btn').forEach(btn => {
         btn.classList.add('active');
         state.colorScheme = btn.dataset.scheme;
         scene.background = new THREE.Color(ORBITAL_COLORS[state.colorScheme].bg);
+        clearLabelCache();
         rebuildAtom();
     });
 });
