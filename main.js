@@ -219,18 +219,21 @@ let labelSprites = [];
 
 // ─── Circular Dot Sprite Texture ─────────────────────────────────
 // Creates a soft circular dot texture to replace default square particles
-const dotCanvas = document.createElement('canvas');
-dotCanvas.width = 64;
-dotCanvas.height = 64;
-const dotCtx = dotCanvas.getContext('2d');
-const gradient = dotCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
-gradient.addColorStop(0, 'rgba(255,255,255,1)');
-gradient.addColorStop(0.3, 'rgba(255,255,255,0.8)');
-gradient.addColorStop(0.6, 'rgba(255,255,255,0.3)');
-gradient.addColorStop(1, 'rgba(255,255,255,0)');
-dotCtx.fillStyle = gradient;
-dotCtx.fillRect(0, 0, 64, 64);
-const dotTexture = new THREE.CanvasTexture(dotCanvas);
+function createDotTexture() {
+    const dotCanvas = document.createElement('canvas');
+    dotCanvas.width = 64;
+    dotCanvas.height = 64;
+    const dotCtx = dotCanvas.getContext('2d');
+    const gradient = dotCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gradient.addColorStop(0, 'rgba(255,255,255,1)');
+    gradient.addColorStop(0.3, 'rgba(255,255,255,0.8)');
+    gradient.addColorStop(0.6, 'rgba(255,255,255,0.3)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+    dotCtx.fillStyle = gradient;
+    dotCtx.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(dotCanvas);
+}
+const dotTexture = createDotTexture();
 
 /**
  * Heatmap color ramp: maps a normalized density (0–1) to a
