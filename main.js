@@ -1020,6 +1020,32 @@ function updateEnergyDiagram(config) {
 
 const clock = new THREE.Clock();
 
+/**
+ * Updates the animation state for a single orbital cloud.
+ * Handles breathing (expansion/contraction) and quantum jitter.
+ */
+function updateOrbitalCloudAnimation(cloud, elapsed, speed) {
+    const positions = cloud.points.geometry.attributes.position.array;
+    const base = cloud.basePositions;
+    const phase = elapsed * speed * 0.8 + cloud.n * 1.3 + cloud.l * 0.7;
+
+    // Gentle pulsing — expand and contract
+    const breathe = 1.0 + Math.sin(phase) * 0.04;
+
+    // Slight jitter to represent inherent quantum uncertainty
+    const jitterScale = 0.03 * speed;
+    for (let i = 0; i < positions.length; i += 3) {
+        positions[i] = base[i] * breathe + (Math.sin(elapsed * 2.3 + i) * jitterScale);
+        positions[i + 1] = base[i + 1] * breathe + (Math.cos(elapsed * 1.7 + i) * jitterScale);
+        positions[i + 2] = base[i + 2] * breathe + (Math.sin(elapsed * 3.1 + i + 1) * jitterScale);
+    }
+    cloud.points.geometry.attributes.position.needsUpdate = true;
+
+    // Subtle opacity pulse
+    const opacityBase = (state.highlightSubshell === 'all' || state.highlightSubshell === cloud.label) ? 0.7 : 0.12;
+    cloud.points.material.opacity = opacityBase + Math.sin(phase * 0.5) * 0.08;
+}
+
 function animate() {
     requestAnimationFrame(animate);
     const delta = clock.getDelta();
@@ -1035,26 +1061,9 @@ function animate() {
     }
 
     // Orbital cloud breathing animation (quantum uncertainty visualization)
+    const speed = state.animationSpeed;
     orbitalClouds.forEach(cloud => {
-        const positions = cloud.points.geometry.attributes.position.array;
-        const base = cloud.basePositions;
-        const speed = state.animationSpeed;
-        const phase = elapsed * speed * 0.8 + cloud.n * 1.3 + cloud.l * 0.7;
-
-        // Gentle pulsing — expand and contract
-        const breathe = 1.0 + Math.sin(phase) * 0.04;
-        // Slight jitter to represent inherent quantum uncertainty
-        for (let i = 0; i < positions.length; i += 3) {
-            const jitterScale = 0.03 * speed;
-            positions[i] = base[i] * breathe + (Math.sin(elapsed * 2.3 + i) * jitterScale);
-            positions[i + 1] = base[i + 1] * breathe + (Math.cos(elapsed * 1.7 + i) * jitterScale);
-            positions[i + 2] = base[i + 2] * breathe + (Math.sin(elapsed * 3.1 + i + 1) * jitterScale);
-        }
-        cloud.points.geometry.attributes.position.needsUpdate = true;
-
-        // Subtle opacity pulse
-        const opacityBase = (state.highlightSubshell === 'all' || state.highlightSubshell === cloud.label) ? 0.7 : 0.12;
-        cloud.points.material.opacity = opacityBase + Math.sin(phase * 0.5) * 0.08;
+        updateOrbitalCloudAnimation(cloud, elapsed, speed);
     });
 
     // Labels face camera
