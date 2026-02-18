@@ -321,6 +321,8 @@ function radialProbability(n, l, rho) {
     return rho * rho * Rnl * Rnl;
 }
 
+const PROB_MAX_CACHE = {};
+
 /**
  * Sample a radial distance from the hydrogen-like radial distribution.
  * Uses rejection sampling with radial nodes properly included.
@@ -330,14 +332,20 @@ function sampleRadius(n, l) {
     // rhoMax: tight upper bound — cut the tail for compact shapes
     const rhoMax = 3 * n + 4;
 
-    // Find approximate maximum of the probability for rejection sampling
-    let probMax = 0;
-    for (let i = 0; i <= 200; i++) {
-        const rho = (i / 200) * rhoMax;
-        const p = radialProbability(n, l, rho);
-        if (p > probMax) probMax = p;
+    const key = `${n},${l}`;
+    let probMax = PROB_MAX_CACHE[key];
+
+    if (probMax === undefined) {
+        // Find approximate maximum of the probability for rejection sampling
+        probMax = 0;
+        for (let i = 0; i <= 200; i++) {
+            const rho = (i / 200) * rhoMax;
+            const p = radialProbability(n, l, rho);
+            if (p > probMax) probMax = p;
+        }
+        probMax *= 1.05; // safety margin
+        PROB_MAX_CACHE[key] = probMax;
     }
-    probMax *= 1.05; // safety margin
 
     // Rejection sampling — return both radius and density
     let rho;
