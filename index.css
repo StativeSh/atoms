@@ -699,6 +699,11 @@ body {
     font-size: 16px;
 }
 
+/* Initial state for molecule controls */
+#molecule-controls {
+    display: none;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     #control-panel {
