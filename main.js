@@ -1251,10 +1251,16 @@ function updateLegend(config) {
     ['proton', 'neutron'].forEach(type => {
         const item = document.createElement('div');
         item.className = 'legend-item';
-        item.innerHTML = `
-            <span class="legend-dot" style="background:#${new THREE.Color(scheme[type]).getHexString()};"></span>
-            <span>${type.charAt(0).toUpperCase() + type.slice(1)}</span>
-        `;
+
+        const dot = document.createElement('span');
+        dot.className = 'legend-dot';
+        dot.style.background = '#' + new THREE.Color(scheme[type]).getHexString();
+
+        const label = document.createElement('span');
+        label.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+
+        item.appendChild(dot);
+        item.appendChild(label);
         legend.appendChild(item);
     });
 
@@ -1265,10 +1271,17 @@ function updateLegend(config) {
         const color = '#' + new THREE.Color(getSubshellColor(l)).getHexString();
         const item = document.createElement('div');
         item.className = 'legend-item';
-        item.innerHTML = `
-            <span class="legend-dot" style="background:${color}; color:${color};"></span>
-            <span>${typeNames[l]} (l=${l})</span>
-        `;
+
+        const dot = document.createElement('span');
+        dot.className = 'legend-dot';
+        dot.style.background = color;
+        dot.style.color = color;
+
+        const label = document.createElement('span');
+        label.textContent = `${typeNames[l]} (l=${l})`;
+
+        item.appendChild(dot);
+        item.appendChild(label);
         legend.appendChild(item);
     });
 }
