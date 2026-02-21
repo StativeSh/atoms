@@ -737,3 +737,8 @@ body {
         gap: 14px;
     }
 }
+
+/* Utility */
+.hidden {
+    display: none !important;
+}

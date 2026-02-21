@@ -7,6 +7,7 @@
     <title>Quantum Mechanical Atomic Model</title>
     <meta name="description"
         content="Interactive 3D visualization of the quantum mechanical atomic model with probability density orbital clouds, Aufbau configuration, and s/p/d/f orbital shapes.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'sha256-9HZ7iq1u/4DY3OSYci7n+3OdBkF/KATYRNxSXlGZotk=' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com;">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -112,7 +113,7 @@
                 </div>
 
                 <!-- Molecule Mode Controls -->
-                <div id="molecule-controls" style="display: none;">
+                <div id="molecule-controls" class="hidden">
                     <div class="control-group">
                         <label class="control-label">Molecule</label>
                         <select id="molecule-select" class="control-select">
