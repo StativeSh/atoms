@@ -737,3 +737,8 @@ body {
         gap: 14px;
     }
 }
+
+/* Molecule Controls - Hidden by default */
+#molecule-controls {
+    display: none;
+}
