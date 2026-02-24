@@ -737,3 +737,8 @@ body {
         gap: 14px;
     }
 }
+
+/* Added by Sentinel for CSP compliance */
+#molecule-controls {
+    display: none;
+}
