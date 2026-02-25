@@ -737,3 +737,6 @@ body {
         gap: 14px;
     }
 }
+#molecule-controls {
+    display: none;
+}
