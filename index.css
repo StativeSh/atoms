@@ -737,3 +737,8 @@ body {
         gap: 14px;
     }
 }
+
+/* Specific styling for initial hidden state of molecule controls */
+#molecule-controls {
+    display: none;
+}
