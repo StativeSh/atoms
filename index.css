@@ -737,3 +737,7 @@ body {
         gap: 14px;
     }
 }
+/* Move inline style to CSS */
+#molecule-controls {
+    display: none;
+}
