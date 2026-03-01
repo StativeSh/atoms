@@ -152,10 +152,10 @@
         }
 
         tile.innerHTML = `
-            <span class="tile-z">${el.z}</span>
-            <span class="tile-symbol">${el.symbol}</span>
-            <span class="tile-name">${el.name}</span>
-            <span class="tile-mass">${typeof el.mass === 'number' ? el.mass.toFixed(el.mass % 1 === 0 ? 0 : 2) : el.mass}</span>
+            <span class="tile-z">${escapeHTML(el.z)}</span>
+            <span class="tile-symbol">${escapeHTML(el.symbol)}</span>
+            <span class="tile-name">${escapeHTML(el.name)}</span>
+            <span class="tile-mass">${escapeHTML(typeof el.mass === 'number' ? el.mass.toFixed(el.mass % 1 === 0 ? 0 : 2) : el.mass)}</span>
         `;
 
         // Hover card
@@ -176,9 +176,9 @@
         document.getElementById('hc-name').textContent = el.name;
 
         document.getElementById('hc-details').innerHTML = `
-            Atomic Number: <strong>${el.z}</strong><br>
-            Atomic Mass: <strong>${el.mass}</strong> u<br>
-            Neutrons: <strong>${el.neutrons}</strong>
+            Atomic Number: <strong>${escapeHTML(el.z)}</strong><br>
+            Atomic Mass: <strong>${escapeHTML(el.mass)}</strong> u<br>
+            Neutrons: <strong>${escapeHTML(el.neutrons)}</strong>
         `;
 
         const badge = document.getElementById('hc-badge');

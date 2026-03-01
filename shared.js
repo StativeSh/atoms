@@ -158,3 +158,17 @@ ALL_ELEMENTS.forEach(el => { ELEMENTS_BY_Z[el.z] = el; });
 
 // All 118 elements are now viewable in the orbital viewer
 const MAX_VIEWABLE_Z = 118;
+
+function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>'"]/g, match => {
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        };
+        return escapeMap[match];
+    });
+}
