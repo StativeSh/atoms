@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Reaction Lab</title>
+    <meta name="description"
+        content="Drag-and-drop chemistry reaction simulator. Build molecules, watch bonds form, and balance equations.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="reaction-lab.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="chemverse-nav">
+        <a href="index.html" class="chemverse-logo">
+            <span class="logo-icon">⚛</span>
+            <span class="logo-text">CHEMVERSE</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">🧪 Periodic Table</a></li>
+            <li><a href="viewer.html">⚛ Atomic Viewer</a></li>
+            <li><a href="reaction-lab.html" class="active">🔬 Reaction Lab</a></li>
+        </ul>
+    </nav>
+
+    <div class="lab-layout">
+        <!-- Left: Element Palette -->
+        <aside class="palette">
+            <div class="palette-header">
+                <h3>Elements</h3>
+                <input type="text" class="palette-search" id="palette-search" placeholder="Filter...">
+            </div>
+            <div class="palette-list" id="palette-list">
+                <!-- Populated by JS -->
+            </div>
+        </aside>
+
+        <!-- Center: Reaction Canvas -->
+        <main class="canvas-area">
+            <div class="canvas-toolbar">
+                <button class="toolbar-btn" id="btn-clear" title="Clear canvas">🗑 Clear</button>
+                <button class="toolbar-btn" id="btn-react" title="Trigger reaction">⚡ React!</button>
+                <button class="toolbar-btn" id="btn-undo" title="Undo last action">↩ Undo</button>
+            </div>
+            <canvas id="lab-canvas" class="lab-canvas"></canvas>
+            <div class="canvas-hint">Drag elements from the palette • Drop atoms near each other to form bonds</div>
+        </main>
+
+        <!-- Right: Presets + Balancer -->
+        <aside class="lab-panel">
+            <div class="panel-section">
+                <h3>Preset Reactions</h3>
+                <div class="preset-list" id="preset-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="panel-section" id="equation-section" style="display:none;">
+                <h3>Current Reaction</h3>
+                <div class="equation-display">
+                    <div class="equation-text" id="eq-text"></div>
+                    <div class="equation-name" id="eq-name"></div>
+                </div>
+            </div>
+
+            <div class="balancer" id="balancer-section" style="display:none;">
+                <h3>⚖ Balance the Equation</h3>
+                <div id="balance-terms">
+                    <!-- Populated by JS -->
+                </div>
+                <button class="check-btn" id="btn-check">Check Balance</button>
+                <div class="balance-feedback hidden" id="balance-feedback"></div>
+                <div class="score-display">
+                    Streak: <span class="score-num" id="score-num">0</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="reaction-lab.js"></script>
+</body>
+
+</html>

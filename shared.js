@@ -158,3 +158,155 @@ ALL_ELEMENTS.forEach(el => { ELEMENTS_BY_Z[el.z] = el; });
 
 // All 118 elements are now viewable in the orbital viewer
 const MAX_VIEWABLE_Z = 118;
+
+// ─── Chemistry Data for Reaction Lab ────────────────────────────
+
+// Pauling Electronegativity (EN)
+const ELECTRONEGATIVITY = {
+    1: 2.20, 3: 0.98, 4: 1.57, 5: 2.04, 6: 2.55, 7: 3.04, 8: 3.44,
+    9: 3.98, 11: 0.93, 12: 1.31, 13: 1.61, 14: 1.90, 15: 2.19, 16: 2.58,
+    17: 3.16, 19: 0.82, 20: 1.00, 26: 1.83, 29: 1.90, 30: 1.65,
+    35: 2.96, 53: 2.66
+};
+
+// Element bonding properties
+const ELEMENT_PROPERTIES = {
+    1: { valence: 1, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // H — duplet
+    3: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true },   // Li
+    4: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Be
+    5: { valence: 3, maxBonds: 3, electronsNeeded: 5, isMetal: false },  // B (exception)
+    6: { valence: 4, maxBonds: 4, electronsNeeded: 4, isMetal: false },  // C
+    7: { valence: 5, maxBonds: 3, electronsNeeded: 3, isMetal: false },  // N (lone pair)
+    8: { valence: 6, maxBonds: 2, electronsNeeded: 2, isMetal: false },  // O (2 lone pairs)
+    9: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // F
+    11: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true },   // Na
+    12: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Mg
+    13: { valence: 3, maxBonds: 3, electronsNeeded: 0, isMetal: true },   // Al
+    14: { valence: 4, maxBonds: 4, electronsNeeded: 4, isMetal: false },  // Si
+    15: { valence: 5, maxBonds: 3, electronsNeeded: 3, isMetal: false },  // P
+    16: { valence: 6, maxBonds: 2, electronsNeeded: 2, isMetal: false },  // S
+    17: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // Cl
+    19: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true },   // K
+    20: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Ca
+    26: { valence: 2, maxBonds: 3, electronsNeeded: 0, isMetal: true },   // Fe (variable)
+    29: { valence: 1, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Cu
+    30: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Zn
+    35: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // Br
+    53: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // I
+};
+
+// Backward-compatible valence lookup
+const VALENCE_ELECTRONS = {};
+Object.keys(ELEMENT_PROPERTIES).forEach(z => {
+    VALENCE_ELECTRONS[z] = ELEMENT_PROPERTIES[z].maxBonds;
+});
+
+// Common elements for the Reaction Lab palette
+const LAB_ELEMENTS = [1, 6, 7, 8, 9, 11, 12, 13, 15, 16, 17, 19, 20, 26, 35];
+
+// ─── Preset Reactions with Product Blueprints ───────────────────
+// Each product blueprint defines: formula, constituent atoms (by Z),
+// bonds (pairs with order), and layout offsets for geometry
+const PRESET_REACTIONS = [
+    {
+        name: 'Water Formation',
+        equation: '2H₂ + O₂ → 2H₂O',
+        type: 'Synthesis',
+        reactantMolecules: [
+            { formula: 'H₂', atoms: [1, 1], bonds: [[0, 1, 1]], count: 2 },
+            { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 1 }
+        ],
+        products: [
+            {
+                formula: 'H₂O', count: 2,
+                atoms: [8, 1, 1],
+                bonds: [[0, 1, 1], [0, 2, 1]],   // O-H single, O-H single
+                // Bent geometry ~104.5°
+                layout: [{ x: 0, y: 0 }, { x: -30, y: 25 }, { x: 30, y: 25 }]
+            }
+        ],
+        balanceQuestion: { reactants: { 'H₂': null, 'O₂': null }, products: { 'H₂O': null }, answer: { 'H₂': 2, 'O₂': 1, 'H₂O': 2 } }
+    },
+    {
+        name: 'Salt Formation',
+        equation: '2Na + Cl₂ → 2NaCl',
+        type: 'Ionic',
+        reactantMolecules: [
+            { formula: 'Na', atoms: [11], bonds: [], count: 2 },
+            { formula: 'Cl₂', atoms: [17, 17], bonds: [[0, 1, 1]], count: 1 }
+        ],
+        products: [
+            {
+                formula: 'NaCl', count: 2,
+                atoms: [11, 17],
+                bonds: [[0, 1, 1]],   // ionic bond
+                bondTypes: ['ionic'],
+                layout: [{ x: -20, y: 0 }, { x: 20, y: 0 }]
+            }
+        ],
+        balanceQuestion: { reactants: { 'Na': null, 'Cl₂': null }, products: { 'NaCl': null }, answer: { 'Na': 2, 'Cl₂': 1, 'NaCl': 2 } }
+    },
+    {
+        name: 'Rust',
+        equation: '4Fe + 3O₂ → 2Fe₂O₃',
+        type: 'Oxidation',
+        reactantMolecules: [
+            { formula: 'Fe', atoms: [26], bonds: [], count: 4 },
+            { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 3 }
+        ],
+        products: [
+            {
+                formula: 'Fe₂O₃', count: 2,
+                atoms: [26, 26, 8, 8, 8],
+                bonds: [[0, 2, 1], [0, 3, 1], [1, 3, 1], [1, 4, 1], [0, 4, 1]],
+                bondTypes: ['ionic', 'ionic', 'ionic', 'ionic', 'ionic'],
+                layout: [{ x: -25, y: -20 }, { x: 25, y: -20 }, { x: -35, y: 20 }, { x: 0, y: 25 }, { x: 35, y: 20 }]
+            }
+        ],
+        balanceQuestion: { reactants: { 'Fe': null, 'O₂': null }, products: { 'Fe₂O₃': null }, answer: { 'Fe': 4, 'O₂': 3, 'Fe₂O₃': 2 } }
+    },
+    {
+        name: 'Methane Combustion',
+        equation: 'CH₄ + 2O₂ → CO₂ + 2H₂O',
+        type: 'Combustion',
+        reactantMolecules: [
+            { formula: 'CH₄', atoms: [6, 1, 1, 1, 1], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1]], count: 1 },
+            { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 2 }
+        ],
+        products: [
+            {
+                formula: 'CO₂', count: 1,
+                atoms: [6, 8, 8],
+                bonds: [[0, 1, 2], [0, 2, 2]],   // C=O double bonds
+                layout: [{ x: 0, y: 0 }, { x: -35, y: 0 }, { x: 35, y: 0 }]  // linear
+            },
+            {
+                formula: 'H₂O', count: 2,
+                atoms: [8, 1, 1],
+                bonds: [[0, 1, 1], [0, 2, 1]],
+                layout: [{ x: 0, y: 0 }, { x: -30, y: 25 }, { x: 30, y: 25 }]  // bent
+            }
+        ],
+        balanceQuestion: { reactants: { 'CH₄': null, 'O₂': null }, products: { 'CO₂': null, 'H₂O': null }, answer: { 'CH₄': 1, 'O₂': 2, 'CO₂': 1, 'H₂O': 2 } }
+    },
+    {
+        name: 'Ammonia Synthesis',
+        equation: 'N₂ + 3H₂ → 2NH₃',
+        type: 'Synthesis',
+        reactantMolecules: [
+            { formula: 'N₂', atoms: [7, 7], bonds: [[0, 1, 3]], count: 1 },
+            { formula: 'H₂', atoms: [1, 1], bonds: [[0, 1, 1]], count: 3 }
+        ],
+        products: [
+            {
+                formula: 'NH₃', count: 2,
+                atoms: [7, 1, 1, 1],
+                bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1]],   // 3 N-H single bonds
+                // Trigonal pyramidal
+                layout: [{ x: 0, y: -10 }, { x: -30, y: 25 }, { x: 0, y: 35 }, { x: 30, y: 25 }]
+            }
+        ],
+        balanceQuestion: { reactants: { 'N₂': null, 'H₂': null }, products: { 'NH₃': null }, answer: { 'N₂': 1, 'H₂': 3, 'NH₃': 2 } }
+    }
+];
+
