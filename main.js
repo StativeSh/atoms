@@ -1081,7 +1081,7 @@ function rebuildMolecule() {
 
     const bondInfo = document.getElementById('bond-info');
     if (bondInfo) {
-        bondInfo.innerHTML = `<strong>${mol.name}</strong><br>${mol.info}`;
+        bondInfo.innerHTML = `<strong>${escapeHTML(mol.name)}</strong><br>${escapeHTML(mol.info)}`;
         bondInfo.style.display = 'block';
     }
 
@@ -1446,23 +1446,23 @@ renderer.domElement.addEventListener('click', (event) => {
                     Location: Nucleus`;
         } else if (hit.userData.isGlow) {
             const el = ELEMENTS[state.elementZ];
-            info = `<strong>${el.name} Nucleus</strong><br>
-                    ${el.z} protons, ${el.neutrons} neutrons<br>
-                    Mass number: ${el.z + el.neutrons}`;
+            info = `<strong>${escapeHTML(el.name)} Nucleus</strong><br>
+                    ${escapeHTML(el.z)} protons, ${escapeHTML(el.neutrons)} neutrons<br>
+                    Mass number: ${escapeHTML(el.z + el.neutrons)}`;
         } else if (hit.userData.isOrbitalCloud) {
             const d = hit.userData;
             const typeNames = ['s', 'p', 'd', 'f'];
-            info = `<strong>${d.subshellLabel} Orbital</strong><br>
-                    n = ${d.n}, l = ${d.l} (${typeNames[d.l]})<br>
-                    mₗ = ${d.ml}<br>
-                    Electrons: ${d.electronCount}<br>
-                    Shape: ${['Spherical', 'Dumbbell', 'Cloverleaf', 'Multi-lobe'][d.l]}`;
+            info = `<strong>${escapeHTML(d.subshellLabel)} Orbital</strong><br>
+                    n = ${escapeHTML(d.n)}, l = ${escapeHTML(d.l)} (${escapeHTML(typeNames[d.l])})<br>
+                    mₗ = ${escapeHTML(d.ml)}<br>
+                    Electrons: ${escapeHTML(d.electronCount)}<br>
+                    Shape: ${escapeHTML(['Spherical', 'Dumbbell', 'Cloverleaf', 'Multi-lobe'][d.l])}`;
         } else if (hit.userData.isBond) {
             const orderNames = { 1: 'Single', 2: 'Double', 3: 'Triple' };
             const typeNames = { covalent: 'Covalent', polar: 'Polar Covalent', ionic: 'Ionic' };
-            info = `<strong>${orderNames[hit.userData.order] || ''} ${typeNames[hit.userData.type] || ''} Bond</strong><br>
-                    Bond Order: ${hit.userData.order}<br>
-                    Type: ${typeNames[hit.userData.type] || hit.userData.type}`;
+            info = `<strong>${escapeHTML(orderNames[hit.userData.order] || '')} ${escapeHTML(typeNames[hit.userData.type] || '')} Bond</strong><br>
+                    Bond Order: ${escapeHTML(hit.userData.order)}<br>
+                    Type: ${escapeHTML(typeNames[hit.userData.type] || hit.userData.type)}`;
         }
 
         if (info) {
