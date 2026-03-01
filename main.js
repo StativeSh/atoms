@@ -132,6 +132,18 @@ const state = {
     animationSpeed: 1.0,
 };
 
+// ─── Helpers ─────────────────────────────────────────────────────
+/** Escape HTML to prevent XSS and DOM Clobbering */
+function escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 // ─── Three.js Setup ──────────────────────────────────────────────
 const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
@@ -1081,7 +1093,7 @@ function rebuildMolecule() {
 
     const bondInfo = document.getElementById('bond-info');
     if (bondInfo) {
-        bondInfo.innerHTML = `<strong>${mol.name}</strong><br>${mol.info}`;
+        bondInfo.innerHTML = `<strong>${escapeHTML(mol.name)}</strong><br>${escapeHTML(mol.info)}`;
         bondInfo.style.display = 'block';
     }
 
@@ -1223,8 +1235,8 @@ function updateLegend(config) {
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.innerHTML = `
-            <span class="legend-dot" style="background:#${new THREE.Color(scheme[type]).getHexString()};"></span>
-            <span>${type.charAt(0).toUpperCase() + type.slice(1)}</span>
+            <span class="legend-dot" style="background:#${escapeHTML(new THREE.Color(scheme[type]).getHexString())};"></span>
+            <span>${escapeHTML(type.charAt(0).toUpperCase() + type.slice(1))}</span>
         `;
         legend.appendChild(item);
     });
@@ -1237,8 +1249,8 @@ function updateLegend(config) {
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.innerHTML = `
-            <span class="legend-dot" style="background:${color}; color:${color};"></span>
-            <span>${typeNames[l]} (l=${l})</span>
+            <span class="legend-dot" style="background:${escapeHTML(color)}; color:${escapeHTML(color)};"></span>
+            <span>${escapeHTML(typeNames[l])} (l=${escapeHTML(l)})</span>
         `;
         legend.appendChild(item);
     });
@@ -1440,29 +1452,29 @@ renderer.domElement.addEventListener('click', (event) => {
 
         if (hit.userData.isNucleon) {
             const t = hit.userData.type;
-            info = `<strong>${t === 'proton' ? 'Proton' : 'Neutron'}</strong><br>
-                    Charge: ${t === 'proton' ? '+1e' : '0'}<br>
-                    Mass: ~${t === 'proton' ? '1.007' : '1.009'} amu<br>
+            info = `<strong>${escapeHTML(t === 'proton' ? 'Proton' : 'Neutron')}</strong><br>
+                    Charge: ${escapeHTML(t === 'proton' ? '+1e' : '0')}<br>
+                    Mass: ~${escapeHTML(t === 'proton' ? '1.007' : '1.009')} amu<br>
                     Location: Nucleus`;
         } else if (hit.userData.isGlow) {
             const el = ELEMENTS[state.elementZ];
-            info = `<strong>${el.name} Nucleus</strong><br>
-                    ${el.z} protons, ${el.neutrons} neutrons<br>
-                    Mass number: ${el.z + el.neutrons}`;
+            info = `<strong>${escapeHTML(el.name)} Nucleus</strong><br>
+                    ${escapeHTML(el.z)} protons, ${escapeHTML(el.neutrons)} neutrons<br>
+                    Mass number: ${escapeHTML(el.z + el.neutrons)}`;
         } else if (hit.userData.isOrbitalCloud) {
             const d = hit.userData;
             const typeNames = ['s', 'p', 'd', 'f'];
-            info = `<strong>${d.subshellLabel} Orbital</strong><br>
-                    n = ${d.n}, l = ${d.l} (${typeNames[d.l]})<br>
-                    mₗ = ${d.ml}<br>
-                    Electrons: ${d.electronCount}<br>
-                    Shape: ${['Spherical', 'Dumbbell', 'Cloverleaf', 'Multi-lobe'][d.l]}`;
+            info = `<strong>${escapeHTML(d.subshellLabel)} Orbital</strong><br>
+                    n = ${escapeHTML(d.n)}, l = ${escapeHTML(d.l)} (${escapeHTML(typeNames[d.l])})<br>
+                    mₗ = ${escapeHTML(d.ml)}<br>
+                    Electrons: ${escapeHTML(d.electronCount)}<br>
+                    Shape: ${escapeHTML(['Spherical', 'Dumbbell', 'Cloverleaf', 'Multi-lobe'][d.l])}`;
         } else if (hit.userData.isBond) {
             const orderNames = { 1: 'Single', 2: 'Double', 3: 'Triple' };
             const typeNames = { covalent: 'Covalent', polar: 'Polar Covalent', ionic: 'Ionic' };
-            info = `<strong>${orderNames[hit.userData.order] || ''} ${typeNames[hit.userData.type] || ''} Bond</strong><br>
-                    Bond Order: ${hit.userData.order}<br>
-                    Type: ${typeNames[hit.userData.type] || hit.userData.type}`;
+            info = `<strong>${escapeHTML(orderNames[hit.userData.order] || '')} ${escapeHTML(typeNames[hit.userData.type] || '')} Bond</strong><br>
+                    Bond Order: ${escapeHTML(hit.userData.order)}<br>
+                    Type: ${escapeHTML(typeNames[hit.userData.type] || hit.userData.type)}`;
         }
 
         if (info) {
