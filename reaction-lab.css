@@ -116,6 +116,8 @@
     padding: 8px 12px;
     background: rgba(15, 15, 35, 0.5);
     border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+    position: relative;
+    z-index: 5;
 }
 
 .toolbar-btn {
