@@ -159,9 +159,13 @@ ALL_ELEMENTS.forEach(el => { ELEMENTS_BY_Z[el.z] = el; });
 // All 118 elements are now viewable in the orbital viewer
 const MAX_VIEWABLE_Z = 118;
 
-// ─── Chemistry Data for Reaction Lab ────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+// CHEMISTRY DATA FOR REACTION LAB v3
+// Sources: Pauling "Nature of the Chemical Bond", Heitler-London,
+//          Mulliken, Frenking 2019, Altmann, Woodward-Hoffmann
+// ═══════════════════════════════════════════════════════════════════
 
-// Pauling Electronegativity (EN)
+// Pauling Electronegativity (EN) — Chapter 3-6, Table 3-7
 const ELECTRONEGATIVITY = {
     1: 2.20, 3: 0.98, 4: 1.57, 5: 2.04, 6: 2.55, 7: 3.04, 8: 3.44,
     9: 3.98, 11: 0.93, 12: 1.31, 13: 1.61, 14: 1.90, 15: 2.19, 16: 2.58,
@@ -169,30 +173,102 @@ const ELECTRONEGATIVITY = {
     35: 2.96, 53: 2.66
 };
 
+// Pauling Covalent Radii (Å) — Chapter 7, Table 7-2/7-3
+const COVALENT_RADII = {
+    1: 0.30, 3: 1.34, 4: 0.90, 5: 0.82, 6: 0.77, 7: 0.70, 8: 0.66,
+    9: 0.64, 11: 1.54, 12: 1.30, 13: 1.18, 14: 1.11, 15: 1.06, 16: 1.02,
+    17: 0.99, 19: 1.96, 20: 1.74, 26: 1.17, 29: 1.17, 30: 1.25,
+    35: 1.14, 53: 1.33
+};
+
+// Pauling Bond Dissociation Energies (kcal/mol) — Table 3-4
+// Keys: "Z1-Z2-order" where order is bond multiplicity
+const BOND_ENERGIES = {
+    '1-1-1': 104.2,   // H-H
+    '6-6-1': 83.1,    // C-C
+    '6-6-2': 146,     // C=C
+    '6-6-3': 200,     // C≡C
+    '6-1-1': 98.8,    // C-H
+    '6-8-1': 84,      // C-O
+    '6-8-2': 192,     // C=O (as in CO₂)
+    '6-7-1': 73,      // C-N
+    '6-7-2': 147,     // C=N
+    '6-7-3': 213,     // C≡N
+    '6-17-1': 78.5,   // C-Cl
+    '6-9-1': 116,     // C-F
+    '6-16-1': 65,     // C-S
+    '7-7-1': 38.4,    // N-N
+    '7-7-2': 100,     // N=N
+    '7-7-3': 226,     // N≡N
+    '7-1-1': 93.4,    // N-H
+    '7-8-1': 48,      // N-O
+    '8-8-1': 33.2,    // O-O
+    '8-8-2': 119.1,   // O=O
+    '8-1-1': 110.6,   // O-H
+    '9-1-1': 134.6,   // F-H
+    '9-9-1': 36.6,    // F-F
+    '17-17-1': 58.0,  // Cl-Cl
+    '17-1-1': 103.2,  // Cl-H
+    '35-35-1': 46.1,  // Br-Br
+    '35-1-1': 87.5,   // Br-H
+    '11-17-1': 98,    // Na-Cl (ionic)
+    '11-9-1': 114,    // Na-F
+    '12-8-1': 92,     // Mg-O
+    '20-8-1': 110,    // Ca-O
+    '26-8-1': 82,     // Fe-O
+    '15-1-1': 77,     // P-H
+    '16-1-1': 81,     // S-H
+    '16-8-1': 54,     // S-O
+    '16-8-2': 128,    // S=O
+};
+
 // Element bonding properties
 const ELEMENT_PROPERTIES = {
-    1: { valence: 1, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // H — duplet
-    3: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true },   // Li
-    4: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Be
-    5: { valence: 3, maxBonds: 3, electronsNeeded: 5, isMetal: false },  // B (exception)
-    6: { valence: 4, maxBonds: 4, electronsNeeded: 4, isMetal: false },  // C
-    7: { valence: 5, maxBonds: 3, electronsNeeded: 3, isMetal: false },  // N (lone pair)
-    8: { valence: 6, maxBonds: 2, electronsNeeded: 2, isMetal: false },  // O (2 lone pairs)
-    9: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // F
-    11: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true },   // Na
-    12: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Mg
-    13: { valence: 3, maxBonds: 3, electronsNeeded: 0, isMetal: true },   // Al
-    14: { valence: 4, maxBonds: 4, electronsNeeded: 4, isMetal: false },  // Si
-    15: { valence: 5, maxBonds: 3, electronsNeeded: 3, isMetal: false },  // P
-    16: { valence: 6, maxBonds: 2, electronsNeeded: 2, isMetal: false },  // S
-    17: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // Cl
-    19: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true },   // K
-    20: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Ca
-    26: { valence: 2, maxBonds: 3, electronsNeeded: 0, isMetal: true },   // Fe (variable)
-    29: { valence: 1, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Cu
-    30: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true },   // Zn
-    35: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // Br
-    53: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false },  // I
+    1: { valence: 1, maxBonds: 1, electronsNeeded: 1, isMetal: false, lonePairs: 0 },
+    3: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    4: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    5: { valence: 3, maxBonds: 3, electronsNeeded: 5, isMetal: false, lonePairs: 0 },
+    6: { valence: 4, maxBonds: 4, electronsNeeded: 4, isMetal: false, lonePairs: 0 },
+    7: { valence: 5, maxBonds: 3, electronsNeeded: 3, isMetal: false, lonePairs: 1 },
+    8: { valence: 6, maxBonds: 2, electronsNeeded: 2, isMetal: false, lonePairs: 2 },
+    9: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false, lonePairs: 3 },
+    11: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    12: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    13: { valence: 3, maxBonds: 3, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    14: { valence: 4, maxBonds: 4, electronsNeeded: 4, isMetal: false, lonePairs: 0 },
+    15: { valence: 5, maxBonds: 3, electronsNeeded: 3, isMetal: false, lonePairs: 1 },
+    16: { valence: 6, maxBonds: 2, electronsNeeded: 2, isMetal: false, lonePairs: 2 },
+    17: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false, lonePairs: 3 },
+    19: { valence: 1, maxBonds: 1, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    20: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    26: { valence: 2, maxBonds: 3, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    29: { valence: 1, maxBonds: 2, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    30: { valence: 2, maxBonds: 2, electronsNeeded: 0, isMetal: true, lonePairs: 0 },
+    35: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false, lonePairs: 3 },
+    53: { valence: 7, maxBonds: 1, electronsNeeded: 1, isMetal: false, lonePairs: 3 },
+};
+
+// VSEPR geometry rules (steric number → geometry)
+const VSEPR_GEOMETRY = {
+    2: { name: 'Linear', angle: 180, hybrid: 'sp' },
+    3: { name: 'Trigonal Planar', angle: 120, hybrid: 'sp²' },
+    4: { name: 'Tetrahedral', angle: 109.5, hybrid: 'sp³' },
+    5: { name: 'Trigonal Bipyramidal', angle: 90, hybrid: 'sp³d' },
+    6: { name: 'Octahedral', angle: 90, hybrid: 'sp³d²' },
+};
+
+// Molecular shape from steric number + lone pairs (Pauling Ch. 4)
+const MOLECULAR_SHAPES = {
+    '2-0': { shape: 'Linear', angle: 180 },
+    '3-0': { shape: 'Trigonal Planar', angle: 120 },
+    '3-1': { shape: 'Bent', angle: 117 },
+    '4-0': { shape: 'Tetrahedral', angle: 109.5 },
+    '4-1': { shape: 'Trigonal Pyramidal', angle: 107.3 },
+    '4-2': { shape: 'Bent', angle: 104.5 },
+    '5-0': { shape: 'Trigonal Bipyramidal', angle: 90 },
+    '5-1': { shape: 'Seesaw', angle: 86.5 },
+    '5-2': { shape: 'T-shaped', angle: 87.5 },
+    '6-0': { shape: 'Octahedral', angle: 90 },
 };
 
 // Backward-compatible valence lookup
@@ -205,86 +281,82 @@ Object.keys(ELEMENT_PROPERTIES).forEach(z => {
 const LAB_ELEMENTS = [1, 6, 7, 8, 9, 11, 12, 13, 15, 16, 17, 19, 20, 26, 35];
 
 // ─── Preset Reactions with Product Blueprints ───────────────────
-// Each product blueprint defines: formula, constituent atoms (by Z),
-// bonds (pairs with order), and layout offsets for geometry
+// deltaH in kcal/mol (negative = exothermic, positive = endothermic)
 const PRESET_REACTIONS = [
     {
         name: 'Water Formation',
         equation: '2H₂ + O₂ → 2H₂O',
         type: 'Synthesis',
+        deltaH: -116,
+        geometry: 'Bent 104.5°',
+        hybridization: 'sp³',
         reactantMolecules: [
             { formula: 'H₂', atoms: [1, 1], bonds: [[0, 1, 1]], count: 2 },
             { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 1 }
         ],
-        products: [
-            {
-                formula: 'H₂O', count: 2,
-                atoms: [8, 1, 1],
-                bonds: [[0, 1, 1], [0, 2, 1]],   // O-H single, O-H single
-                // Bent geometry ~104.5°
-                layout: [{ x: 0, y: 0 }, { x: -30, y: 25 }, { x: 30, y: 25 }]
-            }
-        ],
+        products: [{
+            formula: 'H₂O', count: 2, atoms: [8, 1, 1],
+            bonds: [[0, 1, 1], [0, 2, 1]],
+            layout: [{ x: 0, y: 0 }, { x: -28, y: 24 }, { x: 28, y: 24 }]
+        }],
         balanceQuestion: { reactants: { 'H₂': null, 'O₂': null }, products: { 'H₂O': null }, answer: { 'H₂': 2, 'O₂': 1, 'H₂O': 2 } }
     },
     {
         name: 'Salt Formation',
         equation: '2Na + Cl₂ → 2NaCl',
         type: 'Ionic',
+        deltaH: -196,
+        geometry: 'Ionic Lattice',
+        hybridization: 'none',
         reactantMolecules: [
             { formula: 'Na', atoms: [11], bonds: [], count: 2 },
             { formula: 'Cl₂', atoms: [17, 17], bonds: [[0, 1, 1]], count: 1 }
         ],
-        products: [
-            {
-                formula: 'NaCl', count: 2,
-                atoms: [11, 17],
-                bonds: [[0, 1, 1]],   // ionic bond
-                bondTypes: ['ionic'],
-                layout: [{ x: -20, y: 0 }, { x: 20, y: 0 }]
-            }
-        ],
+        products: [{
+            formula: 'NaCl', count: 2, atoms: [11, 17],
+            bonds: [[0, 1, 1]], bondTypes: ['ionic'],
+            layout: [{ x: -22, y: 0 }, { x: 22, y: 0 }]
+        }],
         balanceQuestion: { reactants: { 'Na': null, 'Cl₂': null }, products: { 'NaCl': null }, answer: { 'Na': 2, 'Cl₂': 1, 'NaCl': 2 } }
     },
     {
         name: 'Rust',
         equation: '4Fe + 3O₂ → 2Fe₂O₃',
         type: 'Oxidation',
+        deltaH: -399,
+        geometry: 'Ionic Crystal',
+        hybridization: 'none',
         reactantMolecules: [
             { formula: 'Fe', atoms: [26], bonds: [], count: 4 },
             { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 3 }
         ],
-        products: [
-            {
-                formula: 'Fe₂O₃', count: 2,
-                atoms: [26, 26, 8, 8, 8],
-                bonds: [[0, 2, 1], [0, 3, 1], [1, 3, 1], [1, 4, 1], [0, 4, 1]],
-                bondTypes: ['ionic', 'ionic', 'ionic', 'ionic', 'ionic'],
-                layout: [{ x: -25, y: -20 }, { x: 25, y: -20 }, { x: -35, y: 20 }, { x: 0, y: 25 }, { x: 35, y: 20 }]
-            }
-        ],
+        products: [{
+            formula: 'Fe₂O₃', count: 2, atoms: [26, 26, 8, 8, 8],
+            bonds: [[0, 2, 1], [0, 3, 1], [1, 3, 1], [1, 4, 1], [0, 4, 1]],
+            bondTypes: ['ionic', 'ionic', 'ionic', 'ionic', 'ionic'],
+            layout: [{ x: -25, y: -20 }, { x: 25, y: -20 }, { x: -35, y: 20 }, { x: 0, y: 25 }, { x: 35, y: 20 }]
+        }],
         balanceQuestion: { reactants: { 'Fe': null, 'O₂': null }, products: { 'Fe₂O₃': null }, answer: { 'Fe': 4, 'O₂': 3, 'Fe₂O₃': 2 } }
     },
     {
         name: 'Methane Combustion',
         equation: 'CH₄ + 2O₂ → CO₂ + 2H₂O',
         type: 'Combustion',
+        deltaH: -213,
+        geometry: 'Linear CO₂ + Bent H₂O',
+        hybridization: 'sp (CO₂) + sp³ (H₂O)',
         reactantMolecules: [
             { formula: 'CH₄', atoms: [6, 1, 1, 1, 1], bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1], [0, 4, 1]], count: 1 },
             { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 2 }
         ],
         products: [
             {
-                formula: 'CO₂', count: 1,
-                atoms: [6, 8, 8],
-                bonds: [[0, 1, 2], [0, 2, 2]],   // C=O double bonds
-                layout: [{ x: 0, y: 0 }, { x: -35, y: 0 }, { x: 35, y: 0 }]  // linear
+                formula: 'CO₂', count: 1, atoms: [6, 8, 8], bonds: [[0, 1, 2], [0, 2, 2]],
+                layout: [{ x: 0, y: 0 }, { x: -35, y: 0 }, { x: 35, y: 0 }]
             },
             {
-                formula: 'H₂O', count: 2,
-                atoms: [8, 1, 1],
-                bonds: [[0, 1, 1], [0, 2, 1]],
-                layout: [{ x: 0, y: 0 }, { x: -30, y: 25 }, { x: 30, y: 25 }]  // bent
+                formula: 'H₂O', count: 2, atoms: [8, 1, 1], bonds: [[0, 1, 1], [0, 2, 1]],
+                layout: [{ x: 0, y: 0 }, { x: -28, y: 24 }, { x: 28, y: 24 }]
             }
         ],
         balanceQuestion: { reactants: { 'CH₄': null, 'O₂': null }, products: { 'CO₂': null, 'H₂O': null }, answer: { 'CH₄': 1, 'O₂': 2, 'CO₂': 1, 'H₂O': 2 } }
@@ -293,20 +365,112 @@ const PRESET_REACTIONS = [
         name: 'Ammonia Synthesis',
         equation: 'N₂ + 3H₂ → 2NH₃',
         type: 'Synthesis',
+        deltaH: -22,
+        geometry: 'Trigonal Pyramidal 107.3°',
+        hybridization: 'sp³',
         reactantMolecules: [
             { formula: 'N₂', atoms: [7, 7], bonds: [[0, 1, 3]], count: 1 },
             { formula: 'H₂', atoms: [1, 1], bonds: [[0, 1, 1]], count: 3 }
         ],
+        products: [{
+            formula: 'NH₃', count: 2, atoms: [7, 1, 1, 1],
+            bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1]],
+            layout: [{ x: 0, y: -10 }, { x: -28, y: 22 }, { x: 0, y: 32 }, { x: 28, y: 22 }]
+        }],
+        balanceQuestion: { reactants: { 'N₂': null, 'H₂': null }, products: { 'NH₃': null }, answer: { 'N₂': 1, 'H₂': 3, 'NH₃': 2 } }
+    },
+    {
+        name: 'Hydrogen Chloride',
+        equation: 'H₂ + Cl₂ → 2HCl',
+        type: 'Synthesis',
+        deltaH: -44,
+        geometry: 'Linear',
+        hybridization: 'none',
+        reactantMolecules: [
+            { formula: 'H₂', atoms: [1, 1], bonds: [[0, 1, 1]], count: 1 },
+            { formula: 'Cl₂', atoms: [17, 17], bonds: [[0, 1, 1]], count: 1 }
+        ],
+        products: [{
+            formula: 'HCl', count: 2, atoms: [1, 17],
+            bonds: [[0, 1, 1]],
+            layout: [{ x: -18, y: 0 }, { x: 18, y: 0 }]
+        }],
+        balanceQuestion: { reactants: { 'H₂': null, 'Cl₂': null }, products: { 'HCl': null }, answer: { 'H₂': 1, 'Cl₂': 1, 'HCl': 2 } }
+    },
+    {
+        name: 'Carbon Dioxide',
+        equation: 'C + O₂ → CO₂',
+        type: 'Combustion',
+        deltaH: -94,
+        geometry: 'Linear 180°',
+        hybridization: 'sp',
+        reactantMolecules: [
+            { formula: 'C', atoms: [6], bonds: [], count: 1 },
+            { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 1 }
+        ],
+        products: [{
+            formula: 'CO₂', count: 1, atoms: [6, 8, 8],
+            bonds: [[0, 1, 2], [0, 2, 2]],
+            layout: [{ x: 0, y: 0 }, { x: -35, y: 0 }, { x: 35, y: 0 }]
+        }],
+        balanceQuestion: { reactants: { 'C': null, 'O₂': null }, products: { 'CO₂': null }, answer: { 'C': 1, 'O₂': 1, 'CO₂': 1 } }
+    },
+    {
+        name: 'Magnesium Combustion',
+        equation: '2Mg + O₂ → 2MgO',
+        type: 'Oxidation',
+        deltaH: -290,
+        geometry: 'Ionic',
+        hybridization: 'none',
+        reactantMolecules: [
+            { formula: 'Mg', atoms: [12], bonds: [], count: 2 },
+            { formula: 'O₂', atoms: [8, 8], bonds: [[0, 1, 2]], count: 1 }
+        ],
+        products: [{
+            formula: 'MgO', count: 2, atoms: [12, 8],
+            bonds: [[0, 1, 1]], bondTypes: ['ionic'],
+            layout: [{ x: -20, y: 0 }, { x: 20, y: 0 }]
+        }],
+        balanceQuestion: { reactants: { 'Mg': null, 'O₂': null }, products: { 'MgO': null }, answer: { 'Mg': 2, 'O₂': 1, 'MgO': 2 } }
+    },
+    {
+        name: 'Hydrogen Fluoride',
+        equation: 'H₂ + F₂ → 2HF',
+        type: 'Synthesis',
+        deltaH: -130,
+        geometry: 'Linear',
+        hybridization: 'none',
+        reactantMolecules: [
+            { formula: 'H₂', atoms: [1, 1], bonds: [[0, 1, 1]], count: 1 },
+            { formula: 'F₂', atoms: [9, 9], bonds: [[0, 1, 1]], count: 1 }
+        ],
+        products: [{
+            formula: 'HF', count: 2, atoms: [1, 9],
+            bonds: [[0, 1, 1]],
+            layout: [{ x: -18, y: 0 }, { x: 18, y: 0 }]
+        }],
+        balanceQuestion: { reactants: { 'H₂': null, 'F₂': null }, products: { 'HF': null }, answer: { 'H₂': 1, 'F₂': 1, 'HF': 2 } }
+    },
+    {
+        name: 'Hydrogen Peroxide Decomposition',
+        equation: '2H₂O₂ → 2H₂O + O₂',
+        type: 'Decomposition',
+        deltaH: -47,
+        geometry: 'Bent H₂O + O₂',
+        hybridization: 'sp³',
+        reactantMolecules: [
+            { formula: 'H₂O₂', atoms: [8, 8, 1, 1], bonds: [[0, 1, 1], [0, 2, 1], [1, 3, 1]], count: 2 }
+        ],
         products: [
             {
-                formula: 'NH₃', count: 2,
-                atoms: [7, 1, 1, 1],
-                bonds: [[0, 1, 1], [0, 2, 1], [0, 3, 1]],   // 3 N-H single bonds
-                // Trigonal pyramidal
-                layout: [{ x: 0, y: -10 }, { x: -30, y: 25 }, { x: 0, y: 35 }, { x: 30, y: 25 }]
+                formula: 'H₂O', count: 2, atoms: [8, 1, 1], bonds: [[0, 1, 1], [0, 2, 1]],
+                layout: [{ x: 0, y: 0 }, { x: -28, y: 24 }, { x: 28, y: 24 }]
+            },
+            {
+                formula: 'O₂', count: 1, atoms: [8, 8], bonds: [[0, 1, 2]],
+                layout: [{ x: -18, y: 0 }, { x: 18, y: 0 }]
             }
         ],
-        balanceQuestion: { reactants: { 'N₂': null, 'H₂': null }, products: { 'NH₃': null }, answer: { 'N₂': 1, 'H₂': 3, 'NH₃': 2 } }
-    }
+        balanceQuestion: { reactants: { 'H₂O₂': null }, products: { 'H₂O': null, 'O₂': null }, answer: { 'H₂O₂': 2, 'H₂O': 2, 'O₂': 1 } }
+    },
 ];
-

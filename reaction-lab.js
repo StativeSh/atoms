@@ -1,7 +1,12 @@
 // ============================================
-//  ChemVerse — Reaction Lab Engine v2
-//  Chemistry-accurate bonding with EN, bond types,
-//  octet rule, and product-aware reactions
+//  ChemVerse — Reaction Lab Engine v3
+//  Chemistry-accurate simulation backed by:
+//  - Pauling bond energies & covalent radii
+//  - Electronegativity-based bond types
+//  - VSEPR molecular geometry
+//  - Enthalpy tracking (ΔH)
+//  - % Ionic character (Pauling formula)
+//  - Lewis dot rendering
 // ============================================
 
 (function () {
@@ -24,8 +29,9 @@
     resize();
 
     // ─── State ───
-    const atoms = [];       // { id, z, x, y, bonds: [], charge: 0 }
-    const bonds = [];       // { a, b, order, type: 'nonpolar'|'polar'|'ionic' }
+    const atoms = [];
+    const bonds = [];
+    const particles = [];   // spark/frost particles
     let nextId = 1;
     let dragging = null;
     let dragOffX = 0, dragOffY = 0;
@@ -33,18 +39,21 @@
     let activePreset = null;
     let score = 0;
     let reacting = false;
+    let hoveredAtom = null;
 
-    const ATOM_RADIUS = 24;
+    const BASE_RADIUS = 22;
     const BOND_DIST = 72;
 
     // ─── Chemistry Helpers ───
 
-    function getEN(z) {
-        return ELECTRONEGATIVITY[z] || 1.5;
-    }
+    function getEN(z) { return ELECTRONEGATIVITY[z] || 1.5; }
+    function getProps(z) { return ELEMENT_PROPERTIES[z] || { valence: 0, maxBonds: 0, electronsNeeded: 0, isMetal: false, lonePairs: 0 }; }
+    function getRadius(z) { return COVALENT_RADII[z] || 0.77; }
 
-    function getProps(z) {
-        return ELEMENT_PROPERTIES[z] || { valence: 0, maxBonds: 0, electronsNeeded: 0, isMetal: false };
+    // Atom visual radius scaled by covalent radius (Pauling Ch. 7)
+    function atomRadius(z) {
+        const r = getRadius(z);
+        return Math.max(14, Math.min(32, BASE_RADIUS * (r / 0.77)));
     }
 
     function getElementColor(z) {
@@ -58,48 +67,59 @@
         return ELEMENTS_BY_Z[z] || { symbol: '?', name: 'Unknown', mass: 0 };
     }
 
-    // Determine bond type from electronegativity difference
+    // Bond type from ΔEN (Pauling Ch. 3)
     function determineBondType(z1, z2) {
-        const en1 = getEN(z1);
-        const en2 = getEN(z2);
-        const delta = Math.abs(en1 - en2);
+        const delta = Math.abs(getEN(z1) - getEN(z2));
         if (delta > 1.7) return 'ionic';
         if (delta >= 0.4) return 'polar';
         return 'nonpolar';
     }
 
-    // Calculate proper bond order for two atoms
+    // % Ionic character — Pauling Ch. 3-9 formula
+    function ionicCharacter(z1, z2) {
+        const delta = Math.abs(getEN(z1) - getEN(z2));
+        return Math.round(100 * (1 - Math.exp(-0.25 * delta * delta)));
+    }
+
+    // Bond energy lookup (Pauling Table 3-4)
+    function getBondEnergy(z1, z2, order) {
+        const a = Math.min(z1, z2), b = Math.max(z1, z2);
+        const key = `${a}-${b}-${order}`;
+        if (BOND_ENERGIES[key]) return BOND_ENERGIES[key];
+        // Try single bond as fallback
+        const fallback = `${a}-${b}-1`;
+        if (BOND_ENERGIES[fallback]) return BOND_ENERGIES[fallback] * order * 0.8;
+        return 80 * order; // rough estimate
+    }
+
+    // Bond order from electrons needed
     function calculateBondOrder(z1, z2) {
-        const p1 = getProps(z1);
-        const p2 = getProps(z2);
-
-        // Metals donate electrons → ionic, single bond equivalent
+        const p1 = getProps(z1), p2 = getProps(z2);
         if (p1.isMetal || p2.isMetal) return 1;
-
-        // Both nonmetals: bond order = min(electrons needed by each)
-        // But cap at each atom's remaining capacity
         return Math.min(p1.electronsNeeded, p2.electronsNeeded, 3);
     }
 
-    // Get remaining bonding capacity for an atom
     function getAvailableBonds(atom) {
         const props = getProps(atom.z);
-        const currentBonds = atom.bonds.reduce((sum, b) => sum + b.order, 0);
-        return Math.max(0, props.maxBonds - currentBonds);
+        const used = atom.bonds.reduce((s, b) => s + b.order, 0);
+        return Math.max(0, props.maxBonds - used);
     }
 
-    // Can two elements bond?
     function canBond(z1, z2) {
-        const p1 = getProps(z1);
-        const p2 = getProps(z2);
-
-        // Noble gases can't bond (maxBonds = 0)
+        const p1 = getProps(z1), p2 = getProps(z2);
         if (p1.maxBonds === 0 || p2.maxBonds === 0) return false;
-
-        // Two metals generally don't form molecular bonds
         if (p1.isMetal && p2.isMetal) return false;
-
         return true;
+    }
+
+    // VSEPR shape for a central atom
+    function getMolecularShape(atom) {
+        const props = getProps(atom.z);
+        const bondCount = atom.bonds.length;
+        const lp = props.lonePairs || 0;
+        const steric = bondCount + lp;
+        const key = `${steric}-${lp}`;
+        return MOLECULAR_SHAPES[key] || null;
     }
 
     // ─── Build Palette ───
@@ -120,12 +140,20 @@
             const color = getElementColor(z);
             const props = getProps(z);
             const en = getEN(z);
+            const r = getRadius(z);
 
             item.innerHTML = `
-                <div class="pi-symbol" style="color:${color}; background:${color}15; border-color:${color}40">${el.symbol}</div>
+                <div class="pi-symbol" style="color:${color}; background:${color}15; border-color:${color}40">
+                    <span>${el.symbol}</span>
+                    <span class="pi-z">${z}</span>
+                </div>
                 <div class="pi-info">
                     <div class="pi-name">${el.name}</div>
-                    <div class="pi-valence">Bonds: ${props.maxBonds} · EN: ${en.toFixed(1)}</div>
+                    <div class="pi-stats">
+                        <span title="Max bonds">⚡${props.maxBonds}</span>
+                        <span title="Electronegativity">EN ${en.toFixed(1)}</span>
+                        <span title="Covalent radius">r ${r.toFixed(2)}Å</span>
+                    </div>
                 </div>
             `;
 
@@ -135,8 +163,9 @@
             });
 
             item.addEventListener('click', () => {
-                addAtom(z, W / devicePixelRatio / 2 + (Math.random() - 0.5) * 100,
-                    H / devicePixelRatio / 2 + (Math.random() - 0.5) * 100);
+                const cw = W / devicePixelRatio;
+                const ch = H / devicePixelRatio;
+                addAtom(z, cw / 2 + (Math.random() - 0.5) * 100, ch / 2 + (Math.random() - 0.5) * 100);
             });
 
             list.appendChild(item);
@@ -162,6 +191,7 @@
         const atom = { id: nextId++, z, x, y, bonds: [], charge: 0 };
         atoms.push(atom);
         trySmartBond(atom);
+        updateBondInfo();
         render();
     }
 
@@ -181,16 +211,15 @@
             }
         }
         atoms.splice(atoms.indexOf(atom), 1);
+        updateBondInfo();
         render();
     }
 
     // ─── Smart Bond Engine ───
-    // Uses electronegativity, bond type, and proper bond orders
     function trySmartBond(newAtom) {
-        const avail = getAvailableBonds(newAtom);
+        let avail = getAvailableBonds(newAtom);
         if (avail <= 0) return;
 
-        // Find all atoms within range, sorted by distance
         const candidates = [];
         for (const other of atoms) {
             if (other === newAtom) continue;
@@ -198,35 +227,34 @@
             if (!canBond(newAtom.z, other.z)) continue;
             if (bonds.some(b => (b.a === newAtom && b.b === other) || (b.a === other && b.b === newAtom))) continue;
 
-            const dx = other.x - newAtom.x;
-            const dy = other.y - newAtom.y;
+            const dx = other.x - newAtom.x, dy = other.y - newAtom.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < BOND_DIST) candidates.push({ atom: other, dist });
         }
 
         candidates.sort((a, b) => a.dist - b.dist);
 
-        let remaining = avail;
         for (const c of candidates) {
-            if (remaining <= 0) break;
+            if (avail <= 0) break;
             const otherAvail = getAvailableBonds(c.atom);
             if (otherAvail <= 0) continue;
 
             const bondType = determineBondType(newAtom.z, c.atom.z);
             let order = calculateBondOrder(newAtom.z, c.atom.z);
-            order = Math.min(order, remaining, otherAvail);
+            order = Math.min(order, avail, otherAvail);
             if (order <= 0) continue;
 
-            const bond = { a: newAtom, b: c.atom, order, type: bondType };
+            const energy = getBondEnergy(newAtom.z, c.atom.z, order);
+            const ionic = ionicCharacter(newAtom.z, c.atom.z);
+
+            const bond = { a: newAtom, b: c.atom, order, type: bondType, energy, ionicPct: ionic };
             bonds.push(bond);
             newAtom.bonds.push(bond);
             c.atom.bonds.push(bond);
-            remaining -= order;
+            avail -= order;
 
-            // Set charges for ionic bonds
             if (bondType === 'ionic') {
-                const p1 = getProps(newAtom.z);
-                const p2 = getProps(c.atom.z);
+                const p1 = getProps(newAtom.z), p2 = getProps(c.atom.z);
                 if (p1.isMetal) {
                     newAtom.charge = p1.valence;
                     c.atom.charge = -p1.valence;
@@ -242,9 +270,9 @@
     function getAtomAt(x, y) {
         for (let i = atoms.length - 1; i >= 0; i--) {
             const a = atoms[i];
-            const dx = a.x - x;
-            const dy = a.y - y;
-            if (dx * dx + dy * dy < ATOM_RADIUS * ATOM_RADIUS) return a;
+            const r = atomRadius(a.z);
+            const dx = a.x - x, dy = a.y - y;
+            if (dx * dx + dy * dy < r * r) return a;
         }
         return null;
     }
@@ -252,15 +280,10 @@
     canvas.addEventListener('mousedown', (e) => {
         if (reacting) return;
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const x = e.clientX - rect.left, y = e.clientY - rect.top;
         const atom = getAtomAt(x, y);
 
-        if (e.button === 2 && atom) {
-            e.preventDefault();
-            removeAtom(atom);
-            return;
-        }
+        if (e.button === 2 && atom) { e.preventDefault(); removeAtom(atom); return; }
 
         if (atom) {
             dragging = atom;
@@ -273,8 +296,7 @@
     canvas.addEventListener('mousemove', (e) => {
         if (reacting) return;
         const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const x = e.clientX - rect.left, y = e.clientY - rect.top;
 
         if (dragging) {
             dragging.x = x + dragOffX;
@@ -282,14 +304,15 @@
             render();
         } else {
             const atom = getAtomAt(x, y);
+            hoveredAtom = atom;
             canvas.style.cursor = atom ? 'grab' : 'crosshair';
+            render();
         }
     });
 
     canvas.addEventListener('mouseup', () => {
         if (reacting) return;
         if (dragging) {
-            // Remove bonds and rebond with chemistry rules
             for (let i = bonds.length - 1; i >= 0; i--) {
                 if (bonds[i].a === dragging || bonds[i].b === dragging) {
                     const other = bonds[i].a === dragging ? bonds[i].b : bonds[i].a;
@@ -303,6 +326,7 @@
             trySmartBond(dragging);
             dragging = null;
             canvas.style.cursor = 'crosshair';
+            updateBondInfo();
             render();
         }
     });
@@ -313,7 +337,7 @@
     function saveUndo() {
         undoStack.push({
             atoms: atoms.map(a => ({ id: a.id, z: a.z, x: a.x, y: a.y, charge: a.charge, bonds: [] })),
-            bonds: bonds.map(b => ({ aId: b.a.id, bId: b.b.id, order: b.order, type: b.type }))
+            bonds: bonds.map(b => ({ aId: b.a.id, bId: b.b.id, order: b.order, type: b.type, energy: b.energy, ionicPct: b.ionicPct }))
         });
         if (undoStack.length > 20) undoStack.shift();
     }
@@ -321,35 +345,36 @@
     document.getElementById('btn-undo').addEventListener('click', () => {
         if (undoStack.length === 0 || reacting) return;
         const state = undoStack.pop();
-        atoms.length = 0;
-        bonds.length = 0;
+        atoms.length = 0; bonds.length = 0;
         state.atoms.forEach(a => atoms.push(a));
         state.bonds.forEach(b => {
             const a = atoms.find(at => at.id === b.aId);
             const bAt = atoms.find(at => at.id === b.bId);
             if (a && bAt) {
-                const bond = { a, b: bAt, order: b.order, type: b.type };
+                const bond = { a, b: bAt, order: b.order, type: b.type, energy: b.energy, ionicPct: b.ionicPct };
                 bonds.push(bond);
                 a.bonds.push(bond);
                 bAt.bonds.push(bond);
             }
         });
+        updateBondInfo();
         render();
     });
 
     document.getElementById('btn-clear').addEventListener('click', () => {
         if (reacting) return;
         saveUndo();
-        atoms.length = 0;
-        bonds.length = 0;
+        atoms.length = 0; bonds.length = 0; particles.length = 0;
         activePreset = null;
         document.getElementById('equation-section').style.display = 'none';
         document.getElementById('balancer-section').style.display = 'none';
+        document.getElementById('bond-info-section').style.display = 'none';
+        document.getElementById('energy-overlay').style.display = 'none';
         render();
     });
 
     // ═══════════════════════════════════════════════════════════════
-    // REACT! — Product-Aware Reaction Animation
+    // REACT! — Product-Aware Reaction with Enthalpy
     // ═══════════════════════════════════════════════════════════════
 
     document.getElementById('btn-react').addEventListener('click', () => {
@@ -357,11 +382,11 @@
         if (activePreset) {
             runPresetReaction();
         } else {
-            // Free-form: just try smart bonding for all atoms
             saveUndo();
             bonds.length = 0;
             atoms.forEach(a => { a.bonds = []; a.charge = 0; });
             atoms.forEach(a => trySmartBond(a));
+            updateBondInfo();
             render();
         }
     });
@@ -369,156 +394,131 @@
     function runPresetReaction() {
         reacting = true;
         saveUndo();
-
         const preset = activePreset;
         const cw = W / devicePixelRatio;
         const ch = H / devicePixelRatio;
 
-        // Phase 1: Break all existing bonds (animate separation)
-        const phase1Duration = 600; // ms
-        const phase2Duration = 800;
-        const phase3Duration = 600;
+        // Calculate enthalpy from bond energies
+        const bondsBreaking = bonds.map(b => b.energy || getBondEnergy(b.a.z, b.b.z, b.order));
+        const totalBroken = bondsBreaking.reduce((s, e) => s + e, 0);
 
-        // Collect all current atom positions
         const startPositions = atoms.map(a => ({ x: a.x, y: a.y }));
-
-        // Calculate target product molecules
-        const productAtomGroups = []; // array of { atomRefs, blueprint, centerX, centerY }
-
-        // Gather atoms by element type
+        const productAtomGroups = [];
         const atomPool = {};
-        atoms.forEach(a => {
-            if (!atomPool[a.z]) atomPool[a.z] = [];
-            atomPool[a.z].push(a);
-        });
+        atoms.forEach(a => { if (!atomPool[a.z]) atomPool[a.z] = []; atomPool[a.z].push(a); });
 
-        // Assign atoms to product molecules
-        let groupX = 100;
-        const groupY = ch / 2;
-        const groupSpacing = 140;
-
+        let groupIdx = 0;
         for (const product of preset.products) {
             for (let pi = 0; pi < product.count; pi++) {
                 const atomRefs = [];
                 let valid = true;
-
                 for (const z of product.atoms) {
                     if (!atomPool[z] || atomPool[z].length === 0) { valid = false; break; }
                     atomRefs.push(atomPool[z].shift());
                 }
-
                 if (valid) {
-                    productAtomGroups.push({
-                        atomRefs,
-                        blueprint: product,
-                        centerX: groupX + (pi + productAtomGroups.length) * groupSpacing,
-                        centerY: groupY
-                    });
+                    const cx = 120 + groupIdx * 160;
+                    productAtomGroups.push({ atomRefs, blueprint: product, centerX: cx, centerY: ch / 2 });
+                    groupIdx++;
                 }
             }
         }
 
-        // Phase 1: Clear bonds and scatter apart slightly
+        // Calculate energy of formed bonds
+        let totalFormed = 0;
+        productAtomGroups.forEach(g => {
+            g.blueprint.bonds.forEach(bDef => {
+                const [ai, bi, order] = bDef;
+                totalFormed += getBondEnergy(g.atomRefs[ai].z, g.atomRefs[bi].z, order);
+            });
+        });
+
+        const deltaH = totalBroken - totalFormed;  // + = endothermic, - = exothermic
+        const presetDH = preset.deltaH || -deltaH;
+
+        // Phase timing
+        const P1 = 600, P2 = 900, P3 = 600, P4 = 800;
+
         bonds.length = 0;
         atoms.forEach(a => { a.bonds = []; a.charge = 0; });
 
         const scatterPositions = atoms.map(a => ({
-            x: a.x + (Math.random() - 0.5) * 60,
-            y: a.y + (Math.random() - 0.5) * 60
+            x: a.x + (Math.random() - 0.5) * 80,
+            y: a.y + (Math.random() - 0.5) * 80
         }));
 
-        // Calculate final positions from blueprints
         const targetPositions = new Map();
         productAtomGroups.forEach(group => {
             group.atomRefs.forEach((atom, i) => {
                 const layout = group.blueprint.layout[i];
-                targetPositions.set(atom.id, {
-                    x: group.centerX + layout.x,
-                    y: group.centerY + layout.y
-                });
+                targetPositions.set(atom.id, { x: group.centerX + layout.x, y: group.centerY + layout.y });
             });
         });
-
-        // For any atoms not assigned to a product, just leave them
-        atoms.forEach(a => {
-            if (!targetPositions.has(a.id)) {
-                targetPositions.set(a.id, { x: a.x, y: a.y });
-            }
-        });
+        atoms.forEach(a => { if (!targetPositions.has(a.id)) targetPositions.set(a.id, { x: a.x, y: a.y }); });
 
         let startTime = null;
+        let bondsFormed = false;
 
         function animateStep(timestamp) {
             if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
-            const totalDuration = phase1Duration + phase2Duration + phase3Duration;
+            const total = P1 + P2 + P3 + P4;
 
-            if (elapsed < phase1Duration) {
-                // Phase 1: scatter
-                const t = elapsed / phase1Duration;
-                const ease = t * t * (3 - 2 * t); // smoothstep
+            const ease = t => t * t * (3 - 2 * t);
+
+            if (elapsed < P1) {
+                const t = ease(elapsed / P1);
                 atoms.forEach((a, i) => {
-                    a.x = startPositions[i].x + (scatterPositions[i].x - startPositions[i].x) * ease;
-                    a.y = startPositions[i].y + (scatterPositions[i].y - startPositions[i].y) * ease;
+                    a.x = startPositions[i].x + (scatterPositions[i].x - startPositions[i].x) * t;
+                    a.y = startPositions[i].y + (scatterPositions[i].y - startPositions[i].y) * t;
                 });
-            } else if (elapsed < phase1Duration + phase2Duration) {
-                // Phase 2: move to product positions
-                const t = (elapsed - phase1Duration) / phase2Duration;
-                const ease = t * t * (3 - 2 * t);
+            } else if (elapsed < P1 + P2) {
+                const t = ease((elapsed - P1) / P2);
                 atoms.forEach((a, i) => {
                     const target = targetPositions.get(a.id);
-                    a.x = scatterPositions[i].x + (target.x - scatterPositions[i].x) * ease;
-                    a.y = scatterPositions[i].y + (target.y - scatterPositions[i].y) * ease;
+                    a.x = scatterPositions[i].x + (target.x - scatterPositions[i].x) * t;
+                    a.y = scatterPositions[i].y + (target.y - scatterPositions[i].y) * t;
                 });
-            } else if (elapsed < totalDuration) {
-                // Phase 3: form bonds
-                const t = (elapsed - phase1Duration - phase2Duration) / phase3Duration;
-
-                // Snap to final positions
+            } else if (elapsed < P1 + P2 + P3) {
                 atoms.forEach(a => {
                     const target = targetPositions.get(a.id);
-                    a.x = target.x;
-                    a.y = target.y;
+                    a.x = target.x; a.y = target.y;
                 });
 
-                // Form product bonds (do once)
-                if (bonds.length === 0) {
+                if (!bondsFormed) {
+                    bondsFormed = true;
                     productAtomGroups.forEach(group => {
                         const bp = group.blueprint;
                         bp.bonds.forEach((bDef, bi) => {
                             const [ai, bi2, order] = bDef;
-                            const atomA = group.atomRefs[ai];
-                            const atomB = group.atomRefs[bi2];
-
-                            let bondType;
-                            if (bp.bondTypes && bp.bondTypes[bi]) {
-                                bondType = bp.bondTypes[bi];
-                            } else {
-                                bondType = determineBondType(atomA.z, atomB.z);
-                            }
-
-                            const bond = { a: atomA, b: atomB, order, type: bondType };
+                            const atomA = group.atomRefs[ai], atomB = group.atomRefs[bi2];
+                            let bondType = (bp.bondTypes && bp.bondTypes[bi]) ? bp.bondTypes[bi] : determineBondType(atomA.z, atomB.z);
+                            const energy = getBondEnergy(atomA.z, atomB.z, order);
+                            const ionic = ionicCharacter(atomA.z, atomB.z);
+                            const bond = { a: atomA, b: atomB, order, type: bondType, energy, ionicPct: ionic };
                             bonds.push(bond);
                             atomA.bonds.push(bond);
                             atomB.bonds.push(bond);
 
-                            // Set ionic charges
                             if (bondType === 'ionic') {
-                                const p1 = getProps(atomA.z);
-                                const p2 = getProps(atomB.z);
-                                if (p1.isMetal) {
-                                    atomA.charge = Math.min(p1.valence, order);
-                                    atomB.charge = -Math.min(p1.valence, order);
-                                } else if (p2.isMetal) {
-                                    atomB.charge = Math.min(p2.valence, order);
-                                    atomA.charge = -Math.min(p2.valence, order);
-                                }
+                                const p1 = getProps(atomA.z), p2 = getProps(atomB.z);
+                                if (p1.isMetal) { atomA.charge = Math.min(p1.valence, order); atomB.charge = -Math.min(p1.valence, order); }
+                                else if (p2.isMetal) { atomB.charge = Math.min(p2.valence, order); atomA.charge = -Math.min(p2.valence, order); }
                             }
                         });
                     });
+
+                    // Spawn reaction particles
+                    spawnReactionParticles(presetDH, cw / 2, ch / 2);
                 }
+            } else if (elapsed < total) {
+                // Phase 4: show enthalpy
+                const t = ease((elapsed - P1 - P2 - P3) / P4);
+                showEnthalpy(presetDH, t);
             } else {
                 reacting = false;
+                showEnthalpy(presetDH, 1);
+                updateBondInfo();
                 render();
                 return;
             }
@@ -526,67 +526,171 @@
             render();
             requestAnimationFrame(animateStep);
         }
-
         requestAnimationFrame(animateStep);
     }
 
-    // ─── Load Preset with Proper Reactant Molecules ───
+    // ─── Enthalpy Display ───
+    function showEnthalpy(deltaH, t) {
+        const overlay = document.getElementById('energy-overlay');
+        overlay.style.display = 'flex';
+
+        const label = document.getElementById('energy-label');
+        const fill = document.getElementById('energy-bar-fill');
+        const typeEl = document.getElementById('energy-type');
+
+        const val = Math.round(deltaH * t);
+        label.textContent = `ΔH = ${val} kcal/mol`;
+
+        const pct = Math.min(Math.abs(val) / 400 * 100, 100);
+        fill.style.width = pct + '%';
+
+        if (deltaH < 0) {
+            fill.className = 'energy-bar-fill exothermic';
+            typeEl.textContent = '🔥 Exothermic — Energy Released';
+            typeEl.className = 'energy-type exo';
+        } else {
+            fill.className = 'energy-bar-fill endothermic';
+            typeEl.textContent = '❄️ Endothermic — Energy Absorbed';
+            typeEl.className = 'energy-type endo';
+        }
+    }
+
+    // ─── Reaction Particles ───
+    function spawnReactionParticles(deltaH, cx, cy) {
+        const isExo = deltaH < 0;
+        const count = Math.min(Math.abs(deltaH) / 5, 40);
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 1 + Math.random() * 3;
+            particles.push({
+                x: cx + (Math.random() - 0.5) * 100,
+                y: cy + (Math.random() - 0.5) * 100,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                life: 60 + Math.random() * 40,
+                maxLife: 100,
+                color: isExo
+                    ? `hsl(${20 + Math.random() * 30}, 100%, ${50 + Math.random() * 30}%)`
+                    : `hsl(${200 + Math.random() * 40}, 80%, ${60 + Math.random() * 30}%)`,
+                size: 2 + Math.random() * 3
+            });
+        }
+    }
+
+    // ─── Bond Info Panel ───
+    function updateBondInfo() {
+        const section = document.getElementById('bond-info-section');
+        const content = document.getElementById('bond-info-content');
+
+        if (bonds.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        let html = '<div class="bond-info-grid">';
+
+        // Deduplicate bond types
+        const seen = new Set();
+        bonds.forEach(b => {
+            const el1 = getElementInfo(b.a.z), el2 = getElementInfo(b.b.z);
+            const key = `${Math.min(b.a.z, b.b.z)}-${Math.max(b.a.z, b.b.z)}-${b.order}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+
+            const orderStr = b.order === 1 ? 'Single' : b.order === 2 ? 'Double' : 'Triple';
+            const typeStr = b.type === 'ionic' ? 'Ionic' : b.type === 'polar' ? 'Polar Covalent' : 'Nonpolar Covalent';
+            const typeClass = b.type === 'ionic' ? 'ionic' : b.type === 'polar' ? 'polar' : 'nonpolar';
+
+            html += `
+                <div class="bond-info-row">
+                    <div class="bond-pair">${el1.symbol}${b.order > 1 ? '═'.repeat(b.order - 1) : '─'}${el2.symbol}</div>
+                    <div class="bond-details">
+                        <span class="bond-tag ${typeClass}">${typeStr}</span>
+                        <span class="bond-tag order">${orderStr}</span>
+                    </div>
+                    <div class="bond-numbers">
+                        <span title="Bond energy">⚡ ${Math.round(b.energy || 0)} kcal</span>
+                        <span title="Ionic character">⊕ ${b.ionicPct || 0}%</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+
+        // VSEPR info for central atoms
+        atoms.forEach(a => {
+            if (a.bonds.length >= 2) {
+                const shape = getMolecularShape(a);
+                if (shape) {
+                    const el = getElementInfo(a.z);
+                    html += `<div class="vsepr-label">📐 ${el.symbol}: ${shape.shape} (${shape.angle}°)</div>`;
+                }
+            }
+        });
+
+        content.innerHTML = html;
+    }
+
+    // ─── Load Preset ───
     function loadPreset(idx) {
         if (reacting) return;
         const preset = PRESET_REACTIONS[idx];
         activePreset = preset;
-
-        atoms.length = 0;
-        bonds.length = 0;
+        atoms.length = 0; bonds.length = 0; particles.length = 0;
         undoStack.length = 0;
 
         const cw = W / devicePixelRatio;
         const ch = H / devicePixelRatio;
-
-        // Place reactant molecules with correct internal bonds
         let xOff = 80;
         const yCenter = ch / 2;
 
         for (const mol of preset.reactantMolecules) {
             for (let mi = 0; mi < mol.count; mi++) {
                 const molAtoms = [];
-
-                // Create atoms for this molecule
                 mol.atoms.forEach((z, ai) => {
-                    // Spread atoms within molecule
                     const angle = mol.atoms.length > 1 ? (ai / mol.atoms.length) * Math.PI * 2 : 0;
                     const spread = mol.atoms.length > 1 ? 28 : 0;
                     const x = xOff + Math.cos(angle) * spread;
-                    const y = yCenter + Math.sin(angle) * spread + (Math.random() - 0.5) * 40;
-                    const atom = addAtomSilent(z, x, y);
-                    molAtoms.push(atom);
+                    const y = yCenter + Math.sin(angle) * spread + (Math.random() - 0.5) * 30;
+                    molAtoms.push(addAtomSilent(z, x, y));
                 });
 
-                // Create bonds within molecule
                 if (mol.bonds) {
                     mol.bonds.forEach(bDef => {
                         const [ai, bi, order] = bDef;
-                        const atomA = molAtoms[ai];
-                        const atomB = molAtoms[bi];
+                        const atomA = molAtoms[ai], atomB = molAtoms[bi];
                         const bondType = determineBondType(atomA.z, atomB.z);
-                        const bond = { a: atomA, b: atomB, order, type: bondType };
+                        const energy = getBondEnergy(atomA.z, atomB.z, order);
+                        const ionic = ionicCharacter(atomA.z, atomB.z);
+                        const bond = { a: atomA, b: atomB, order, type: bondType, energy, ionicPct: ionic };
                         bonds.push(bond);
                         atomA.bonds.push(bond);
                         atomB.bonds.push(bond);
                     });
                 }
-
                 xOff += 90;
             }
-            xOff += 40; // gap between different molecule types
+            xOff += 40;
         }
 
-        // Show equation
+        // Show equation + metadata
         document.getElementById('equation-section').style.display = 'block';
         document.getElementById('eq-text').textContent = preset.equation;
         document.getElementById('eq-name').textContent = preset.name + ' — ' + preset.type;
 
+        const dhEl = document.getElementById('eq-dh');
+        dhEl.textContent = `ΔH = ${preset.deltaH} kcal/mol`;
+        dhEl.className = 'equation-dh ' + (preset.deltaH < 0 ? 'exo' : 'endo');
+
+        document.getElementById('eq-geometry').textContent = '📐 ' + (preset.geometry || '');
+        document.getElementById('eq-hybrid').textContent = '🔬 ' + (preset.hybridization || '');
+
+        document.getElementById('energy-overlay').style.display = 'none';
+
         buildBalancer(preset);
+        updateBondInfo();
         render();
     }
 
@@ -600,7 +704,7 @@
         ctx.clearRect(0, 0, w, h);
 
         // Grid dots
-        ctx.fillStyle = 'rgba(99,102,241,0.04)';
+        ctx.fillStyle = 'rgba(99,102,241,0.03)';
         for (let gx = 0; gx < w; gx += 40) {
             for (let gy = 0; gy < h; gy += 40) {
                 ctx.beginPath();
@@ -609,178 +713,232 @@
             }
         }
 
-        // Bonds
+        // ── Bonds ──
         bonds.forEach(bond => {
             const { a, b, order, type } = bond;
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
+            const dx = b.x - a.x, dy = b.y - a.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist === 0) return;
-            const nx = -dy / dist;
-            const ny = dx / dist;
+            const nx = -dy / dist, ny = dx / dist;
 
             ctx.lineCap = 'round';
 
             if (type === 'ionic') {
-                // Ionic: dashed line with charge indicators
-                ctx.setLineDash([3, 5]);
-                ctx.strokeStyle = 'rgba(255,200,100,0.4)';
-                ctx.lineWidth = 2;
+                // Ionic: animated dashed golden line
+                ctx.setLineDash([4, 6]);
+                ctx.strokeStyle = 'rgba(255,200,100,0.5)';
+                ctx.lineWidth = 2.5;
                 ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
+                ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
                 ctx.stroke();
                 ctx.setLineDash([]);
-            } else {
-                // Covalent bonds
-                const bondColor = type === 'polar'
-                    ? 'rgba(120,180,255,0.6)'   // polar = blue tint
-                    : 'rgba(148,163,184,0.6)';  // nonpolar = gray
 
-                const glowColor = type === 'polar'
-                    ? 'rgba(99,140,241,0.15)'
-                    : 'rgba(99,102,241,0.15)';
+                // Ionic % label
+                ctx.font = '8px Inter, sans-serif';
+                ctx.fillStyle = 'rgba(255,200,100,0.6)';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${bond.ionicPct}% ionic`, (a.x + b.x) / 2, (a.y + b.y) / 2 - 10);
+            } else {
+                const bondColor = type === 'polar' ? 'rgba(100,170,255,0.7)' : 'rgba(148,163,184,0.6)';
+                const glowColor = type === 'polar' ? 'rgba(80,140,241,0.12)' : 'rgba(99,102,241,0.1)';
 
                 for (let i = 0; i < order; i++) {
                     const offset = (i - (order - 1) / 2) * 6;
-                    ctx.beginPath();
-                    ctx.moveTo(a.x + nx * offset, a.y + ny * offset);
-                    ctx.lineTo(b.x + nx * offset, b.y + ny * offset);
+                    const ax = a.x + nx * offset, ay = a.y + ny * offset;
+                    const bx = b.x + nx * offset, by = b.y + ny * offset;
 
-                    ctx.strokeStyle = glowColor;
-                    ctx.lineWidth = 6;
-                    ctx.stroke();
+                    // Glow
+                    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+                    ctx.strokeStyle = glowColor; ctx.lineWidth = 6; ctx.stroke();
 
-                    ctx.strokeStyle = bondColor;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
+                    // Line
+                    ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by);
+                    ctx.strokeStyle = bondColor; ctx.lineWidth = 2; ctx.stroke();
                 }
 
-                // Polar bond: show δ+ and δ-
+                // Polarity labels
                 if (type === 'polar') {
-                    const en_a = getEN(a.z);
-                    const en_b = getEN(b.z);
-                    const midX = (a.x + b.x) / 2;
-                    const midY = (a.y + b.y) / 2;
-
-                    ctx.font = '10px Inter, sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-
+                    const en_a = getEN(a.z), en_b = getEN(b.z);
+                    ctx.font = '9px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     if (en_a > en_b) {
-                        ctx.fillStyle = 'rgba(100,180,255,0.7)';
-                        ctx.fillText('δ⁻', a.x + nx * 14, a.y + ny * 14);
-                        ctx.fillStyle = 'rgba(255,150,100,0.7)';
-                        ctx.fillText('δ⁺', b.x - nx * 14, b.y - ny * 14);
+                        ctx.fillStyle = 'rgba(100,180,255,0.6)'; ctx.fillText('δ⁻', a.x + nx * 16, a.y + ny * 16);
+                        ctx.fillStyle = 'rgba(255,150,100,0.6)'; ctx.fillText('δ⁺', b.x - nx * 16, b.y - ny * 16);
                     } else {
-                        ctx.fillStyle = 'rgba(100,180,255,0.7)';
-                        ctx.fillText('δ⁻', b.x + nx * 14, b.y + ny * 14);
-                        ctx.fillStyle = 'rgba(255,150,100,0.7)';
-                        ctx.fillText('δ⁺', a.x - nx * 14, a.y - ny * 14);
+                        ctx.fillStyle = 'rgba(100,180,255,0.6)'; ctx.fillText('δ⁻', b.x + nx * 16, b.y + ny * 16);
+                        ctx.fillStyle = 'rgba(255,150,100,0.6)'; ctx.fillText('δ⁺', a.x - nx * 16, a.y - ny * 16);
                     }
+
+                    // % ionic on polar bonds
+                    ctx.font = '7px Inter, sans-serif';
+                    ctx.fillStyle = 'rgba(148,163,184,0.5)';
+                    ctx.fillText(`${bond.ionicPct}%`, (a.x + b.x) / 2, (a.y + b.y) / 2 - 10);
+                }
+
+                // Bond energy label (subtle)
+                if (bond.energy && !reacting) {
+                    ctx.font = '7px Inter, sans-serif';
+                    ctx.fillStyle = 'rgba(148,163,184,0.3)';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${Math.round(bond.energy)}`, (a.x + b.x) / 2, (a.y + b.y) / 2 + 10);
                 }
             }
         });
 
-        // Atoms
+        // ── Atoms ──
         atoms.forEach(atom => {
             const el = getElementInfo(atom.z);
             const color = getElementColor(atom.z);
+            const r = atomRadius(atom.z);
             const props = getProps(atom.z);
+            const isHovered = hoveredAtom === atom;
 
-            // Outer glow
-            const grd = ctx.createRadialGradient(atom.x, atom.y, ATOM_RADIUS * 0.5, atom.x, atom.y, ATOM_RADIUS * 1.5);
-            grd.addColorStop(0, color + '30');
-            grd.addColorStop(1, 'transparent');
-            ctx.fillStyle = grd;
-            ctx.beginPath();
-            ctx.arc(atom.x, atom.y, ATOM_RADIUS * 1.5, 0, Math.PI * 2);
-            ctx.fill();
+            // Electron cloud (covalent radius visualization)
+            const cloudR = r * 1.8;
+            const cloud = ctx.createRadialGradient(atom.x, atom.y, r * 0.3, atom.x, atom.y, cloudR);
+            cloud.addColorStop(0, color + '18');
+            cloud.addColorStop(0.6, color + '08');
+            cloud.addColorStop(1, 'transparent');
+            ctx.fillStyle = cloud;
+            ctx.beginPath(); ctx.arc(atom.x, atom.y, cloudR, 0, Math.PI * 2); ctx.fill();
 
-            // Atom circle
+            // Atom body
             ctx.beginPath();
-            ctx.arc(atom.x, atom.y, ATOM_RADIUS, 0, Math.PI * 2);
-            ctx.fillStyle = color + '20';
+            ctx.arc(atom.x, atom.y, r, 0, Math.PI * 2);
+            ctx.fillStyle = color + (isHovered ? '35' : '18');
             ctx.fill();
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
+            ctx.strokeStyle = color + (isHovered ? 'cc' : '88');
+            ctx.lineWidth = isHovered ? 2.5 : 1.5;
             ctx.stroke();
 
             // Symbol
             ctx.fillStyle = color;
-            ctx.font = 'bold 16px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(el.symbol, atom.x, atom.y - 2);
+            ctx.font = `bold ${Math.max(11, r * 0.7)}px Inter, sans-serif`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(el.symbol, atom.x, atom.y - 1);
 
-            // Lone pair / free electron dots
+            // Atomic number
+            ctx.fillStyle = 'rgba(148,163,184,0.35)';
+            ctx.font = '8px Inter, sans-serif';
+            ctx.fillText(atom.z, atom.x, atom.y + r * 0.55);
+
+            // Lone pairs (Lewis dots)
             const usedBonds = atom.bonds.reduce((s, b) => s + b.order, 0);
-            const freeDots = Math.max(0, props.maxBonds - usedBonds);
-            const dotR = 3;
-            for (let i = 0; i < freeDots; i++) {
-                const angle = (i / Math.max(freeDots, 1)) * Math.PI * 2 - Math.PI / 2;
-                const ddx = Math.cos(angle) * (ATOM_RADIUS + 8);
-                const ddy = Math.sin(angle) * (ATOM_RADIUS + 8);
-                ctx.beginPath();
-                ctx.arc(atom.x + ddx, atom.y + ddy, dotR, 0, Math.PI * 2);
-                ctx.fillStyle = color;
-                ctx.fill();
+            const lonePairCount = props.lonePairs || 0;
+            if (lonePairCount > 0 && !props.isMetal) {
+                const bondAngles = atom.bonds.map(b => {
+                    const other = b.a === atom ? b.b : b.a;
+                    return Math.atan2(other.y - atom.y, other.x - atom.x);
+                });
+
+                // Place lone pairs away from bonds
+                for (let lp = 0; lp < lonePairCount; lp++) {
+                    let angle;
+                    if (bondAngles.length === 0) {
+                        angle = (lp / lonePairCount) * Math.PI * 2;
+                    } else {
+                        // Find gap between bonds
+                        const sorted = [...bondAngles].sort((a, b) => a - b);
+                        let maxGap = 0, gapStart = 0;
+                        for (let gi = 0; gi < sorted.length; gi++) {
+                            const next = (gi + 1) % sorted.length;
+                            let gap = sorted[next] - sorted[gi];
+                            if (next === 0) gap += Math.PI * 2;
+                            if (gap > maxGap) { maxGap = gap; gapStart = sorted[gi]; }
+                        }
+                        angle = gapStart + maxGap * (lp + 1) / (lonePairCount + 1);
+                    }
+
+                    const d1 = r + 6, d2 = r + 10;
+                    const perpOff = 2;
+                    const cx = Math.cos(angle), sy = Math.sin(angle);
+
+                    ctx.fillStyle = color + '80';
+                    ctx.beginPath();
+                    ctx.arc(atom.x + cx * d1 - sy * perpOff, atom.y + sy * d1 + cx * perpOff, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(atom.x + cx * d2 + sy * perpOff, atom.y + sy * d2 - cx * perpOff, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
 
-            // Charge label for ionic bonds
+            // Free bonding dots (available bonds)
+            const freeBonds = Math.max(0, props.maxBonds - usedBonds);
+            if (freeBonds > 0 && !props.isMetal) {
+                for (let i = 0; i < freeBonds; i++) {
+                    const angle = (i / Math.max(freeBonds, 1)) * Math.PI * 2 - Math.PI / 2;
+                    // Check this position doesn't overlap with lone pairs
+                    const ddx = Math.cos(angle) * (r + 8);
+                    const ddy = Math.sin(angle) * (r + 8);
+                    ctx.beginPath();
+                    ctx.arc(atom.x + ddx, atom.y + ddy, 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = color + '60';
+                    ctx.fill();
+                }
+            }
+
+            // Charge label
             if (atom.charge !== 0) {
                 const chargeStr = atom.charge > 0
                     ? (atom.charge === 1 ? '⁺' : `${atom.charge}⁺`)
                     : (atom.charge === -1 ? '⁻' : `${Math.abs(atom.charge)}⁻`);
                 ctx.fillStyle = atom.charge > 0 ? '#ff9966' : '#66bbff';
-                ctx.font = 'bold 12px Inter, sans-serif';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(chargeStr, atom.x + ATOM_RADIUS - 4, atom.y - ATOM_RADIUS - 4);
+                ctx.font = 'bold 11px Inter, sans-serif';
+                ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+                ctx.fillText(chargeStr, atom.x + r - 6, atom.y - r - 6);
             }
 
-            // Atomic number
-            ctx.fillStyle = 'rgba(148,163,184,0.4)';
-            ctx.font = '9px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(atom.z, atom.x, atom.y + 13);
+            // VSEPR shape label (on hover)
+            if (isHovered && atom.bonds.length >= 2) {
+                const shape = getMolecularShape(atom);
+                if (shape) {
+                    ctx.fillStyle = 'rgba(200,220,255,0.85)';
+                    ctx.font = 'bold 10px Inter, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${shape.shape} ${shape.angle}°`, atom.x, atom.y - r - 14);
+                }
+            }
         });
 
-        // Drag hint lines
+        // ── Drag hint lines ──
         if (dragging && !reacting) {
             const avail = getAvailableBonds(dragging);
             if (avail > 0) {
                 for (const other of atoms) {
-                    if (other === dragging) continue;
-                    if (getAvailableBonds(other) <= 0) continue;
-                    if (!canBond(dragging.z, other.z)) continue;
-                    const dx = other.x - dragging.x;
-                    const dy = other.y - dragging.y;
+                    if (other === dragging || getAvailableBonds(other) <= 0 || !canBond(dragging.z, other.z)) continue;
+                    const dx = other.x - dragging.x, dy = other.y - dragging.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < BOND_DIST * 1.5) {
                         const bondType = determineBondType(dragging.z, other.z);
                         ctx.setLineDash([4, 4]);
-                        ctx.strokeStyle = bondType === 'ionic'
-                            ? 'rgba(255,200,100,0.3)'
-                            : 'rgba(99,102,241,0.3)';
+                        ctx.strokeStyle = bondType === 'ionic' ? 'rgba(255,200,100,0.25)' : 'rgba(99,102,241,0.25)';
                         ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(dragging.x, dragging.y);
-                        ctx.lineTo(other.x, other.y);
-                        ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(dragging.x, dragging.y); ctx.lineTo(other.x, other.y); ctx.stroke();
                         ctx.setLineDash([]);
 
-                        // Show predicted bond type
-                        const midX = (dragging.x + other.x) / 2;
-                        const midY = (dragging.y + other.y) / 2;
-                        ctx.font = '9px Inter, sans-serif';
-                        ctx.fillStyle = 'rgba(148,163,184,0.6)';
+                        ctx.font = '8px Inter, sans-serif';
+                        ctx.fillStyle = 'rgba(148,163,184,0.5)';
                         ctx.textAlign = 'center';
-                        ctx.fillText(bondType, midX, midY - 8);
+                        ctx.fillText(bondType, (dragging.x + other.x) / 2, (dragging.y + other.y) / 2 - 8);
                     }
                 }
             }
+        }
+
+        // ── Particles ──
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx; p.y += p.vy;
+            p.vy += 0.02; // gravity
+            p.life--;
+            const alpha = p.life / p.maxLife;
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            if (p.life <= 0) particles.splice(i, 1);
         }
     }
 
@@ -790,9 +948,15 @@
         PRESET_REACTIONS.forEach((preset, idx) => {
             const btn = document.createElement('button');
             btn.className = 'preset-btn';
+            const dhClass = preset.deltaH < 0 ? 'exo' : 'endo';
             btn.innerHTML = `
-                <span>${preset.name}</span>
-                <span class="preset-type">${preset.type}</span>
+                <div class="preset-top">
+                    <span class="preset-name">${preset.name}</span>
+                    <span class="preset-type">${preset.type}</span>
+                </div>
+                <div class="preset-bottom">
+                    <span class="preset-dh ${dhClass}">${preset.deltaH > 0 ? '+' : ''}${preset.deltaH} kcal</span>
+                </div>
             `;
             btn.addEventListener('click', () => loadPreset(idx));
             list.appendChild(btn);
@@ -813,8 +977,7 @@
         Object.keys(q.reactants).forEach((formula, i) => {
             if (i > 0) {
                 const op = document.createElement('span');
-                op.className = 'balance-operator';
-                op.textContent = '+';
+                op.className = 'balance-operator'; op.textContent = '+';
                 container.appendChild(op);
             }
             const term = createBalanceTerm(formula);
@@ -823,15 +986,13 @@
         });
 
         const arrow = document.createElement('span');
-        arrow.className = 'balance-arrow';
-        arrow.textContent = '→';
+        arrow.className = 'balance-arrow'; arrow.textContent = '→';
         container.appendChild(arrow);
 
         Object.keys(q.products).forEach((formula, i) => {
             if (i > 0) {
                 const op = document.createElement('span');
-                op.className = 'balance-operator';
-                op.textContent = '+';
+                op.className = 'balance-operator'; op.textContent = '+';
                 container.appendChild(op);
             }
             const term = createBalanceTerm(formula);
@@ -842,19 +1003,16 @@
         document.getElementById('btn-check').onclick = () => {
             const userAnswer = {};
             allTerms.forEach(t => { userAnswer[t.formula] = t.value; });
-
             const correct = Object.keys(q.answer).every(k => userAnswer[k] === q.answer[k]);
-
             const fb = document.getElementById('balance-feedback');
             fb.classList.remove('hidden', 'correct', 'incorrect');
-
             if (correct) {
                 fb.classList.add('correct');
                 fb.textContent = '✅ Perfectly Balanced!';
                 score++;
             } else {
                 fb.classList.add('incorrect');
-                fb.textContent = '❌ Not quite — check the atom counts!';
+                fb.textContent = '❌ Not quite — check atom counts!';
                 score = Math.max(0, score - 1);
             }
             document.getElementById('score-num').textContent = score;
@@ -865,41 +1023,23 @@
 
     function createBalanceTerm(formula) {
         const term = { formula, value: 1, el: null };
-
         const div = document.createElement('div');
         div.className = 'balance-term';
 
         const minus = document.createElement('button');
-        minus.className = 'coeff-btn';
-        minus.textContent = '−';
-
+        minus.className = 'coeff-btn'; minus.textContent = '−';
         const val = document.createElement('span');
-        val.className = 'coeff-value';
-        val.textContent = '1';
-
+        val.className = 'coeff-value'; val.textContent = '1';
         const plus = document.createElement('button');
-        plus.className = 'coeff-btn';
-        plus.textContent = '+';
-
+        plus.className = 'coeff-btn'; plus.textContent = '+';
         const label = document.createElement('span');
-        label.className = 'balance-formula';
-        label.textContent = formula;
+        label.className = 'balance-formula'; label.textContent = formula;
 
-        minus.addEventListener('click', () => {
-            term.value = Math.max(1, term.value - 1);
-            val.textContent = term.value;
-        });
-        plus.addEventListener('click', () => {
-            term.value = Math.min(10, term.value + 1);
-            val.textContent = term.value;
-        });
+        minus.addEventListener('click', () => { term.value = Math.max(1, term.value - 1); val.textContent = term.value; });
+        plus.addEventListener('click', () => { term.value = Math.min(10, term.value + 1); val.textContent = term.value; });
 
-        div.appendChild(minus);
-        div.appendChild(val);
-        div.appendChild(plus);
-        div.appendChild(label);
+        div.appendChild(minus); div.appendChild(val); div.appendChild(plus); div.appendChild(label);
         term.el = div;
-
         return term;
     }
 
@@ -907,14 +1047,13 @@
     buildPresets();
     render();
 
-    // Gentle idle animation
     let time = 0;
     function animate() {
         time += 0.016;
         if (!reacting) {
             atoms.forEach(atom => {
                 if (atom.bonds.length === 0 && atom !== dragging) {
-                    atom.y += Math.sin(time * 2 + atom.id) * 0.15;
+                    atom.y += Math.sin(time * 2 + atom.id) * 0.12;
                 }
             });
         }
