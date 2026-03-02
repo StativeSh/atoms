@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — 3D Molecular Viewer</title>
+    <meta name="description"
+        content="Rotate, zoom, and explore molecules in real-time 3D with ball-and-stick, space-filling, and wireframe modes.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="mol3d.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="chemverse-nav">
+        <a href="index.html" class="chemverse-logo">
+            <span class="logo-icon">⚛</span>
+            <span class="logo-text">CHEMVERSE</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">🧪 Periodic Table</a></li>
+            <li><a href="viewer.html">⚛ Atomic Viewer</a></li>
+            <li><a href="reaction-lab.html">🔬 Reaction Lab</a></li>
+            <li><a href="mol3d.html" class="active">🧬 3D Viewer</a></li>
+        </ul>
+    </nav>
+
+    <div class="mol3d-layout">
+        <!-- Left: Molecule Picker -->
+        <aside class="mol3d-sidebar">
+            <div class="sidebar-section">
+                <h3>Preset Molecules</h3>
+                <div class="molecule-grid" id="molecule-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>View Mode</h3>
+                <div class="mode-toggles">
+                    <button class="mode-btn active" data-mode="ball-stick" id="mode-ball-stick">
+                        <span class="mode-icon">⚛</span> Ball & Stick
+                    </button>
+                    <button class="mode-btn" data-mode="space-fill" id="mode-space-fill">
+                        <span class="mode-icon">🔵</span> Space Filling
+                    </button>
+                    <button class="mode-btn" data-mode="wireframe" id="mode-wireframe">
+                        <span class="mode-icon">🔗</span> Wireframe
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Display Options</h3>
+                <label class="toggle-label">
+                    <input type="checkbox" id="show-labels" checked>
+                    <span>Atom Labels</span>
+                </label>
+                <label class="toggle-label">
+                    <input type="checkbox" id="show-lone-pairs">
+                    <span>Lone Pairs</span>
+                </label>
+                <label class="toggle-label">
+                    <input type="checkbox" id="show-axes">
+                    <span>Axes</span>
+                </label>
+                <label class="toggle-label">
+                    <input type="checkbox" id="auto-rotate">
+                    <span>Auto Rotate</span>
+                </label>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Color Scheme</h3>
+                <div class="mode-toggles">
+                    <button class="color-btn active" data-color="element" id="color-element">Element (CPK)</button>
+                    <button class="color-btn" data-color="electronegativity" id="color-en">Electronegativity</button>
+                    <button class="color-btn" data-color="charge" id="color-charge">Partial Charge</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: 3D Viewport -->
+        <main class="viewport-area">
+            <div class="viewport-toolbar">
+                <button class="toolbar-btn" id="btn-reset-view" title="Reset camera">🔄 Reset View</button>
+                <button class="toolbar-btn" id="btn-screenshot" title="Save screenshot">📸 Screenshot</button>
+                <span class="viewport-info" id="viewport-info">Drag to rotate • Scroll to zoom • Shift+drag to
+                    pan</span>
+            </div>
+            <div class="viewport-container" id="viewport-container">
+                <!-- Three.js canvas injected here -->
+            </div>
+        </main>
+
+        <!-- Right: Info Panel -->
+        <aside class="info-panel">
+            <div class="info-section" id="mol-info">
+                <h3>Molecule Info</h3>
+                <div class="info-card" id="info-card">
+                    <div class="info-name" id="info-name">Select a molecule</div>
+                    <div class="info-formula" id="info-formula"></div>
+                    <div class="info-grid" id="info-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section" id="bond-section" style="display:none;">
+                <h3>Bonds</h3>
+                <div id="bond-list" class="bond-list-3d">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="info-section" id="geometry-section" style="display:none;">
+                <h3>Geometry</h3>
+                <div id="geometry-info" class="geometry-info">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="mol3d.js"></script>
+</body>
+
+</html>
