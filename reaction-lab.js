@@ -190,7 +190,7 @@
         saveUndo();
         const atom = { id: nextId++, z, x, y, bonds: [], charge: 0 };
         atoms.push(atom);
-        trySmartBond(atom);
+        // No auto-bonding — user clicks React! to trigger bonds
         updateBondInfo();
         render();
     }
@@ -313,20 +313,9 @@
     canvas.addEventListener('mouseup', () => {
         if (reacting) return;
         if (dragging) {
-            for (let i = bonds.length - 1; i >= 0; i--) {
-                if (bonds[i].a === dragging || bonds[i].b === dragging) {
-                    const other = bonds[i].a === dragging ? bonds[i].b : bonds[i].a;
-                    other.bonds = other.bonds.filter(b => b !== bonds[i]);
-                    dragging.bonds = dragging.bonds.filter(b => b !== bonds[i]);
-                    other.charge = 0;
-                    bonds.splice(i, 1);
-                }
-            }
-            dragging.charge = 0;
-            trySmartBond(dragging);
+            // Just drop the atom — no auto-bonding on drag
             dragging = null;
             canvas.style.cursor = 'crosshair';
-            updateBondInfo();
             render();
         }
     });
