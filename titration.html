@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — pH Titration Simulator</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="titration.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
+        <div class="nav-links">
+            <a href="index.html">🧪 Periodic Table</a>
+            <a href="reaction-lab.html">⚡ Reaction Lab</a>
+            <a href="spectroscopy.html">📊 Spectroscopy</a>
+            <a href="electrochem.html">🔋 Electrochemistry</a>
+            <a href="mechanisms.html">🧬 Mechanisms</a>
+            <a href="organic.html">🧱 Organic Builder</a>
+            <a href="titration.html" class="active">🧫 Titration</a>
+        </div>
+    </nav>
+    <div class="tit-layout">
+        <aside class="tit-sidebar">
+            <h2>SETUP</h2>
+            <div class="ts-section">
+                <label>Analyte (in flask)</label>
+                <select id="analyte-select">
+                    <option value="hcl">HCl (strong acid)</option>
+                    <option value="acetic">CH₃COOH (weak acid)</option>
+                    <option value="naoh-a">NaOH (strong base)</option>
+                    <option value="nh3">NH₃ (weak base)</option>
+                </select>
+            </div>
+            <div class="ts-section">
+                <label>Titrant (in burette)</label>
+                <select id="titrant-select">
+                    <option value="naoh">NaOH (strong base)</option>
+                    <option value="hcl-t">HCl (strong acid)</option>
+                </select>
+            </div>
+            <div class="ts-section">
+                <label>Analyte Concentration</label>
+                <input type="range" id="analyte-conc" min="-2" max="0" value="-1" step="0.1">
+                <span id="analyte-conc-val">0.1 M</span>
+            </div>
+            <div class="ts-section">
+                <label>Analyte Volume (mL)</label>
+                <input type="range" id="analyte-vol" min="10" max="100" value="25" step="5">
+                <span id="analyte-vol-val">25 mL</span>
+            </div>
+            <div class="ts-section">
+                <label>Titrant Concentration</label>
+                <input type="range" id="titrant-conc" min="-2" max="0" value="-1" step="0.1">
+                <span id="titrant-conc-val">0.1 M</span>
+            </div>
+            <div class="ts-section">
+                <label>Indicator</label>
+                <select id="indicator-select">
+                    <option value="phenolphthalein">Phenolphthalein (8.2–10.0)</option>
+                    <option value="methyl-orange">Methyl Orange (3.1–4.4)</option>
+                    <option value="bromothymol">Bromothymol Blue (6.0–7.6)</option>
+                    <option value="universal">Universal Indicator</option>
+                </select>
+            </div>
+            <button class="action-btn" id="btn-reset">🔄 Reset</button>
+        </aside>
+
+        <main class="tit-viewport">
+            <div class="tit-top-row">
+                <div class="flask-area">
+                    <canvas id="flask-canvas" width="300" height="350"></canvas>
+                    <div class="flask-controls">
+                        <button class="drop-btn" id="btn-add-drop">💧 Add Drop</button>
+                        <button class="drop-btn" id="btn-add-5">+5 mL</button>
+                        <button class="drop-btn" id="btn-add-1">+1 mL</button>
+                        <button class="drop-btn" id="btn-add-01">+0.1 mL</button>
+                    </div>
+                </div>
+                <div class="curve-area">
+                    <canvas id="ph-canvas" width="500" height="350"></canvas>
+                </div>
+            </div>
+            <div class="tit-readouts">
+                <div class="readout"><span class="r-label">pH</span><span class="r-value" id="ph-val">—</span></div>
+                <div class="readout"><span class="r-label">Volume Added</span><span class="r-value" id="vol-added">0.0
+                        mL</span></div>
+                <div class="readout"><span class="r-label">Equiv. Point</span><span class="r-value" id="eq-point">—
+                        mL</span></div>
+                <div class="readout"><span class="r-label">½ Equiv.</span><span class="r-value" id="half-eq">— mL</span>
+                </div>
+            </div>
+        </main>
+
+        <aside class="tit-info">
+            <h2>ANALYSIS</h2>
+            <div class="info-card">
+                <div class="info-label">Reaction Type</div>
+                <div class="info-value" id="rxn-type">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">pH at Equiv. Point</div>
+                <div class="info-value" id="eq-ph">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Buffer Region</div>
+                <div class="info-value" id="buffer-region">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">pKa / pKb</div>
+                <div class="info-value" id="pka-val">—</div>
+            </div>
+            <div class="ph-scale">
+                <h3>pH SCALE</h3>
+                <div class="scale-bar" id="ph-scale-bar">
+                    <div class="scale-needle" id="ph-needle"></div>
+                </div>
+                <div class="scale-labels"><span>0</span><span>7</span><span>14</span></div>
+            </div>
+        </aside>
+    </div>
+    <script src="titration.js"></script>
+</body>
+
+</html>
