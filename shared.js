@@ -288,6 +288,8 @@ const PRESET_REACTIONS = [
         equation: '2H₂ + O₂ → 2H₂O',
         type: 'Synthesis',
         deltaH: -116,
+        deltaS: -88.6,
+        activationEnergy: 75,
         geometry: 'Bent 104.5°',
         hybridization: 'sp³',
         reactantMolecules: [
@@ -306,6 +308,8 @@ const PRESET_REACTIONS = [
         equation: '2Na + Cl₂ → 2NaCl',
         type: 'Ionic',
         deltaH: -196,
+        deltaS: -30.2,
+        activationEnergy: 5,
         geometry: 'Ionic Lattice',
         hybridization: 'none',
         reactantMolecules: [
@@ -324,6 +328,8 @@ const PRESET_REACTIONS = [
         equation: '4Fe + 3O₂ → 2Fe₂O₃',
         type: 'Oxidation',
         deltaH: -399,
+        deltaS: -137.4,
+        activationEnergy: 40,
         geometry: 'Ionic Crystal',
         hybridization: 'none',
         reactantMolecules: [
@@ -343,6 +349,8 @@ const PRESET_REACTIONS = [
         equation: 'CH₄ + 2O₂ → CO₂ + 2H₂O',
         type: 'Combustion',
         deltaH: -213,
+        deltaS: -58.8,
+        activationEnergy: 65,
         geometry: 'Linear CO₂ + Bent H₂O',
         hybridization: 'sp (CO₂) + sp³ (H₂O)',
         reactantMolecules: [
@@ -366,6 +374,8 @@ const PRESET_REACTIONS = [
         equation: 'N₂ + 3H₂ → 2NH₃',
         type: 'Synthesis',
         deltaH: -22,
+        deltaS: -47.3,
+        activationEnergy: 40,
         geometry: 'Trigonal Pyramidal 107.3°',
         hybridization: 'sp³',
         reactantMolecules: [
@@ -384,6 +394,8 @@ const PRESET_REACTIONS = [
         equation: 'H₂ + Cl₂ → 2HCl',
         type: 'Synthesis',
         deltaH: -44,
+        deltaS: -9.5,
+        activationEnergy: 58,
         geometry: 'Linear',
         hybridization: 'none',
         reactantMolecules: [
@@ -402,6 +414,8 @@ const PRESET_REACTIONS = [
         equation: 'C + O₂ → CO₂',
         type: 'Combustion',
         deltaH: -94,
+        deltaS: 0.7,
+        activationEnergy: 80,
         geometry: 'Linear 180°',
         hybridization: 'sp',
         reactantMolecules: [
@@ -420,6 +434,8 @@ const PRESET_REACTIONS = [
         equation: '2Mg + O₂ → 2MgO',
         type: 'Oxidation',
         deltaH: -290,
+        deltaS: -54.1,
+        activationEnergy: 20,
         geometry: 'Ionic',
         hybridization: 'none',
         reactantMolecules: [
@@ -438,6 +454,8 @@ const PRESET_REACTIONS = [
         equation: 'H₂ + F₂ → 2HF',
         type: 'Synthesis',
         deltaH: -130,
+        deltaS: -13.8,
+        activationEnergy: 35,
         geometry: 'Linear',
         hybridization: 'none',
         reactantMolecules: [
@@ -456,6 +474,8 @@ const PRESET_REACTIONS = [
         equation: '2H₂O₂ → 2H₂O + O₂',
         type: 'Decomposition',
         deltaH: -47,
+        deltaS: 30.4,
+        activationEnergy: 18,
         geometry: 'Bent H₂O + O₂',
         hybridization: 'sp³',
         reactantMolecules: [

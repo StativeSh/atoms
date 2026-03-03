@@ -567,6 +567,120 @@
     font-size: 14px;
 }
 
+/* ─── Thermodynamics Dashboard ─── */
+.thermo-card {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.thermo-temp-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.thermo-temp-control label {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.thermo-temp-control input[type="range"] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(90deg, #3b82f6, #f97316, #ef4444);
+    border-radius: 2px;
+    outline: none;
+}
+
+.thermo-temp-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    border: 2px solid #6366f1;
+    cursor: pointer;
+}
+
+.temp-display {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e2e8f0;
+    min-width: 50px;
+    text-align: right;
+    font-family: 'Inter', monospace;
+}
+
+.thermo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.thermo-item {
+    background: rgba(20, 20, 50, 0.5);
+    border-radius: 6px;
+    padding: 5px 7px;
+    display: flex;
+    flex-direction: column;
+}
+
+.thermo-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(148, 163, 184, 0.45);
+}
+
+.thermo-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-family: 'Inter', monospace;
+}
+
+.thermo-unit {
+    font-size: 8px;
+    color: rgba(148, 163, 184, 0.3);
+}
+
+.thermo-item.exo .thermo-value {
+    color: #f97316;
+}
+
+.thermo-item.endo .thermo-value {
+    color: #3b82f6;
+}
+
+.thermo-spontaneity .thermo-value.spontaneous {
+    color: #22c55e;
+}
+
+.thermo-spontaneity .thermo-value.non-spontaneous {
+    color: #ef4444;
+}
+
+.thermo-spontaneity .thermo-value.equilibrium {
+    color: #fbbf24;
+}
+
+.energy-diagram {
+    width: 100%;
+    height: 160px;
+    border-radius: 6px;
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
 /* ─── Scrollbar ─── */
 .palette::-webkit-scrollbar,
 .lab-panel::-webkit-scrollbar {

@@ -98,6 +98,50 @@
                 </div>
             </div>
 
+            <!-- Thermodynamics Dashboard -->
+            <div class="panel-section thermo-section" id="thermo-section" style="display:none;">
+                <h3>🔥 Thermodynamics</h3>
+                <div class="thermo-card">
+                    <div class="thermo-temp-control">
+                        <label>Temperature</label>
+                        <input type="range" id="temp-slider" min="200" max="2000" value="298" step="1">
+                        <span class="temp-display" id="temp-display">298 K</span>
+                    </div>
+                    <div class="thermo-grid">
+                        <div class="thermo-item" id="thermo-dh">
+                            <span class="thermo-label">ΔH</span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">kcal/mol</span>
+                        </div>
+                        <div class="thermo-item" id="thermo-ds">
+                            <span class="thermo-label">ΔS</span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">cal/mol·K</span>
+                        </div>
+                        <div class="thermo-item" id="thermo-dg">
+                            <span class="thermo-label">ΔG</span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">kcal/mol</span>
+                        </div>
+                        <div class="thermo-item" id="thermo-keq">
+                            <span class="thermo-label">K<sub>eq</sub></span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit"></span>
+                        </div>
+                        <div class="thermo-item" id="thermo-ea">
+                            <span class="thermo-label">E<sub>a</sub></span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">kcal/mol</span>
+                        </div>
+                        <div class="thermo-item thermo-spontaneity" id="thermo-spont">
+                            <span class="thermo-label">Spontaneous?</span>
+                            <span class="thermo-value">—</span>
+                        </div>
+                    </div>
+                    <canvas id="energy-diagram" class="energy-diagram" width="260" height="160"></canvas>
+                </div>
+            </div>
+
             <!-- Equation Balancer -->
             <div class="balancer" id="balancer-section" style="display:none;">
                 <h3>⚖ Balance the Equation</h3>

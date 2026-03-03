@@ -359,8 +359,204 @@
         document.getElementById('balancer-section').style.display = 'none';
         document.getElementById('bond-info-section').style.display = 'none';
         document.getElementById('energy-overlay').style.display = 'none';
+        document.getElementById('thermo-section').style.display = 'none';
         render();
     });
+
+    // ═══════════════════════════════════════════════════════════════
+    // THERMODYNAMICS DASHBOARD
+    // ═══════════════════════════════════════════════════════════════
+
+    const tempSlider = document.getElementById('temp-slider');
+    const tempDisplay = document.getElementById('temp-display');
+
+    tempSlider.addEventListener('input', () => {
+        tempDisplay.textContent = tempSlider.value + ' K';
+        if (activePreset) updateThermo(activePreset, parseFloat(tempSlider.value));
+    });
+
+    function updateThermo(preset, T) {
+        if (!preset) return;
+        const section = document.getElementById('thermo-section');
+        section.style.display = 'block';
+
+        const dH = preset.deltaH;           // kcal/mol
+        const dS = preset.deltaS || 0;      // cal/mol·K
+        const Ea = preset.activationEnergy || 50;  // kcal/mol
+
+        // ΔG = ΔH - TΔS  (convert ΔS from cal to kcal: /1000)
+        const dG = dH - T * (dS / 1000);
+
+        // Keq = exp(-ΔG / RT)  where R = 1.987 cal/mol·K = 0.001987 kcal/mol·K
+        const R = 0.001987; // kcal/(mol·K)
+        const Keq = Math.exp(-dG / (R * T));
+
+        // Update display
+        const setThermo = (id, value, cls) => {
+            const el = document.getElementById(id);
+            el.querySelector('.thermo-value').textContent = value;
+            el.className = 'thermo-item' + (cls ? ' ' + cls : '');
+        };
+
+        setThermo('thermo-dh', dH.toFixed(1), dH < 0 ? 'exo' : 'endo');
+        setThermo('thermo-ds', dS.toFixed(1), dS > 0 ? 'endo' : 'exo');
+        setThermo('thermo-dg', dG.toFixed(1), dG < 0 ? 'exo' : 'endo');
+
+        // Format Keq nicely
+        let keqStr;
+        if (Keq > 1e10) keqStr = Keq.toExponential(1);
+        else if (Keq > 1e4) keqStr = Keq.toExponential(2);
+        else if (Keq > 1) keqStr = Keq.toFixed(1);
+        else if (Keq > 0.01) keqStr = Keq.toFixed(3);
+        else keqStr = Keq.toExponential(1);
+        setThermo('thermo-keq', keqStr, '');
+
+        setThermo('thermo-ea', Ea.toFixed(0), '');
+
+        // Spontaneity
+        const spontEl = document.getElementById('thermo-spont');
+        const spontVal = spontEl.querySelector('.thermo-value');
+        if (Math.abs(dG) < 0.5) {
+            spontVal.textContent = 'At Equilibrium';
+            spontVal.className = 'thermo-value equilibrium';
+        } else if (dG < 0) {
+            spontVal.textContent = '✓ Yes';
+            spontVal.className = 'thermo-value spontaneous';
+        } else {
+            spontVal.textContent = '✗ No';
+            spontVal.className = 'thermo-value non-spontaneous';
+        }
+
+        // Draw energy diagram
+        drawEnergyDiagram(dH, Ea, dG);
+    }
+
+    function drawEnergyDiagram(dH, Ea, dG) {
+        const cv = document.getElementById('energy-diagram');
+        const ctx = cv.getContext('2d');
+        const w = cv.width, h = cv.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const pad = 20;
+        const plotW = w - pad * 2;
+        const plotH = h - pad * 2;
+
+        // Normalize energies so diagram fits
+        const reactantE = 0;
+        const productE = dH;
+        const peakE = Math.max(Math.abs(Ea), Math.abs(dH)) + Math.abs(Ea);
+        const minE = Math.min(reactantE, productE) - 10;
+        const maxE = Ea + 10;
+        const range = maxE - minE;
+
+        const yOf = (e) => pad + plotH * (1 - (e - minE) / range);
+
+        // Background gradient
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, 'rgba(99, 102, 241, 0.05)');
+        grad.addColorStop(1, 'rgba(10, 10, 30, 0.3)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+
+        // Axes
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(pad, pad);
+        ctx.lineTo(pad, h - pad);
+        ctx.lineTo(w - pad, h - pad);
+        ctx.stroke();
+
+        // Curve points
+        const rX = pad + plotW * 0.15;  // reactants
+        const pX = pad + plotW * 0.85;  // products
+        const tX = pad + plotW * 0.50;  // transition state
+
+        const rY = yOf(reactantE);
+        const pY = yOf(productE);
+        const tY = yOf(Ea);
+
+        // Draw reaction coordinate curve
+        ctx.beginPath();
+        ctx.moveTo(rX - 20, rY);
+        ctx.lineTo(rX, rY);
+        ctx.bezierCurveTo(rX + plotW * 0.12, rY, tX - plotW * 0.12, tY, tX, tY);
+        ctx.bezierCurveTo(tX + plotW * 0.12, tY, pX - plotW * 0.12, pY, pX, pY);
+        ctx.lineTo(pX + 20, pY);
+
+        const pathGrad = ctx.createLinearGradient(rX, 0, pX, 0);
+        pathGrad.addColorStop(0, '#6366f1');
+        pathGrad.addColorStop(0.5, '#ec4899');
+        pathGrad.addColorStop(1, dH < 0 ? '#f97316' : '#3b82f6');
+        ctx.strokeStyle = pathGrad;
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        // Horizontal energy lines
+        ctx.setLineDash([4, 3]);
+        ctx.lineWidth = 1;
+
+        // Reactant line
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+        ctx.beginPath();
+        ctx.moveTo(rX - 20, rY);
+        ctx.lineTo(pX + 20, rY);
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+
+        // Ea arrow
+        ctx.strokeStyle = '#ec4899';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(tX + 25, rY);
+        ctx.lineTo(tX + 25, tY);
+        ctx.stroke();
+        // Arrowhead
+        ctx.beginPath();
+        ctx.moveTo(tX + 21, tY + 6);
+        ctx.lineTo(tX + 25, tY);
+        ctx.lineTo(tX + 29, tY + 6);
+        ctx.stroke();
+
+        // ΔH arrow
+        ctx.strokeStyle = dH < 0 ? '#f97316' : '#3b82f6';
+        ctx.beginPath();
+        ctx.moveTo(pX + 5, rY);
+        ctx.lineTo(pX + 5, pY);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pX + 1, pY + (dH < 0 ? -6 : 6));
+        ctx.lineTo(pX + 5, pY);
+        ctx.lineTo(pX + 9, pY + (dH < 0 ? -6 : 6));
+        ctx.stroke();
+
+        // Labels
+        ctx.font = '600 9px Inter, sans-serif';
+        ctx.fillStyle = '#e2e8f0';
+        ctx.textAlign = 'center';
+        ctx.fillText('Reactants', rX, rY + 14);
+        ctx.fillText('Products', pX, pY + (dH < 0 ? 14 : -6));
+
+        ctx.fillStyle = '#ec4899';
+        ctx.fillText('Eₐ', tX + 35, (rY + tY) / 2 + 3);
+
+        ctx.fillStyle = dH < 0 ? '#f97316' : '#3b82f6';
+        ctx.fillText('ΔH', pX + 18, (rY + pY) / 2 + 3);
+
+        ctx.fillStyle = '#818cf8';
+        ctx.fillText('‡', tX, tY - 6);
+
+        // Axis labels
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.font = '500 8px Inter, sans-serif';
+        ctx.save();
+        ctx.translate(10, h / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Energy', 0, 0);
+        ctx.restore();
+        ctx.fillText('Reaction Coordinate', w / 2, h - 4);
+    }
 
     // ═══════════════════════════════════════════════════════════════
     // REACT! — Product-Aware Reaction with Enthalpy
@@ -508,6 +704,7 @@
                 reacting = false;
                 showEnthalpy(presetDH, 1);
                 updateBondInfo();
+                updateThermo(activePreset, parseFloat(tempSlider.value));
                 render();
                 return;
             }
@@ -680,6 +877,7 @@
 
         buildBalancer(preset);
         updateBondInfo();
+        updateThermo(preset, parseFloat(tempSlider.value));
         render();
     }
 
