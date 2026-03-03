@@ -278,3 +278,10 @@
     draw(); updateInfo();
     buildChain(3); // Start with propane
 })();
+
+    // ─── Explain Mode Hooks ───
+    if (window.ChemExplain) {
+        ChemExplain.register('#org-canvas', 'Molecular Structure', '<b>Carbon (C)</b> forms 4 bonds.<br><b>Nitrogen (N)</b> forms 3 bonds.<br><b>Oxygen (O)</b> forms 2 bonds.<br><b>Hydrogen (H)</b> forms 1 bond.<br>Lines represent shared electron pairs.');
+        ChemExplain.register('.org-info-card:nth-child(2)', 'IUPAC Naming', 'The standard systematic method of naming chemical compounds based on the longest carbon chain and functional group priorities.');
+        ChemExplain.register('.org-info-card:nth-child(5)', 'Degree of Unsaturation', 'Also known as the Index of Hydrogen Deficiency (IHD).<br>Indicates the total number of rings and/pi bonds.<br><span class="tt-formula">DoU = C + 1 - H/2 + N/2 - X/2</span>');
+    }

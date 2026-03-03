@@ -289,3 +289,11 @@
     dataPoints.push({ v: 0, ph: initPH });
     updatePH(); drawFlask(); drawCurve();
 })();
+
+    // ─── Explain Mode Hooks ───
+    if (window.ChemExplain) {
+        ChemExplain.register('#titr-canvas', 'Titration Curve', 'Shows the change in pH as titrant is added.<br>The steepest part of the curve represents rapid pH change near the equivalence point.');
+        ChemExplain.register('#titr-flask', 'Erlenmeyer Flask', 'Contains the <b>Analyte</b> (solution of unknown concentration) and an indicator that changes color at a specific pH range.');
+        ChemExplain.register('.info-card:nth-child(2)', 'Equivalence Point', 'The point where the amount of added titrant is stoichiometrically equal to the amount of analyte.<br>pH = 7 for strong-strong, >7 for weak acid-strong base, <7 for strong acid-weak base.');
+        ChemExplain.register('.info-card:nth-child(3)', 'Buffer Region', 'A region where the solution resists changes in pH, occurring before the equivalence point in weak acid/base titrations.<br><span class="tt-formula">pH = pKa + log([A-]/[HA])</span>');
+    }

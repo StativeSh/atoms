@@ -288,3 +288,9 @@
     ctx.fillText('Select a mechanism to view its animation', canvas.width / 2, canvas.height / 2);
     selectMech(0);
 })();
+
+    // ─── Explain Mode Hooks ───
+    if (window.ChemExplain) {
+        ChemExplain.register('#mech-canvas', 'Reaction Mechanism', 'Curved arrows show the flow of electrons.<br>• <strong>Tail:</strong> Source of electrons (bond or lone pair).<br>• <strong>Head:</strong> Destination of electrons (forming a bond or neutralizing a charge).<br>Dashed brackets indicate a high-energy <strong>Transition State (‡)</strong>.');
+        ChemExplain.register('.mech-sidebar', 'Reaction Types', '<strong>SN2 & E2:</strong> Concerted (one-step) reactions.<br><strong>SN1 & E1:</strong> Stepwise reactions forming a carbocation intermediate.<br><strong>Addition:</strong> Breaking a pi bond to add groups.<br><strong>Esterification:</strong> Nucleophilic acyl substitution.');
+    }

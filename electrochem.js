@@ -468,3 +468,11 @@
     drawCell();
 
 })();
+
+    // ─── Explain Mode Hooks ───
+    if (window.ChemExplain) {
+        ChemExplain.register('.ec-result', 'Cell Potential (E°cell)', 'The standard electromotive force of the cell.<br><strong>E°cell > 0:</strong> Spontaneous (Galvanic).<br><strong>E°cell < 0:</strong> Non-spontaneous (Electrolytic).<br><span class="tt-formula">E°cell = E°cathode - E°anode</span>');
+        ChemExplain.register('.ec-nernst', 'Nernst Equation', 'Calculates the actual cell potential under non-standard conditions (different concentrations/temperature).<br><span class="tt-formula">E = E° - (RT/nF)ln(Q)</span>');
+        ChemExplain.register('.ec-dg', 'Gibbs Free Energy (ΔG°)', 'The maximum reversible work that may be performed by the system.<br><strong>Negative:</strong> Spontaneous reaction.<br><span class="tt-formula">ΔG° = -nFE°</span>');
+        ChemExplain.register('#ec-canvas', 'Electrochemical Cell', '<b>Anode (Left):</b> Oxidation occurs here. Electrons are lost and flow through the wire.<br><b>Cathode (Right):</b> Reduction occurs here. Electrons are gained.<br><b>Salt Bridge:</b> Maintains electrical neutrality by allowing ion flow.');
+    }
