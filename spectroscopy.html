@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Spectroscopy Simulator</title>
+    <meta name="description" content="Interactive IR and UV-Vis spectroscopy simulator with functional group analysis.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="spectroscopy.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- ─── Navigation ─── -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
+        <div class="nav-links">
+            <a href="index.html">🧪 Periodic Table</a>
+            <a href="viewer.html">⚛ Atomic Viewer</a>
+            <a href="reaction-lab.html">⚡ Reaction Lab</a>
+            <a href="mol3d.html">🔬 3D Viewer</a>
+            <a href="spectroscopy.html" class="active">📊 Spectroscopy</a>
+        </div>
+    </nav>
+
+    <div class="spec-layout">
+        <!-- Left Panel: Molecule Picker -->
+        <aside class="spec-sidebar">
+            <h2>MOLECULES</h2>
+            <div class="molecule-list" id="molecule-list">
+                <!-- Populated by JS -->
+            </div>
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="btn-ir" data-mode="ir">IR Spectrum</button>
+                <button class="mode-btn" id="btn-uv" data-mode="uv">UV-Vis</button>
+            </div>
+            <div class="functional-groups" id="functional-groups">
+                <h3>Functional Groups</h3>
+                <div id="fg-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Spectrum Canvas -->
+        <main class="spec-viewport">
+            <div class="spec-header">
+                <h1 id="spec-title">Select a molecule</h1>
+                <span class="spec-formula" id="spec-formula"></span>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="spectrum-canvas" width="900" height="400"></canvas>
+            </div>
+            <div class="peak-info" id="peak-info">
+                <p class="peak-hint">Click or hover over peaks for details</p>
+            </div>
+        </main>
+
+        <!-- Right Panel: Details -->
+        <aside class="spec-info">
+            <h2>PEAK ANALYSIS</h2>
+            <div class="peak-table" id="peak-table">
+                <!-- Populated by JS -->
+            </div>
+            <div class="spec-legend">
+                <h3>Legend</h3>
+                <div class="legend-item"><span class="legend-dot" style="background:#ef4444"></span> Strong</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span> Medium</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#22c55e"></span> Weak</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#8b5cf6"></span> Broad</div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="spectroscopy.js"></script>
+</body>
+
+</html>
