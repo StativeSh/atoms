@@ -1,0 +1,200 @@
+/* ChemVerse — Crystal Structure Viewer Styles */
+.crys-layout {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+.crys-sidebar {
+    width: 200px;
+    background: rgba(15, 15, 35, 0.95);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.crys-sidebar h2 {
+    font: 700 11px/1 Outfit;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.crys-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.crys-btn {
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    background: rgba(30, 30, 60, 0.4);
+    color: #e2e8f0;
+    font: 600 12px Outfit;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.crys-btn:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.crys-btn.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+}
+
+.crys-btn .crys-sub {
+    font: 400 9px Inter;
+    color: rgba(148, 163, 184, 0.5);
+    display: block;
+    margin-top: 1px;
+}
+
+.crys-controls {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.crys-controls h3 {
+    font: 700 10px Outfit;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.crys-controls label {
+    font: 500 11px Inter;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.crys-controls input[type="checkbox"] {
+    accent-color: #6366f1;
+}
+
+.zoom-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 500 10px Inter;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.zoom-row input {
+    flex: 1;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, #6366f1, #a855f7);
+}
+
+.zoom-row input::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #a5b4fc;
+    cursor: pointer;
+    border: 2px solid #6366f1;
+}
+
+.crys-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+}
+
+#crys-canvas {
+    border-radius: 12px;
+    background: rgba(6, 6, 25, 0.9);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    cursor: grab;
+}
+
+#crys-canvas:active {
+    cursor: grabbing;
+}
+
+.crys-hint {
+    font: 400 10px Inter;
+    color: rgba(148, 163, 184, 0.3);
+    margin-top: 6px;
+}
+
+.crys-info {
+    width: 220px;
+    background: rgba(15, 15, 35, 0.95);
+    border-left: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.crys-info h2 {
+    font: 700 11px/1 Outfit;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.info-card {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 6px;
+    padding: 6px 8px;
+}
+
+.info-label {
+    font: 700 9px Outfit;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.4);
+    text-transform: uppercase;
+}
+
+.info-value {
+    font: 600 13px Inter;
+    color: #a5b4fc;
+    margin-top: 2px;
+}
+
+.crys-notes {
+    font: 400 11px Inter;
+    color: rgba(148, 163, 184, 0.4);
+    line-height: 1.5;
+    margin-top: auto;
+}
+
+@media(max-width:900px) {
+    .crys-layout {
+        flex-direction: column;
+    }
+
+    .crys-sidebar,
+    .crys-info {
+        width: 100%;
+        max-height: 170px;
+    }
+}

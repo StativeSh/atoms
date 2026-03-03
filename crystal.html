@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Crystal Structure Viewer</title>
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="crystal.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
+        <div class="nav-links">
+            <a href="index.html">🧪 Periodic Table</a>
+            <a href="reaction-lab.html">⚡ Reaction Lab</a>
+            <a href="spectroscopy.html">📊 Spectroscopy</a>
+            <a href="electrochem.html">🔋 Electrochemistry</a>
+            <a href="mechanisms.html">🧬 Mechanisms</a>
+            <a href="organic.html">🧱 Organic Builder</a>
+            <a href="titration.html">🧫 Titration</a>
+            <a href="crystal.html" class="active">💎 Crystals</a>
+        </div>
+    </nav>
+    <div class="crys-layout">
+        <aside class="crys-sidebar">
+            <h2>CRYSTAL STRUCTURES</h2>
+            <div class="crys-list" id="crys-list"></div>
+            <div class="crys-controls">
+                <h3>VIEW</h3>
+                <label><input type="checkbox" id="show-bonds" checked> Show Bonds</label>
+                <label><input type="checkbox" id="show-labels"> Show Labels</label>
+                <label><input type="checkbox" id="show-cell" checked> Unit Cell</label>
+                <label><input type="checkbox" id="auto-rotate" checked> Auto-Rotate</label>
+                <div class="zoom-row">
+                    <span>Zoom</span>
+                    <input type="range" id="zoom-slider" min="0.5" max="3" value="1.2" step="0.1">
+                </div>
+            </div>
+        </aside>
+        <main class="crys-viewport">
+            <canvas id="crys-canvas" width="700" height="550"></canvas>
+            <div class="crys-hint">Click & drag to rotate</div>
+        </main>
+        <aside class="crys-info">
+            <h2>PROPERTIES</h2>
+            <div class="info-card">
+                <div class="info-label">Structure</div>
+                <div class="info-value" id="crys-name">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Lattice Type</div>
+                <div class="info-value" id="crys-lattice">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Coordination №</div>
+                <div class="info-value" id="crys-coord">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Atoms/Unit Cell</div>
+                <div class="info-value" id="crys-atoms">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Packing Efficiency</div>
+                <div class="info-value" id="crys-packing">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Examples</div>
+                <div class="info-value" id="crys-examples">—</div>
+            </div>
+            <div class="crys-notes" id="crys-notes"></div>
+        </aside>
+    </div>
+    <script src="crystal.js"></script>
+</body>
+
+</html>
