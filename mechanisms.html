@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Reaction Mechanism Animator</title>
+    <meta name="description"
+        content="Step-by-step arrow-pushing animations for SN1, SN2, E1, E2 and other organic reaction mechanisms.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="mechanisms.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
+        <div class="nav-links">
+            <a href="index.html">🧪 Periodic Table</a>
+            <a href="viewer.html">⚛ Atomic Viewer</a>
+            <a href="reaction-lab.html">⚡ Reaction Lab</a>
+            <a href="mol3d.html">🔬 3D Viewer</a>
+            <a href="spectroscopy.html">📊 Spectroscopy</a>
+            <a href="electrochem.html">🔋 Electrochemistry</a>
+            <a href="mechanisms.html" class="active">🧬 Mechanisms</a>
+        </div>
+    </nav>
+
+    <div class="mech-layout">
+        <!-- Left: Mechanism Picker -->
+        <aside class="mech-sidebar">
+            <h2>MECHANISMS</h2>
+            <div class="mech-list" id="mech-list">
+                <!-- Populated by JS -->
+            </div>
+        </aside>
+
+        <!-- Center: Animation Canvas -->
+        <main class="mech-viewport">
+            <div class="mech-header">
+                <h1 id="mech-title">Select a mechanism</h1>
+                <span class="mech-type" id="mech-type"></span>
+            </div>
+            <div class="canvas-container">
+                <canvas id="mech-canvas" width="900" height="450"></canvas>
+            </div>
+            <div class="playback-controls">
+                <button class="ctrl-btn" id="btn-prev" title="Previous step">⏮</button>
+                <button class="ctrl-btn play-btn" id="btn-play" title="Play/Pause">▶</button>
+                <button class="ctrl-btn" id="btn-next" title="Next step">⏭</button>
+                <div class="step-indicator">
+                    <span id="step-current">0</span> / <span id="step-total">0</span>
+                </div>
+                <input type="range" id="speed-slider" min="0.25" max="3" value="1" step="0.25" class="speed-slider">
+                <span class="speed-label" id="speed-label">1×</span>
+            </div>
+        </main>
+
+        <!-- Right: Step Details -->
+        <aside class="mech-info">
+            <h2>STEP DETAILS</h2>
+            <div class="step-card" id="step-card">
+                <div class="step-name" id="step-name">—</div>
+                <div class="step-desc" id="step-desc">Select a mechanism to begin</div>
+            </div>
+            <div class="mech-notes">
+                <h3>KEY CONCEPTS</h3>
+                <div id="mech-concepts">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            <div class="mech-summary">
+                <h3>SUMMARY</h3>
+                <div id="mech-summary-text">—</div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="mechanisms.js"></script>
+</body>
+
+</html>
