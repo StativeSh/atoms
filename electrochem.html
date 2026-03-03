@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Electrochemistry Cell Builder</title>
+    <meta name="description"
+        content="Build galvanic and electrolytic cells, calculate E°cell, and explore the Nernst equation.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="electrochem.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- ─── Navigation ─── -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
+        <div class="nav-links">
+            <a href="index.html">🧪 Periodic Table</a>
+            <a href="viewer.html">⚛ Atomic Viewer</a>
+            <a href="reaction-lab.html">⚡ Reaction Lab</a>
+            <a href="mol3d.html">🔬 3D Viewer</a>
+            <a href="spectroscopy.html">📊 Spectroscopy</a>
+            <a href="electrochem.html" class="active">🔋 Electrochemistry</a>
+        </div>
+    </nav>
+
+    <div class="ec-layout">
+        <!-- Left: Half-Cell Picker -->
+        <aside class="ec-sidebar">
+            <h2>HALF-CELL PICKER</h2>
+
+            <div class="hc-section">
+                <label class="hc-label">Anode (Oxidation)</label>
+                <select class="hc-select" id="anode-select">
+                    <!-- Populated by JS -->
+                </select>
+                <div class="hc-info" id="anode-info">
+                    <span class="hc-equation" id="anode-eq">—</span>
+                    <span class="hc-e0" id="anode-e0">E° = — V</span>
+                </div>
+            </div>
+
+            <div class="hc-section">
+                <label class="hc-label">Cathode (Reduction)</label>
+                <select class="hc-select" id="cathode-select">
+                    <!-- Populated by JS -->
+                </select>
+                <div class="hc-info" id="cathode-info">
+                    <span class="hc-equation" id="cathode-eq">—</span>
+                    <span class="hc-e0" id="cathode-e0">E° = — V</span>
+                </div>
+            </div>
+
+            <div class="cell-result">
+                <div class="result-label">E°<sub>cell</sub></div>
+                <div class="result-value" id="ecell-value">— V</div>
+                <div class="result-spontaneity" id="ecell-spont">—</div>
+            </div>
+
+            <div class="cell-type-toggle">
+                <button class="type-btn active" id="btn-galvanic" data-type="galvanic">⚡ Galvanic</button>
+                <button class="type-btn" id="btn-electrolytic" data-type="electrolytic">🔌 Electrolytic</button>
+            </div>
+
+            <div class="preset-cells">
+                <h3>Preset Cells</h3>
+                <button class="preset-btn" data-anode="6" data-cathode="12">Daniell Cell (Zn|Cu)</button>
+                <button class="preset-btn" data-anode="6" data-cathode="13">Zn|Ag Cell</button>
+                <button class="preset-btn" data-anode="7" data-cathode="12">Fe|Cu Cell</button>
+                <button class="preset-btn" data-anode="4" data-cathode="12">Mg|Cu Cell</button>
+            </div>
+        </aside>
+
+        <!-- Center: Cell Animation Canvas -->
+        <main class="ec-viewport">
+            <div class="canvas-container">
+                <canvas id="cell-canvas" width="800" height="500"></canvas>
+            </div>
+
+            <!-- Nernst Equation Section -->
+            <div class="nernst-section">
+                <h3>📐 Nernst Equation</h3>
+                <div class="nernst-formula">E = E° − (RT / nF) ln Q</div>
+                <div class="nernst-controls">
+                    <div class="nernst-slider">
+                        <label>Temperature (K)</label>
+                        <input type="range" id="nernst-temp" min="200" max="500" value="298" step="1">
+                        <span class="slider-val" id="nernst-temp-val">298 K</span>
+                    </div>
+                    <div class="nernst-slider">
+                        <label>[Anode ion] (M)</label>
+                        <input type="range" id="nernst-anode-conc" min="-3" max="1" value="0" step="0.1">
+                        <span class="slider-val" id="nernst-anode-val">1.0 M</span>
+                    </div>
+                    <div class="nernst-slider">
+                        <label>[Cathode ion] (M)</label>
+                        <input type="range" id="nernst-cathode-conc" min="-3" max="1" value="0" step="0.1">
+                        <span class="slider-val" id="nernst-cathode-val">1.0 M</span>
+                    </div>
+                </div>
+                <div class="nernst-result">
+                    <span class="nernst-label">E<sub>cell</sub> (non-standard) =</span>
+                    <span class="nernst-value" id="nernst-ecell">— V</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right: Info Panel -->
+        <aside class="ec-info">
+            <h2>CELL PROPERTIES</h2>
+            <div id="cell-props">
+                <div class="prop-item">
+                    <span class="prop-label">Cell Type</span>
+                    <span class="prop-value" id="prop-type">Galvanic</span>
+                </div>
+                <div class="prop-item">
+                    <span class="prop-label">Anode</span>
+                    <span class="prop-value" id="prop-anode">—</span>
+                </div>
+                <div class="prop-item">
+                    <span class="prop-label">Cathode</span>
+                    <span class="prop-value" id="prop-cathode">—</span>
+                </div>
+                <div class="prop-item">
+                    <span class="prop-label">E°<sub>cell</sub></span>
+                    <span class="prop-value" id="prop-ecell">—</span>
+                </div>
+                <div class="prop-item">
+                    <span class="prop-label">ΔG°</span>
+                    <span class="prop-value" id="prop-dg">—</span>
+                </div>
+                <div class="prop-item">
+                    <span class="prop-label">n (electrons)</span>
+                    <span class="prop-value" id="prop-n">—</span>
+                </div>
+            </div>
+
+            <div class="overall-reaction">
+                <h3>Overall Reaction</h3>
+                <div class="reaction-eq" id="overall-eq">—</div>
+            </div>
+
+            <div class="activity-series">
+                <h3>Activity Series</h3>
+                <div class="series-list" id="series-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="electrochem.js"></script>
+</body>
+
+</html>

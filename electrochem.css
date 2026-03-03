@@ -1,0 +1,437 @@
+/* ═══════════════════════════════════════════════
+   ChemVerse — Electrochemistry Cell Builder Styles
+   ═══════════════════════════════════════════════ */
+
+.ec-layout {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+/* ─── Sidebar ─── */
+.ec-sidebar {
+    width: 250px;
+    background: rgba(15, 15, 35, 0.95);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ec-sidebar h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.hc-section {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.hc-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.5);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.hc-select {
+    width: 100%;
+    padding: 8px 10px;
+    background: rgba(15, 15, 45, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.hc-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+.hc-info {
+    margin-top: 6px;
+    font-size: 11px;
+}
+
+.hc-equation {
+    display: block;
+    color: #a5b4fc;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+}
+
+.hc-e0 {
+    display: block;
+    color: rgba(148, 163, 184, 0.5);
+    font-family: 'Inter', monospace;
+    font-size: 10px;
+    margin-top: 2px;
+}
+
+/* ─── Cell Result ─── */
+.cell-result {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.08));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
+.result-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.5);
+    text-transform: uppercase;
+}
+
+.result-value {
+    font-family: 'Inter', monospace;
+    font-size: 28px;
+    font-weight: 800;
+    color: #a5b4fc;
+    margin: 4px 0;
+}
+
+.result-spontaneity {
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.result-spontaneity.spontaneous {
+    color: #22c55e;
+}
+
+.result-spontaneity.non-spontaneous {
+    color: #ef4444;
+}
+
+/* ─── Cell Type Toggle ─── */
+.cell-type-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(20, 20, 50, 0.5);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.type-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.type-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+}
+
+/* ─── Preset Cells ─── */
+.preset-cells h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 0 0 6px;
+    text-transform: uppercase;
+}
+
+.preset-btn {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 6px;
+    color: #94a3b8;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.preset-btn:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #e2e8f0;
+}
+
+/* ─── Canvas Viewport ─── */
+.ec-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+    overflow-y: auto;
+    gap: 12px;
+}
+
+.canvas-container {
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#cell-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* ─── Nernst Section ─── */
+.nernst-section {
+    background: rgba(15, 15, 45, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.nernst-section h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0 0 6px;
+}
+
+.nernst-formula {
+    font-family: 'Inter', monospace;
+    font-size: 14px;
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.08);
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.nernst-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.nernst-slider {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.nernst-slider label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(148, 163, 184, 0.5);
+    font-family: 'Inter', sans-serif;
+}
+
+.nernst-slider input[type="range"] {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, #6366f1, #a855f7);
+    outline: none;
+}
+
+.nernst-slider input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #a5b4fc;
+    cursor: pointer;
+    border: 2px solid #6366f1;
+}
+
+.slider-val {
+    font-family: 'Inter', monospace;
+    font-size: 11px;
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.nernst-result {
+    margin-top: 10px;
+    text-align: center;
+    padding: 8px;
+    background: rgba(99, 102, 241, 0.06);
+    border-radius: 8px;
+}
+
+.nernst-label {
+    font-size: 12px;
+    color: rgba(148, 163, 184, 0.6);
+}
+
+.nernst-value {
+    font-family: 'Inter', monospace;
+    font-size: 22px;
+    font-weight: 800;
+    color: #c084fc;
+    margin-left: 8px;
+}
+
+/* ─── Right Panel ─── */
+.ec-info {
+    width: 220px;
+    background: rgba(15, 15, 35, 0.95);
+    border-left: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.ec-info h2,
+.ec-info h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.prop-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+}
+
+.prop-label {
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.prop-value {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+}
+
+.overall-reaction {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.reaction-eq {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #a5b4fc;
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
+/* ─── Activity Series ─── */
+.series-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.series-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+.series-item:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.series-item .si-metal {
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.series-item .si-e0 {
+    font-family: 'Inter', monospace;
+    font-size: 9px;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.series-item.highlight {
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.series-item.highlight .si-metal {
+    color: #a5b4fc;
+}
+
+/* ─── Scrollbar ─── */
+.ec-sidebar::-webkit-scrollbar,
+.ec-info::-webkit-scrollbar {
+    width: 4px;
+}
+
+.ec-sidebar::-webkit-scrollbar-track,
+.ec-info::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.ec-sidebar::-webkit-scrollbar-thumb,
+.ec-info::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+    .ec-layout {
+        flex-direction: column;
+    }
+
+    .ec-sidebar,
+    .ec-info {
+        width: 100%;
+        max-height: 200px;
+    }
+
+    .nernst-controls {
+        grid-template-columns: 1fr;
+    }
+}

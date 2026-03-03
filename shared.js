@@ -494,3 +494,25 @@ const PRESET_REACTIONS = [
         balanceQuestion: { reactants: { 'H₂O₂': null }, products: { 'H₂O': null, 'O₂': null }, answer: { 'H₂O₂': 2, 'H₂O': 2, 'O₂': 1 } }
     },
 ];
+
+// ═════════════════════════════════════════════
+// Standard Reduction Potentials (V vs SHE)
+// ═════════════════════════════════════════════
+const STANDARD_REDUCTION_POTENTIALS = [
+    { ion: 'Li⁺', metal: 'Li', equation: 'Li⁺ + e⁻ → Li', E0: -3.04, n: 1, color: '#ef4444', metalColor: '#c0c0c0' },
+    { ion: 'K⁺', metal: 'K', equation: 'K⁺ + e⁻ → K', E0: -2.93, n: 1, color: '#f97316', metalColor: '#c0c0c0' },
+    { ion: 'Ca²⁺', metal: 'Ca', equation: 'Ca²⁺ + 2e⁻ → Ca', E0: -2.87, n: 2, color: '#f59e0b', metalColor: '#d0d0d0' },
+    { ion: 'Na⁺', metal: 'Na', equation: 'Na⁺ + e⁻ → Na', E0: -2.71, n: 1, color: '#eab308', metalColor: '#c8c8c8' },
+    { ion: 'Mg²⁺', metal: 'Mg', equation: 'Mg²⁺ + 2e⁻ → Mg', E0: -2.37, n: 2, color: '#84cc16', metalColor: '#b8b8b8' },
+    { ion: 'Al³⁺', metal: 'Al', equation: 'Al³⁺ + 3e⁻ → Al', E0: -1.66, n: 3, color: '#22c55e', metalColor: '#a8a8a8' },
+    { ion: 'Zn²⁺', metal: 'Zn', equation: 'Zn²⁺ + 2e⁻ → Zn', E0: -0.76, n: 2, color: '#6366f1', metalColor: '#a0a8c0' },
+    { ion: 'Fe²⁺', metal: 'Fe', equation: 'Fe²⁺ + 2e⁻ → Fe', E0: -0.44, n: 2, color: '#8b5cf6', metalColor: '#808080' },
+    { ion: 'Ni²⁺', metal: 'Ni', equation: 'Ni²⁺ + 2e⁻ → Ni', E0: -0.26, n: 2, color: '#a855f7', metalColor: '#909090' },
+    { ion: 'Sn²⁺', metal: 'Sn', equation: 'Sn²⁺ + 2e⁻ → Sn', E0: -0.14, n: 2, color: '#d946ef', metalColor: '#b0b0b0' },
+    { ion: 'Pb²⁺', metal: 'Pb', equation: 'Pb²⁺ + 2e⁻ → Pb', E0: -0.13, n: 2, color: '#ec4899', metalColor: '#707070' },
+    { ion: 'H⁺', metal: 'H₂', equation: '2H⁺ + 2e⁻ → H₂', E0: 0.00, n: 2, color: '#94a3b8', metalColor: '#e0e0e0' },
+    { ion: 'Cu²⁺', metal: 'Cu', equation: 'Cu²⁺ + 2e⁻ → Cu', E0: +0.34, n: 2, color: '#f97316', metalColor: '#b87333' },
+    { ion: 'Ag⁺', metal: 'Ag', equation: 'Ag⁺ + e⁻ → Ag', E0: +0.80, n: 1, color: '#e2e8f0', metalColor: '#c0c0c0' },
+    { ion: 'Pt²⁺', metal: 'Pt', equation: 'Pt²⁺ + 2e⁻ → Pt', E0: +1.20, n: 2, color: '#fbbf24', metalColor: '#e5e4e2' },
+    { ion: 'Au³⁺', metal: 'Au', equation: 'Au³⁺ + 3e⁻ → Au', E0: +1.50, n: 3, color: '#fbbf24', metalColor: '#ffd700' },
+];
