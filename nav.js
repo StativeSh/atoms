@@ -8,7 +8,7 @@
         <div class="dropdown">
             <button class="dropbtn">📚 Fundamentals ▾</button>
             <div class="dropdown-content">
-                <a href="index.html" data-page="index">🧪 Periodic Table</a>
+                <a href="periodic-table.html" data-page="periodic-table">🧪 Periodic Table</a>
                 <a href="spectroscopy.html" data-page="spectroscopy">📊 Spectroscopy</a>
             </div>
         </div>
