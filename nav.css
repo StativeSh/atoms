@@ -1,0 +1,91 @@
+/* nav.css */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    height: 100%;
+}
+
+.dropbtn {
+    background-color: transparent;
+    color: #a5b4fc;
+    padding: 12px 16px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: color 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+}
+
+.dropdown:hover .dropbtn,
+.dropbtn.active {
+    color: #fff;
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.dropdown-content {
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(10px);
+    position: absolute;
+    background-color: rgba(15, 15, 30, 0.95);
+    min-width: 220px;
+    box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-top: none;
+    backdrop-filter: blur(10px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    top: 100%;
+    left: 0;
+}
+
+.dropdown:hover .dropdown-content {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-content a {
+    color: #cbd5e1;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dropdown-content a:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(99, 102, 241, 0.2);
+    color: #fff;
+}
+
+.dropdown-content a.active {
+    background-color: rgba(99, 102, 241, 0.4);
+    color: #fff;
+    font-weight: bold;
+    border-left: 3px solid #818cf8;
+}
+
+/* Ensuring top-nav elements align well with flexbox */
+.top-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-nav .logo {
+    margin-right: 20px;
+}
