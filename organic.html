@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Organic Molecule Builder</title>
+    <meta name="description" content="Build organic molecules, detect functional groups, and get IUPAC names.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="organic.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <nav class="top-nav">
+        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
+        <div class="nav-links">
+            <a href="index.html">🧪 Periodic Table</a>
+            <a href="reaction-lab.html">⚡ Reaction Lab</a>
+            <a href="mol3d.html">🔬 3D Viewer</a>
+            <a href="spectroscopy.html">📊 Spectroscopy</a>
+            <a href="electrochem.html">🔋 Electrochemistry</a>
+            <a href="mechanisms.html">🧬 Mechanisms</a>
+            <a href="organic.html" class="active">🧱 Organic Builder</a>
+        </div>
+    </nav>
+    <div class="org-layout">
+        <aside class="org-sidebar">
+            <h2>TOOLS</h2>
+            <div class="tool-section">
+                <h3>Add Atom</h3>
+                <div class="atom-btns">
+                    <button class="atom-btn active" data-atom="C">C</button>
+                    <button class="atom-btn" data-atom="O">O</button>
+                    <button class="atom-btn" data-atom="N">N</button>
+                    <button class="atom-btn" data-atom="S">S</button>
+                    <button class="atom-btn" data-atom="Cl">Cl</button>
+                    <button class="atom-btn" data-atom="Br">Br</button>
+                    <button class="atom-btn" data-atom="F">F</button>
+                    <button class="atom-btn" data-atom="H">H</button>
+                </div>
+            </div>
+            <div class="tool-section">
+                <h3>Bond Type</h3>
+                <div class="bond-btns">
+                    <button class="bond-btn active" data-bond="1">Single</button>
+                    <button class="bond-btn" data-bond="2">Double</button>
+                    <button class="bond-btn" data-bond="3">Triple</button>
+                </div>
+            </div>
+            <div class="tool-section">
+                <h3>Quick Build</h3>
+                <div class="quick-btns" id="quick-btns">
+                    <button class="quick-btn" data-chain="1">Methane</button>
+                    <button class="quick-btn" data-chain="2">Ethane</button>
+                    <button class="quick-btn" data-chain="3">Propane</button>
+                    <button class="quick-btn" data-chain="4">Butane</button>
+                    <button class="quick-btn" data-chain="5">Pentane</button>
+                    <button class="quick-btn" data-chain="6">Hexane</button>
+                    <button class="quick-btn" data-preset="ethanol">Ethanol</button>
+                    <button class="quick-btn" data-preset="acetone">Acetone</button>
+                    <button class="quick-btn" data-preset="acetic-acid">Acetic Acid</button>
+                    <button class="quick-btn" data-preset="benzene">Benzene</button>
+                </div>
+            </div>
+            <div class="tool-section">
+                <button class="action-btn" id="btn-clear">🗑 Clear</button>
+                <button class="action-btn" id="btn-add-h">➕ Auto-add H</button>
+            </div>
+        </aside>
+        <main class="org-viewport">
+            <div class="canvas-container">
+                <canvas id="org-canvas" width="800" height="450"></canvas>
+            </div>
+            <div class="org-status">
+                <span id="mol-formula">—</span>
+                <span id="mol-mw">—</span>
+            </div>
+        </main>
+        <aside class="org-info">
+            <h2>MOLECULE INFO</h2>
+            <div class="info-card">
+                <div class="info-label">IUPAC Name</div>
+                <div class="info-value" id="iupac-name">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Molecular Formula</div>
+                <div class="info-value" id="mol-formula2">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Molecular Weight</div>
+                <div class="info-value" id="mol-weight">—</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Degree of Unsaturation</div>
+                <div class="info-value" id="dou">—</div>
+            </div>
+            <div class="fg-section">
+                <h3>FUNCTIONAL GROUPS</h3>
+                <div id="fg-detected">—</div>
+            </div>
+        </aside>
+    </div>
+    <script src="organic.js"></script>
+</body>
+
+</html>
