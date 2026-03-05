@@ -88,4 +88,20 @@
 
 .top-nav .logo {
     margin-right: 20px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 40%, #c084fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+    filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.4));
+    transition: filter 0.3s, transform 0.3s;
+}
+
+.top-nav .logo:hover {
+    filter: drop-shadow(0 0 14px rgba(129, 140, 248, 0.7));
+    transform: scale(1.05);
 }
