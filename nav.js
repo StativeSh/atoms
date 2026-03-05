@@ -3,7 +3,7 @@
     'use strict';
 
     const navContent = `
-        <div class="logo">⚛️ CHEMVERSE</div>
+        <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">⚛️ CHEMVERSE</a>
         
         <div class="dropdown">
             <button class="dropbtn">📚 Fundamentals ▾</button>
