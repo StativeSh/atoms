@@ -1,0 +1,4 @@
+## 2024-05-18 - [DOM-based XSS in Link Interception]
+**Vulnerability:** A DOM-based XSS vulnerability existed where user-supplied link `href` attributes were assigned to `window.location.href` using weak sanitization (`startsWith('javascript')`).
+**Learning:** Checking for `javascript:` using string methods like `startsWith` or `includes` is insufficient. Attackers can bypass this by padding the URI with whitespace or tabs (e.g., ` href="  javascript:alert(1)"`), using mixed case (`JaVaScRiPt:`), or using `data:` URIs. When intercepting links for custom routing and aesthetic transitions, strict validation is necessary.
+**Prevention:** Use a rigorous regular expression like `/^\s*(javascript|data)\s*:/i` to validate any URL before assigning it to `window.location.href`, or validate against an explicit allowlist of safe protocols (e.g., `http:`, `https:`).
