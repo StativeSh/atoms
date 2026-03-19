@@ -1,0 +1,4 @@
+## 2024-05-24 - DOM-based XSS in Page Transitions
+**Vulnerability:** A DOM-based Cross-Site Scripting (XSS) vulnerability was found in `premium.js` where `window.location.href = href` was assigned after checking `href.startsWith('javascript')`. This could be bypassed using whitespace-padded URLs (e.g., ` javascript:`) or mixed-case URLs (e.g., `JaVaScRiPt:`), as well as `data:` URIs.
+**Learning:** Checking for `javascript` at the start of a URL is insufficient. Browsers strip leading whitespace and are case-insensitive when interpreting URL schemes. Additionally, `data:` URIs can also be used to execute arbitrary scripts or render malicious content in modern browsers under certain contexts.
+**Prevention:** Always use a robust regex pattern to validate URLs before assigning them to `window.location.href`, such as `/^\s*(javascript|data)\s*:/i.test(href)`, which handles leading whitespace, case-insensitivity, and multiple dangerous schemes.
