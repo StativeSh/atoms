@@ -1,0 +1,4 @@
+## 2024-05-24 - DOM-based XSS via Intercepted Links
+**Vulnerability:** DOM-based XSS via `window.location.href` assignment with intercepted link `href` attributes. The existing validation used `href.startsWith('javascript')` which was bypassed by whitespace-padded `javascript:` URIs (e.g. ` javascript:alert(1)`) or `data:` URIs.
+**Learning:** Custom link interception for page transitions can inadvertently execute XSS payloads if `window.location.href` is assigned an unsanitized URI, especially if the check is easily bypassed. Furthermore, returning from the event listener without calling `e.preventDefault()` allows the native browser execution of the malicious URI.
+**Prevention:** Apply a rigorous regex (`/^\s*(javascript|data)\s*:/i`) to validate all intercepted URLs. Explicitly call `e.preventDefault()` before returning when a malicious URI is detected to block both custom and native browser execution.
