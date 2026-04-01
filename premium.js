@@ -118,11 +118,19 @@ const ChemPremium = (function () {
 
     function interceptLinks() {
         document.addEventListener('click', (e) => {
-            if (!isActive) return;
             const link = e.target.closest('a[href]');
             if (!link) return;
             const href = link.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('javascript')) return;
+
+            // Security: Block XSS via javascript: or data: URIs
+            // We want to block this regardless of premium mode state to prevent XSS.
+            if (/^\s*(javascript|data)\s*:/i.test(href)) {
+                e.preventDefault();
+                return;
+            }
+
+            if (!isActive) return;
+            if (!href || href.startsWith('#') || href.startsWith('http')) return;
 
             e.preventDefault();
             const overlay = document.getElementById('page-transition');
