@@ -1,0 +1,4 @@
+## 2026-04-03 - DOM-based XSS via URL Interception
+**Vulnerability:** Link interception logic (`interceptLinks` in `premium.js`) failed to block malicious protocols like `javascript:` or `data:` when padded with whitespace, allowing DOM-based XSS when custom animated page transitions were triggered.
+**Learning:** Checking for malicious URL schemes must use rigorous regular expressions (e.g., `/^\s*(javascript|data)\s*:/i`) rather than simple string matching (`startsWith('javascript')`) because browsers are tolerant of whitespace before the protocol in URLs.
+**Prevention:** Always validate and sanitize URLs using a strict allow-list of schemes or robust regexes to block all forms of malicious protocols (`javascript:`, `vbscript:`, `data:`) before processing or redirecting them, and explicitly call `e.preventDefault()` to stop native execution.
