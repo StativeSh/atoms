@@ -1,0 +1,249 @@
+/* ChemVerse — Organic Molecule Builder Styles */
+.org-layout {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+.org-sidebar {
+    width: 200px;
+    background: rgba(15, 15, 35, 0.95);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.org-sidebar h2 {
+    font: 700 11px/1 Outfit;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.tool-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.tool-section h3 {
+    font: 700 10px/1 Outfit;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.atom-btns,
+.bond-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.atom-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(30, 30, 60, 0.4);
+    color: #e2e8f0;
+    font: 700 13px Inter;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.atom-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.atom-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #6366f1;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+.bond-btn {
+    flex: 1;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(30, 30, 60, 0.4);
+    color: rgba(148, 163, 184, 0.6);
+    font: 600 10px Inter;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bond-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #6366f1;
+    color: #a5b4fc;
+}
+
+.quick-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.quick-btn {
+    padding: 5px 8px;
+    border-radius: 5px;
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    background: rgba(30, 30, 60, 0.3);
+    color: #94a3b8;
+    font: 500 10px Inter;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.quick-btn:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: #e2e8f0;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 7px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(30, 30, 60, 0.4);
+    color: #94a3b8;
+    font: 600 11px Inter;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #e2e8f0;
+}
+
+.org-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+    overflow-y: auto;
+    gap: 8px;
+}
+
+.canvas-container {
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#org-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    cursor: crosshair;
+}
+
+.org-status {
+    display: flex;
+    gap: 16px;
+    font: 500 12px Inter;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.org-status span {
+    background: rgba(30, 30, 60, 0.4);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.org-info {
+    width: 230px;
+    background: rgba(15, 15, 35, 0.95);
+    border-left: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.org-info h2 {
+    font: 700 11px/1 Outfit;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.info-card {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.info-label {
+    font: 700 9px Outfit;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.4);
+    text-transform: uppercase;
+}
+
+.info-value {
+    font: 600 14px Inter;
+    color: #a5b4fc;
+    margin-top: 3px;
+}
+
+.fg-section {
+    margin-top: auto;
+}
+
+.fg-section h3 {
+    font: 700 10px/1 Outfit;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 0 0 6px;
+}
+
+#fg-detected {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.fg-tag2 {
+    font: 500 10px Inter;
+    color: #94a3b8;
+    padding: 4px 6px;
+    background: rgba(30, 30, 60, 0.4);
+    border-radius: 4px;
+    border-left: 3px solid #6366f1;
+}
+
+.org-sidebar::-webkit-scrollbar,
+.org-info::-webkit-scrollbar {
+    width: 4px;
+}
+
+.org-sidebar::-webkit-scrollbar-thumb,
+.org-info::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 4px;
+}
+
+@media(max-width:900px) {
+    .org-layout {
+        flex-direction: column;
+    }
+
+    .org-sidebar,
+    .org-info {
+        width: 100%;
+        max-height: 180px;
+    }
+}

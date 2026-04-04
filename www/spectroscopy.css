@@ -1,0 +1,378 @@
+/* ═══════════════════════════════════════════════
+   ChemVerse — Spectroscopy Simulator Styles
+   ═══════════════════════════════════════════════ */
+
+.spec-layout {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+/* ─── Sidebar: Molecule Picker ─── */
+.spec-sidebar {
+    width: 220px;
+    background: rgba(15, 15, 35, 0.95);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.spec-sidebar h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.molecule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mol-btn {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: #e2e8f0;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.mol-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.mol-btn.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+}
+
+.mol-btn .mol-formula {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+    display: block;
+    margin-top: 2px;
+}
+
+/* ─── Mode Toggle ─── */
+.mode-toggle {
+    display: flex;
+    gap: 4px;
+    background: rgba(20, 20, 50, 0.5);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 6px 8px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.mode-btn.active {
+    background: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+}
+
+.mode-btn:hover:not(.active) {
+    color: #e2e8f0;
+}
+
+/* ─── Functional Groups ─── */
+.functional-groups h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 8px 0 6px;
+}
+
+#fg-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.fg-tag {
+    font-size: 10px;
+    color: #94a3b8;
+    padding: 4px 8px;
+    background: rgba(30, 30, 60, 0.4);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 3px solid;
+}
+
+.fg-tag .fg-range {
+    font-family: 'Inter', monospace;
+    font-size: 9px;
+    color: rgba(148, 163, 184, 0.4);
+}
+
+/* ─── Spectrum Viewport ─── */
+.spec-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+    overflow-y: auto;
+}
+
+.spec-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.spec-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.spec-formula {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: #818cf8;
+}
+
+.canvas-wrapper {
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 10px;
+    position: relative;
+}
+
+#spectrum-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    cursor: crosshair;
+}
+
+.peak-info {
+    margin-top: 8px;
+    min-height: 40px;
+}
+
+.peak-hint {
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.4);
+    font-style: italic;
+}
+
+.peak-detail {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #e2e8f0;
+}
+
+.peak-detail strong {
+    color: #a5b4fc;
+}
+
+/* ─── Right Panel: Peak Analysis ─── */
+.spec-info {
+    width: 240px;
+    background: rgba(15, 15, 35, 0.95);
+    border-left: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.spec-info h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.peak-table {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.peak-row {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: #94a3b8;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.peak-row:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.peak-row .peak-wavenumber {
+    font-family: 'Inter', monospace;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-size: 13px;
+}
+
+.peak-row .peak-assignment {
+    font-size: 10px;
+    color: #818cf8;
+}
+
+.peak-row .peak-desc {
+    font-size: 9px;
+    color: rgba(148, 163, 184, 0.4);
+}
+
+.peak-row .peak-strength {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.peak-strength.strong {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+}
+
+.peak-strength.medium {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.peak-strength.weak {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.peak-strength.broad {
+    background: rgba(139, 92, 246, 0.2);
+    color: #8b5cf6;
+}
+
+/* ─── Legend ─── */
+.spec-legend {
+    margin-top: auto;
+}
+
+.spec-legend h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 0 0 6px;
+}
+
+.legend-item {
+    font-size: 10px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ─── UV-Vis Specific ─── */
+.uv-info {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 8px;
+}
+
+.uv-info .uv-lambda {
+    font-size: 18px;
+    font-weight: 700;
+    color: #a5b4fc;
+    font-family: 'Inter', monospace;
+}
+
+.uv-info .uv-label {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ─── Scrollbar ─── */
+.spec-sidebar::-webkit-scrollbar,
+.spec-info::-webkit-scrollbar {
+    width: 4px;
+}
+
+.spec-sidebar::-webkit-scrollbar-track,
+.spec-info::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.spec-sidebar::-webkit-scrollbar-thumb,
+.spec-info::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 4px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+    .spec-layout {
+        flex-direction: column;
+    }
+
+    .spec-sidebar,
+    .spec-info {
+        width: 100%;
+        max-height: 200px;
+    }
+}

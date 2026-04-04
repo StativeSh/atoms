@@ -1,0 +1,354 @@
+/* ============================================
+   ChemVerse — Premium Aesthetic Layer
+   Activated via body.premium-mode class
+   ============================================ */
+
+/* ─── Particle Canvas (behind everything) ─── */
+#premium-particles {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+body.premium-mode #premium-particles {
+    opacity: 1;
+}
+
+/* ─── Living Gradient Background ─── */
+body.premium-mode .bg-gradient {
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+        var(--bg-primary);
+    animation: gradientShift 12s ease-in-out infinite alternate;
+}
+
+@keyframes gradientShift {
+    0% {
+        filter: hue-rotate(0deg);
+    }
+
+    50% {
+        filter: hue-rotate(15deg);
+    }
+
+    100% {
+        filter: hue-rotate(-10deg);
+    }
+}
+
+/* ─── Animated Border Glow on All Glass Elements ─── */
+body.premium-mode .glass,
+body.premium-mode .glass-strong,
+body.premium-mode .module-card,
+body.premium-mode .info-card,
+body.premium-mode .org-info-card,
+body.premium-mode .ec-result,
+body.premium-mode .crystal-btn,
+body.premium-mode .mech-step {
+    border-image: linear-gradient(var(--border-angle, 0deg),
+            #6366f1, #a855f7, #ec4899, #6366f1) 1;
+    border-width: 1px;
+    border-style: solid;
+    animation: borderRotate 4s linear infinite;
+}
+
+@keyframes borderRotate {
+    to {
+        --border-angle: 360deg;
+    }
+}
+
+@property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+/* ─── Card Entrance Animations ─── */
+body.premium-mode .module-card,
+body.premium-mode .info-card,
+body.premium-mode .org-info-card,
+body.premium-mode .crystal-btn,
+body.premium-mode .element-tile,
+body.premium-mode .mech-step {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+    animation: cardEntrance 0.6s var(--ease-bounce) forwards;
+}
+
+body.premium-mode .module-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+body.premium-mode .module-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+body.premium-mode .module-card:nth-child(3) {
+    animation-delay: 0.15s;
+}
+
+body.premium-mode .module-card:nth-child(4) {
+    animation-delay: 0.2s;
+}
+
+body.premium-mode .module-card:nth-child(5) {
+    animation-delay: 0.25s;
+}
+
+body.premium-mode .module-card:nth-child(6) {
+    animation-delay: 0.3s;
+}
+
+body.premium-mode .module-card:nth-child(7) {
+    animation-delay: 0.35s;
+}
+
+body.premium-mode .module-card:nth-child(8) {
+    animation-delay: 0.4s;
+}
+
+body.premium-mode .module-card:nth-child(9) {
+    animation-delay: 0.45s;
+}
+
+@keyframes cardEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ─── Premium Glow Hover on Cards ─── */
+body.premium-mode .module-card:hover {
+    box-shadow:
+        0 0 30px rgba(99, 102, 241, 0.3),
+        0 0 60px rgba(139, 92, 246, 0.15),
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 40px rgba(99, 102, 241, 0.05);
+    border-color: rgba(168, 85, 247, 0.6);
+}
+
+/* ─── Premium Top Navigation ─── */
+body.premium-mode .top-nav {
+    background: rgba(6, 10, 20, 0.6);
+    border-bottom: 1px solid;
+    border-image: linear-gradient(90deg, transparent 0%, #6366f1 20%, #a855f7 50%, #ec4899 80%, transparent 100%) 1;
+    box-shadow: 0 4px 30px rgba(99, 102, 241, 0.1);
+}
+
+/* ─── Hero Text Shimmer ─── */
+body.premium-mode .hero-title {
+    background: linear-gradient(90deg, #a5b4fc, #818cf8, #c084fc, #f472b6, #818cf8, #a5b4fc);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(129, 140, 248, 0.4));
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* ─── Floating Orbs ─── */
+body.premium-mode .floating-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: -1;
+    animation: orbFloat 20s ease-in-out infinite alternate;
+}
+
+body.premium-mode .orb-1 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+    top: -100px;
+    left: -100px;
+}
+
+body.premium-mode .orb-2 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.12), transparent);
+    bottom: -50px;
+    right: -50px;
+    animation-delay: -10s;
+}
+
+body.premium-mode .orb-3 {
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(236, 72, 153, 0.10), transparent);
+    top: 40%;
+    left: 60%;
+    animation-delay: -5s;
+}
+
+@keyframes orbFloat {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(30px, -40px) scale(1.1);
+    }
+
+    66% {
+        transform: translate(-20px, 20px) scale(0.95);
+    }
+
+    100% {
+        transform: translate(15px, -15px) scale(1.05);
+    }
+}
+
+/* ─── Premium Buttons ─── */
+body.premium-mode .btn,
+body.premium-mode .dropbtn {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+body.premium-mode .btn:hover,
+body.premium-mode .dropbtn:hover {
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px currentColor;
+}
+
+/* ─── Canvas / Viewport Glow ─── */
+body.premium-mode canvas {
+    border-radius: 12px;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.4s ease;
+}
+
+body.premium-mode canvas:hover {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.15), inset 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Scrollbar Glow ─── */
+body.premium-mode ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6366f1, #a855f7);
+    border-radius: 3px;
+}
+
+/* ─── Info Cards Shine ─── */
+body.premium-mode .info-card::after,
+body.premium-mode .org-info-card::after,
+body.premium-mode .ec-result::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(transparent, rgba(99, 102, 241, 0.05), transparent 30%);
+    animation: cardShine 6s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes cardShine {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ─── Tooltip Glow ─── */
+body.premium-mode .chem-tooltip {
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), 0 8px 32px rgba(0, 0, 0, 0.5);
+    border-color: rgba(168, 85, 247, 0.5);
+}
+
+/* ─── Premium Toggle Button ─── */
+#premium-toggle {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 99999;
+    padding: 12px 20px;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+    border-radius: 30px;
+    background: rgba(15, 15, 30, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #a5b4fc;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.5px;
+}
+
+#premium-toggle:hover {
+    border-color: rgba(168, 85, 247, 0.7);
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), 0 8px 30px rgba(0, 0, 0, 0.5);
+    transform: translateY(-3px) scale(1.05);
+    color: #fff;
+}
+
+#premium-toggle.active {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+    border-color: rgba(168, 85, 247, 0.8);
+    color: #fff;
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.4), 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+#premium-toggle .toggle-icon {
+    font-size: 16px;
+    display: inline-block;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#premium-toggle.active .toggle-icon {
+    transform: rotate(360deg) scale(1.2);
+}
+
+/* ─── Smooth Page Transition Overlay ─── */
+#page-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    background: linear-gradient(135deg, #060a14, #0d1321);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+#page-transition.active {
+    opacity: 1;
+}
+
+/* ─── Selection ─── */
+body.premium-mode ::selection {
+    background: rgba(99, 102, 241, 0.4);
+    color: #fff;
+}
+
+/* ─── Focus Ring ─── */
+body.premium-mode :focus-visible {
+    outline: 2px solid rgba(129, 140, 248, 0.6);
+    outline-offset: 2px;
+}

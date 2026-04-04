@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Interactive Chemistry Suite</title>
+    <meta name="description"
+        content="Explore the periodic table, visualize atomic orbitals in 3D, simulate chemical reactions, and browse a museum of molecules.">
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        /* ─── Dashboard Landing Page ─── */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+        }
+
+        .page-wrapper {
+            min-height: 100vh;
+            padding: 80px 24px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 20px 0 60px;
+            position: relative;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(48px, 8vw, 84px);
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #a5b4fc 0%, #818cf8 40%, #c084fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            line-height: 1.1;
+            text-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: clamp(16px, 2.5vw, 22px);
+            font-weight: 300;
+            letter-spacing: 1px;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            padding-bottom: 40px;
+        }
+
+        /* Module Card */
+        .module-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 28px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: skewX(-20deg);
+            transition: all 0.6s ease;
+        }
+
+        .module-card:hover::before {
+            left: 150%;
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 16px 40px rgba(99, 102, 241, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-icon {
+            font-size: 42px;
+            line-height: 1;
+            margin-bottom: 8px;
+            display: inline-block;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .card-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .card-category {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            color: #818cf8;
+            margin-top: auto;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Category Accents */
+        .card-fundamentals:hover .card-category {
+            color: #f472b6;
+        }
+
+        .card-build:hover .card-category {
+            color: #34d399;
+        }
+
+        .card-sim:hover .card-category {
+            color: #60a5fa;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.03;
+            z-index: -1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .icon-1 {
+            top: 10%;
+            left: 5%;
+            color: #818cf8;
+        }
+
+        .icon-2 {
+            bottom: 10%;
+            right: 5%;
+            animation-delay: -4s;
+            color: #c084fc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="floating-icon icon-1">⚛️</div>
+    <div class="floating-icon icon-2">⚗️</div>
+
+    <!-- Navigation -->
+    <nav class="top-nav">
+        <!-- Will be populated by nav.js -->
+    </nav>
+
+    <div class="page-wrapper">
+        <section class="hero">
+            <h1 class="hero-title">CHEMVERSE</h1>
+            <p class="hero-subtitle">The ultimate interactive suite for exploring elements, building molecules, and
+                simulating complex chemical systems.</p>
+        </section>
+
+        <div class="dashboard-grid">
+            <!-- Fundamentals -->
+            <a href="periodic-table.html" class="module-card card-fundamentals">
+                <span class="card-icon">🧪</span>
+                <h3 class="card-title">Periodic Table</h3>
+                <p class="card-desc">Interactive table with rich data, properties, and trends for all 118 elements.</p>
+                <span class="card-category">Fundamentals</span>
+            </a>
+
+            <a href="spectroscopy.html" class="module-card card-fundamentals">
+                <span class="card-icon">📊</span>
+                <h3 class="card-title">Spectroscopy</h3>
+                <p class="card-desc">Simulate IR and UV-Vis spectra to identify functional groups and conjugation.</p>
+                <span class="card-category">Fundamentals</span>
+            </a>
+
+            <!-- Build & React -->
+            <a href="organic.html" class="module-card card-build">
+                <span class="card-icon">⚗️</span>
+                <h3 class="card-title">Organic Builder</h3>
+                <p class="card-desc">Draw carbon chains and functional groups, and get auto-generated IUPAC names.</p>
+                <span class="card-category">Build & React</span>
+            </a>
+
+            <a href="mol3d.html" class="module-card card-build">
+                <span class="card-icon">🧬</span>
+                <h3 class="card-title">3D Molecular Viewer</h3>
+                <p class="card-desc">Visualize atoms, bonds, and orbital clouds in an immersive interactive 3D engine.
+                </p>
+                <span class="card-category">Build & React</span>
+            </a>
+
+            <a href="reaction-lab.html" class="module-card card-build">
+                <span class="card-icon">⚡️</span>
+                <h3 class="card-title">Reaction Lab</h3>
+                <p class="card-desc">Mix reagents, visualize animated thermodynamics, and read enthalpy/entropy data.
+                </p>
+                <span class="card-category">Build & React</span>
+            </a>
+
+            <!-- Simulations -->
+            <a href="titration.html" class="module-card card-sim">
+                <span class="card-icon">💧</span>
+                <h3 class="card-title">Titration Simulator</h3>
+                <p class="card-desc">Perform acid-base titrations with live pH curves and indicator color changes.</p>
+                <span class="card-category">Simulations</span>
+            </a>
+
+            <a href="electrochem.html" class="module-card card-sim">
+                <span class="card-icon">🔋</span>
+                <h3 class="card-title">Electrochemistry</h3>
+                <p class="card-desc">Build Galvanic cells, calculate standard potentials, and watch electron flow.</p>
+                <span class="card-category">Simulations</span>
+            </a>
+
+            <a href="mechanisms.html" class="module-card card-sim">
+                <span class="card-icon">🔀</span>
+                <h3 class="card-title">Reaction Mechanisms</h3>
+                <p class="card-desc">Step-by-step SN1/SN2/E1/E2 mechanisms with animated curved arrow pushing.</p>
+                <span class="card-category">Simulations</span>
+            </a>
+
+            <a href="crystal.html" class="module-card card-sim">
+                <span class="card-icon">💎</span>
+                <h3 class="card-title">Crystal Structures</h3>
+                <p class="card-desc">Explore 3D lattice geometries like SCC, BCC, FCC, HCP, and Diamond.</p>
+                <span class="card-category">Simulations</span>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="shared.js"></script>
+    <script src="nav.js"></script>
+    <script src="premium.js"></script>
+</body>
+
+</html>

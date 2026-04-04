@@ -1,0 +1,721 @@
+/* ═══════════════════════════════════════════
+   ChemVerse — Reaction Lab v3 Styles
+   ═══════════════════════════════════════════ */
+
+/* ─── Layout ─── */
+.lab-layout {
+    display: grid;
+    grid-template-columns: 190px 1fr 300px;
+    gap: 0;
+    height: calc(100vh - 56px);
+    padding-top: 56px;
+}
+
+/* ─── Palette ─── */
+.palette {
+    background: rgba(15, 15, 35, 0.8);
+    border-right: 1px solid rgba(99, 102, 241, 0.12);
+    overflow-y: auto;
+    padding: 12px 8px;
+}
+
+.palette-header h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.6);
+    margin: 0 0 8px;
+}
+
+.palette-search {
+    width: 100%;
+    padding: 6px 10px;
+    background: rgba(30, 30, 60, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 12px;
+    outline: none;
+    margin-bottom: 10px;
+}
+
+.palette-search:focus {
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.palette-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: grab;
+    transition: background 0.15s;
+    margin-bottom: 2px;
+}
+
+.palette-item:hover {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.palette-item:active {
+    cursor: grabbing;
+}
+
+.pi-symbol {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1.5px solid;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.pi-z {
+    font-size: 7px;
+    font-weight: 400;
+    opacity: 0.5;
+    margin-top: -2px;
+}
+
+.pi-info {
+    min-width: 0;
+}
+
+.pi-name {
+    font-size: 11px;
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.pi-stats {
+    display: flex;
+    gap: 6px;
+    font-size: 8px;
+    color: rgba(148, 163, 184, 0.5);
+    margin-top: 1px;
+}
+
+/* ─── Canvas Area ─── */
+.canvas-area {
+    display: flex;
+    flex-direction: column;
+    background: rgba(8, 8, 24, 0.5);
+    position: relative;
+}
+
+.canvas-toolbar {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(15, 15, 35, 0.5);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+    position: relative;
+    z-index: 5;
+}
+
+.toolbar-btn {
+    padding: 6px 14px;
+    background: rgba(30, 30, 60, 0.5);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 6px;
+    color: #e2e8f0;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toolbar-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.toolbar-btn.react-btn {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.toolbar-btn.react-btn:hover {
+    background: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+}
+
+.lab-canvas {
+    flex: 1;
+    cursor: crosshair;
+}
+
+.canvas-hint {
+    text-align: center;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.35);
+    padding: 6px;
+    background: rgba(15, 15, 35, 0.3);
+}
+
+/* ─── Energy Bar Overlay ─── */
+.energy-overlay {
+    position: absolute;
+    bottom: 36px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.energy-bar-container {
+    background: rgba(10, 10, 30, 0.92);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 10px;
+    padding: 10px 18px;
+    min-width: 280px;
+    backdrop-filter: blur(8px);
+}
+
+.energy-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: #e2e8f0;
+    text-align: center;
+    margin-bottom: 6px;
+    font-family: 'Inter', monospace;
+}
+
+.energy-bar-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(30, 30, 60, 0.6);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.energy-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.energy-bar-fill.exothermic {
+    background: linear-gradient(90deg, #f97316, #ef4444, #f97316);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+.energy-bar-fill.endothermic {
+    background: linear-gradient(90deg, #3b82f6, #06b6d4, #3b82f6);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+.energy-type {
+    text-align: center;
+    font-size: 11px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.energy-type.exo {
+    color: #f97316;
+}
+
+.energy-type.endo {
+    color: #3b82f6;
+}
+
+/* ─── Right Panel ─── */
+.lab-panel {
+    background: rgba(15, 15, 35, 0.8);
+    border-left: 1px solid rgba(99, 102, 241, 0.12);
+    overflow-y: auto;
+    padding: 12px;
+}
+
+.panel-section {
+    margin-bottom: 16px;
+}
+
+.panel-section h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0 0 8px;
+}
+
+/* ─── Preset Buttons ─── */
+.preset-btn {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+}
+
+.preset-btn:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.preset-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preset-name {
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.preset-type {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+}
+
+.preset-bottom {
+    margin-top: 3px;
+}
+
+.preset-dh {
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'Inter', monospace;
+}
+
+.preset-dh.exo {
+    color: #f97316;
+}
+
+.preset-dh.endo {
+    color: #3b82f6;
+}
+
+/* ─── Equation Display ─── */
+.equation-display {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.equation-text {
+    font-size: 16px;
+    color: #e2e8f0;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.equation-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.equation-name {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.equation-dh {
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Inter', monospace;
+}
+
+.equation-dh.exo {
+    color: #f97316;
+}
+
+.equation-dh.endo {
+    color: #3b82f6;
+}
+
+.equation-details {
+    margin-top: 6px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.eq-detail {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+    background: rgba(30, 30, 60, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* ─── Bond Info Panel ─── */
+.bond-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.bond-info-row {
+    background: rgba(30, 30, 60, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 6px;
+    padding: 6px 8px;
+}
+
+.bond-pair {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 3px;
+}
+
+.bond-details {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.bond-tag {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.bond-tag.ionic {
+    background: rgba(255, 200, 100, 0.15);
+    color: #fbbf24;
+}
+
+.bond-tag.polar {
+    background: rgba(100, 170, 255, 0.15);
+    color: #60a5fa;
+}
+
+.bond-tag.nonpolar {
+    background: rgba(148, 163, 184, 0.12);
+    color: #94a3b8;
+}
+
+.bond-tag.order {
+    background: rgba(99, 102, 241, 0.12);
+    color: #818cf8;
+}
+
+.bond-numbers {
+    display: flex;
+    gap: 8px;
+    font-size: 9px;
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.vsepr-label {
+    margin-top: 6px;
+    font-size: 10px;
+    color: rgba(200, 220, 255, 0.6);
+    background: rgba(30, 30, 60, 0.3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border-left: 2px solid rgba(99, 102, 241, 0.3);
+}
+
+/* ─── Balancer ─── */
+.balancer {
+    background: rgba(30, 30, 60, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.balancer h3 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0 0 10px;
+}
+
+#balance-terms {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.balance-term {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(20, 20, 50, 0.5);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 6px;
+    padding: 4px 6px;
+}
+
+.coeff-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    background: rgba(30, 30, 60, 0.5);
+    color: #818cf8;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.coeff-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.coeff-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    min-width: 18px;
+    text-align: center;
+}
+
+.balance-formula {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.balance-operator,
+.balance-arrow {
+    font-size: 14px;
+    color: rgba(148, 163, 184, 0.4);
+    padding: 0 2px;
+}
+
+.check-btn {
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    border: none;
+    border-radius: 6px;
+    color: #0f0f23;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.check-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.balance-feedback {
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.balance-feedback.correct {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.balance-feedback.incorrect {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.balance-feedback.hidden {
+    display: none;
+}
+
+.score-display {
+    margin-top: 8px;
+    text-align: right;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.4);
+}
+
+.score-num {
+    color: #818cf8;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* ─── Thermodynamics Dashboard ─── */
+.thermo-card {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.thermo-temp-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.thermo-temp-control label {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.thermo-temp-control input[type="range"] {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(90deg, #3b82f6, #f97316, #ef4444);
+    border-radius: 2px;
+    outline: none;
+}
+
+.thermo-temp-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    border: 2px solid #6366f1;
+    cursor: pointer;
+}
+
+.temp-display {
+    font-size: 12px;
+    font-weight: 700;
+    color: #e2e8f0;
+    min-width: 50px;
+    text-align: right;
+    font-family: 'Inter', monospace;
+}
+
+.thermo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.thermo-item {
+    background: rgba(20, 20, 50, 0.5);
+    border-radius: 6px;
+    padding: 5px 7px;
+    display: flex;
+    flex-direction: column;
+}
+
+.thermo-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(148, 163, 184, 0.45);
+}
+
+.thermo-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-family: 'Inter', monospace;
+}
+
+.thermo-unit {
+    font-size: 8px;
+    color: rgba(148, 163, 184, 0.3);
+}
+
+.thermo-item.exo .thermo-value {
+    color: #f97316;
+}
+
+.thermo-item.endo .thermo-value {
+    color: #3b82f6;
+}
+
+.thermo-spontaneity .thermo-value.spontaneous {
+    color: #22c55e;
+}
+
+.thermo-spontaneity .thermo-value.non-spontaneous {
+    color: #ef4444;
+}
+
+.thermo-spontaneity .thermo-value.equilibrium {
+    color: #fbbf24;
+}
+
+.energy-diagram {
+    width: 100%;
+    height: 160px;
+    border-radius: 6px;
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+/* ─── Scrollbar ─── */
+.palette::-webkit-scrollbar,
+.lab-panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.palette::-webkit-scrollbar-thumb,
+.lab-panel::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 2px;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 900px) {
+    .lab-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+
+    .palette {
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-right: none;
+        border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+        padding: 8px;
+    }
+
+    .palette-list {
+        display: flex;
+        gap: 4px;
+    }
+
+    .lab-panel {
+        border-left: none;
+        border-top: 1px solid rgba(99, 102, 241, 0.12);
+    }
+}

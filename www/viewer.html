@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Atomic Viewer</title>
+    <meta name="description"
+        content="Interactive 3D visualization of the quantum mechanical atomic model with probability density orbital clouds, Aufbau configuration, and s/p/d/f orbital shapes.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="viewer.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- 3D Canvas Container -->
+        <div id="canvas-container"></div>
+
+        <!-- Header -->
+        <header id="header">
+            <div class="logo">
+                <a href="index.html" class="back-to-table" title="Back to Periodic Table">← Table</a>
+                <span class="logo-icon">⚛</span>
+                <h1>Quantum Atomic Model</h1>
+            </div>
+            <div class="element-display" id="element-display">
+                <span class="element-symbol" id="element-symbol">C</span>
+                <span class="element-name" id="element-name">Carbon</span>
+            </div>
+        </header>
+
+        <!-- Electron Configuration Banner -->
+        <div id="config-banner" class="config-banner">
+            <span class="config-label">Electron Configuration:</span>
+            <span class="config-text" id="electron-config-text">1s² 2s² 2p²</span>
+        </div>
+
+        <!-- Control Panel -->
+        <aside id="control-panel">
+            <div class="panel-header">
+                <h2>Controls</h2>
+                <button id="panel-toggle" class="panel-toggle-btn" aria-label="Toggle panel">
+                    <span class="toggle-icon">◀</span>
+                </button>
+            </div>
+
+            <div class="panel-content">
+                <!-- Mode Toggle -->
+                <div class="control-group">
+                    <label class="control-label">Mode</label>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" data-mode="atom" id="mode-atom">⚛ Atom</button>
+                        <button class="mode-btn" data-mode="molecule" id="mode-molecule">🔗 Molecule</button>
+                    </div>
+                </div>
+
+                <!-- Atom Mode Controls -->
+                <div id="atom-controls">
+                    <!-- Element Selector -->
+                    <div class="control-group">
+                        <label class="control-label">Element</label>
+                        <select id="element-select" class="control-select">
+                            <!-- Populated dynamically by main.js from shared.js data -->
+                        </select>
+                    </div>
+
+                    <!-- Highlight Subshell -->
+                    <div class="control-group">
+                        <label class="control-label">Highlight Subshell</label>
+                        <div id="subshell-buttons" class="subshell-buttons">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Molecule Mode Controls -->
+                <div id="molecule-controls" style="display: none;">
+                    <div class="control-group">
+                        <label class="control-label">Molecule</label>
+                        <select id="molecule-select" class="control-select">
+                            <option value="H2">H₂ — Hydrogen</option>
+                            <option value="O2">O₂ — Oxygen</option>
+                            <option value="N2">N₂ — Nitrogen</option>
+                            <option value="H2O">H₂O — Water</option>
+                            <option value="CO2">CO₂ — Carbon Dioxide</option>
+                            <option value="NaCl">NaCl — Sodium Chloride</option>
+                            <option value="CH4">CH₄ — Methane</option>
+                            <option value="NH3">NH₃ — Ammonia</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Bond Info</label>
+                        <div id="bond-info" class="bond-info">
+                            <strong>H₂ — Hydrogen</strong><br>
+                            Single covalent bond. Bond length: 74 pm.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Density -->
+                <div class="control-group">
+                    <label class="control-label">
+                        Cloud Density
+                        <span class="control-value" id="density-display">1.0x</span>
+                    </label>
+                    <input type="range" id="cloud-density" class="control-slider" min="0.3" max="2.5" value="1"
+                        step="0.1">
+                </div>
+
+                <!-- Animation Speed -->
+                <div class="control-group">
+                    <label class="control-label">
+                        Animation Speed
+                        <span class="control-value" id="anim-speed-display">1.0x</span>
+                    </label>
+                    <input type="range" id="animation-speed" class="control-slider" min="0" max="3" value="1"
+                        step="0.1">
+                </div>
+
+                <!-- Nucleus Size -->
+                <div class="control-group">
+                    <label class="control-label">
+                        Nucleus Size
+                        <span class="control-value" id="nucleus-size-display">1.0x</span>
+                    </label>
+                    <input type="range" id="nucleus-size" class="control-slider" min="0.5" max="2.5" value="1"
+                        step="0.1">
+                </div>
+
+                <!-- Toggles -->
+                <div class="control-group">
+                    <label class="control-label">Display Options</label>
+                    <div class="toggle-row">
+                        <span>Show Labels</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show-labels" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Individual Orbitals</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show-individual" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-row">
+                        <span>Glow Effects</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="glow-effects" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Color Scheme -->
+                <div class="control-group">
+                    <label class="control-label">Color Scheme</label>
+                    <div class="color-scheme-options">
+                        <button class="color-btn active" data-scheme="quantum" id="scheme-quantum">Quantum</button>
+                        <button class="color-btn" data-scheme="classic" id="scheme-classic">Classic</button>
+                        <button class="color-btn" data-scheme="neon" id="scheme-neon">Neon</button>
+                    </div>
+                </div>
+
+                <!-- Energy Level Diagram -->
+                <div class="control-group">
+                    <label class="control-label">Energy Level Diagram</label>
+                    <div class="energy-diagram-container">
+                        <canvas id="energy-diagram"></canvas>
+                    </div>
+                </div>
+
+                <!-- Orbital Legend -->
+                <div class="control-group">
+                    <label class="control-label">Orbital Legend</label>
+                    <div id="orbital-legend" class="orbital-legend">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Reset Button -->
+                <div class="control-group">
+                    <button id="reset-view" class="btn-reset">Reset View</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Info Tooltip -->
+        <div id="info-tooltip" class="info-tooltip hidden">
+            <div class="tooltip-content" id="tooltip-content"></div>
+        </div>
+
+        <!-- Instructions Overlay -->
+        <div id="instructions" class="instructions">
+            <div class="instruction-card">
+                <h3>Navigation</h3>
+                <div class="instruction-item">
+                    <span class="key">🖱 Left Drag</span>
+                    <span>Rotate</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">🖱 Right Drag</span>
+                    <span>Pan</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">🖱 Scroll</span>
+                    <span>Zoom</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">Click</span>
+                    <span>Inspect</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

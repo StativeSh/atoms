@@ -1,0 +1,142 @@
+/* ChemVerse — Explain Mode Styles */
+
+/* The Explain Toggle Button */
+.explain-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(30, 30, 60, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    color: #a5b4fc;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+}
+
+.explain-toggle:hover {
+    transform: scale(1.1);
+    background: rgba(40, 40, 80, 0.9);
+    border-color: rgba(99, 102, 241, 0.6);
+}
+
+.explain-toggle.active {
+    background: #4f46e5;
+    color: #fff;
+    border-color: #818cf8;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+}
+
+/* Explain Mode Active State on Elements */
+body.explain-mode-active .explainable {
+    position: relative;
+    cursor: help !important;
+}
+
+body.explain-mode-active .explainable::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    border: 1px dashed rgba(167, 139, 250, 0.6);
+    border-radius: inherit;
+    pointer-events: none;
+    animation: dash-crawl 10s linear infinite;
+    z-index: 50;
+}
+
+@keyframes dash-crawl {
+    to {
+        stroke-dashoffset: -100;
+    }
+}
+
+body.explain-mode-active canvas.explainable {
+    box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.4);
+}
+
+/* The Tooltip */
+.chem-tooltip {
+    position: fixed;
+    background: rgba(15, 15, 30, 0.95);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 8px;
+    padding: 12px;
+    width: 280px;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.95);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(167, 139, 250, 0.1);
+    backdrop-filter: blur(8px);
+    color: #e2e8f0;
+}
+
+.chem-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.chem-tooltip h4 {
+    margin: 0 0 6px 0;
+    font: 700 12px 'Outfit', sans-serif;
+    color: #c4b5fd;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.2);
+    padding-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chem-tooltip p {
+    margin: 0;
+    font: 400 12px/1.5 'Inter', sans-serif;
+    color: rgba(226, 232, 240, 0.9);
+}
+
+.chem-tooltip p strong {
+    color: #a78bfa;
+    font-weight: 600;
+}
+
+.chem-tooltip .tt-formula {
+    display: block;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 6px;
+    border-radius: 4px;
+    margin-top: 6px;
+    font-family: monospace;
+    color: #a5b4fc;
+    border: 1px solid rgba(167, 139, 250, 0.15);
+    text-align: center;
+}

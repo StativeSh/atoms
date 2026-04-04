@@ -1,0 +1,329 @@
+/* ═══════════════════════════════════════════════
+   ChemVerse — Reaction Mechanism Animator Styles
+   ═══════════════════════════════════════════════ */
+
+.mech-layout {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+/* ─── Sidebar ─── */
+.mech-sidebar {
+    width: 220px;
+    background: rgba(15, 15, 35, 0.95);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mech-sidebar h2 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.mech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mech-btn {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    color: #e2e8f0;
+}
+
+.mech-btn:hover {
+    background: rgba(99, 102, 241, 0.12);
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+.mech-btn.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+}
+
+.mech-btn .mech-btn-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    display: block;
+}
+
+.mech-btn .mech-btn-type {
+    font-size: 10px;
+    color: rgba(148, 163, 184, 0.5);
+    display: block;
+    margin-top: 2px;
+}
+
+.mech-btn .mech-btn-badge {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-substitution {
+    background: rgba(99, 102, 241, 0.2);
+    color: #818cf8;
+}
+
+.badge-elimination {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+}
+
+.badge-addition {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.badge-acyl {
+    background: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+/* ─── Viewport ─── */
+.mech-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+    overflow-y: auto;
+    gap: 10px;
+}
+
+.mech-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.mech-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin: 0;
+}
+
+.mech-type {
+    font-size: 12px;
+    color: #818cf8;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
+.canvas-container {
+    background: rgba(10, 10, 30, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 10px;
+}
+
+#mech-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* ─── Playback Controls ─── */
+.playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(15, 15, 45, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 8px 14px;
+}
+
+.ctrl-btn {
+    background: rgba(30, 30, 60, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    color: #e2e8f0;
+    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ctrl-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+}
+
+.play-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    background: rgba(99, 102, 241, 0.25);
+    border-color: #6366f1;
+}
+
+.play-btn.playing {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+
+.step-indicator {
+    font-family: 'Inter', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: #a5b4fc;
+    margin-left: 8px;
+}
+
+.speed-slider {
+    width: 80px;
+    margin-left: auto;
+    appearance: none;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, #6366f1, #a855f7);
+    outline: none;
+}
+
+.speed-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #a5b4fc;
+    cursor: pointer;
+    border: 2px solid #6366f1;
+}
+
+.speed-label {
+    font-family: 'Inter', monospace;
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.5);
+    min-width: 24px;
+}
+
+/* ─── Info Panel ─── */
+.mech-info {
+    width: 240px;
+    background: rgba(15, 15, 35, 0.95);
+    border-left: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mech-info h2,
+.mech-info h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.step-card {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.step-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #a5b4fc;
+    margin-bottom: 6px;
+}
+
+.step-desc {
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.5;
+}
+
+.mech-notes {
+    background: rgba(30, 30, 60, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+#mech-concepts {
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.concept-tag {
+    font-size: 10px;
+    color: #94a3b8;
+    padding: 3px 6px;
+    background: rgba(99, 102, 241, 0.06);
+    border-radius: 4px;
+    border-left: 3px solid #6366f1;
+}
+
+.mech-summary {
+    margin-top: auto;
+}
+
+#mech-summary-text {
+    font-size: 11px;
+    color: rgba(148, 163, 184, 0.5);
+    line-height: 1.5;
+    margin-top: 6px;
+}
+
+/* ─── Scrollbar ─── */
+.mech-sidebar::-webkit-scrollbar,
+.mech-info::-webkit-scrollbar {
+    width: 4px;
+}
+
+.mech-sidebar::-webkit-scrollbar-thumb,
+.mech-info::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+    .mech-layout {
+        flex-direction: column;
+    }
+
+    .mech-sidebar,
+    .mech-info {
+        width: 100%;
+        max-height: 200px;
+    }
+}

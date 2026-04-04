@@ -1,0 +1,235 @@
+/* ============================================
+   ChemVerse — Shared Design System
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+    /* ─── Core Palette ─── */
+    --bg-primary: #060a14;
+    --bg-secondary: #0d1321;
+    --bg-panel: rgba(13, 19, 33, 0.92);
+    --bg-card: rgba(20, 30, 52, 0.7);
+    --bg-glass: rgba(15, 23, 42, 0.6);
+
+    --border-color: rgba(99, 102, 241, 0.2);
+    --border-glow: rgba(99, 102, 241, 0.45);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+
+    --accent-1: #6366f1;
+    --accent-2: #8b5cf6;
+    --accent-3: #ec4899;
+    --accent-gradient: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+
+    /* ─── Element Category Colors ─── */
+    --cat-alkali-metal: #ff6b6b;
+    --cat-alkaline-earth: #ffa94d;
+    --cat-transition-metal: #4dabf7;
+    --cat-post-transition: #69db7c;
+    --cat-metalloid: #845ef7;
+    --cat-nonmetal: #ffd43b;
+    --cat-halogen: #38d9a9;
+    --cat-noble-gas: #74c0fc;
+    --cat-lanthanide: #f783ac;
+    --cat-actinide: #da77f2;
+    --cat-unknown: #868e96;
+
+    /* ─── Typography ─── */
+    --font-main: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Orbitron', sans-serif;
+
+    /* ─── Spacing ─── */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    /* ─── Transitions ─── */
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ─── Global Reset ─── */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Glassmorphism Utility ─── */
+.glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.glass-strong {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border-glow);
+    border-radius: var(--radius-lg);
+}
+
+/* ─── Glow Utility ─── */
+.glow-text {
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+}
+
+.glow-box {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15),
+        0 0 30px rgba(99, 102, 241, 0.08);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.5);
+}
+
+/* ─── Navigation Bar (shared across pages) ─── */
+.chemverse-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: rgba(6, 10, 20, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chemverse-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.chemverse-logo .logo-icon {
+    font-size: 24px;
+}
+
+.chemverse-logo .logo-text {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.nav-links {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s var(--ease-smooth);
+    border: 1px solid transparent;
+}
+
+.nav-links a:hover {
+    color: var(--text-primary);
+    background: rgba(99, 102, 241, 0.08);
+    border-color: var(--border-color);
+}
+
+.nav-links a.active {
+    color: white;
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--accent-1);
+}
+
+/* ─── Animated Background Gradient ─── */
+.bg-gradient {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%),
+        var(--bg-primary);
+}
+
+/* ─── Button Base ─── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-smooth);
+}
+
+.btn:hover {
+    border-color: var(--accent-1);
+    background: rgba(99, 102, 241, 0.12);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+}
+
+.btn-primary {
+    background: var(--accent-gradient);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.4);
+    transform: translateY(-1px);
+}

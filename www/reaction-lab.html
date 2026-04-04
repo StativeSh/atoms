@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChemVerse — Reaction Lab</title>
+    <meta name="description"
+        content="Chemistry-accurate reaction simulator backed by Pauling's bond energies, electronegativity, and VSEPR geometry.">
+    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="reaction-lab.css">
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- Navigation -->
+    <nav class="chemverse-nav">
+        <a href="index.html" class="chemverse-logo">
+            <span class="logo-icon">⚛</span>
+            <span class="logo-text">CHEMVERSE</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">🧪 Periodic Table</a></li>
+            <li><a href="viewer.html">⚛ Atomic Viewer</a></li>
+            <li><a href="reaction-lab.html" class="active">🔬 Reaction Lab</a></li>
+            <li><a href="mol3d.html">🧬 3D Viewer</a></li>
+            <li><a href="spectroscopy.html">📊 Spectroscopy</a></li>
+        </ul>
+    </nav>
+
+    <div class="lab-layout">
+        <!-- Left: Element Palette -->
+        <aside class="palette">
+            <div class="palette-header">
+                <h3>Elements</h3>
+                <input type="text" class="palette-search" id="palette-search" placeholder="Filter...">
+            </div>
+            <div class="palette-list" id="palette-list">
+                <!-- Populated by JS -->
+            </div>
+        </aside>
+
+        <!-- Center: Reaction Canvas -->
+        <main class="canvas-area">
+            <div class="canvas-toolbar">
+                <button class="toolbar-btn" id="btn-clear" title="Clear canvas">🗑 Clear</button>
+                <button class="toolbar-btn react-btn" id="btn-react" title="Trigger reaction">⚡ React!</button>
+                <button class="toolbar-btn" id="btn-undo" title="Undo last action">↩ Undo</button>
+            </div>
+            <canvas id="lab-canvas" class="lab-canvas"></canvas>
+
+            <!-- Energy Bar Overlay -->
+            <div class="energy-overlay" id="energy-overlay" style="display:none;">
+                <div class="energy-bar-container">
+                    <div class="energy-label" id="energy-label">ΔH = 0 kcal/mol</div>
+                    <div class="energy-bar-track">
+                        <div class="energy-bar-fill" id="energy-bar-fill"></div>
+                    </div>
+                    <div class="energy-type" id="energy-type"></div>
+                </div>
+            </div>
+
+            <div class="canvas-hint">Drag elements from the palette • Drop atoms near each other to form bonds •
+                Right-click to delete</div>
+        </main>
+
+        <!-- Right: Panels -->
+        <aside class="lab-panel">
+            <!-- Preset Reactions -->
+            <div class="panel-section">
+                <h3>Preset Reactions</h3>
+                <div class="preset-list" id="preset-list">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Current Reaction Info -->
+            <div class="panel-section" id="equation-section" style="display:none;">
+                <h3>Current Reaction</h3>
+                <div class="equation-display">
+                    <div class="equation-text" id="eq-text"></div>
+                    <div class="equation-meta">
+                        <span class="equation-name" id="eq-name"></span>
+                        <span class="equation-dh" id="eq-dh"></span>
+                    </div>
+                    <div class="equation-details">
+                        <span class="eq-detail" id="eq-geometry"></span>
+                        <span class="eq-detail" id="eq-hybrid"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bond Info Panel -->
+            <div class="panel-section" id="bond-info-section" style="display:none;">
+                <h3>Bond Analysis</h3>
+                <div class="bond-info-content" id="bond-info-content">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Thermodynamics Dashboard -->
+            <div class="panel-section thermo-section" id="thermo-section" style="display:none;">
+                <h3>🔥 Thermodynamics</h3>
+                <div class="thermo-card">
+                    <div class="thermo-temp-control">
+                        <label>Temperature</label>
+                        <input type="range" id="temp-slider" min="200" max="2000" value="298" step="1">
+                        <span class="temp-display" id="temp-display">298 K</span>
+                    </div>
+                    <div class="thermo-grid">
+                        <div class="thermo-item" id="thermo-dh">
+                            <span class="thermo-label">ΔH</span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">kcal/mol</span>
+                        </div>
+                        <div class="thermo-item" id="thermo-ds">
+                            <span class="thermo-label">ΔS</span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">cal/mol·K</span>
+                        </div>
+                        <div class="thermo-item" id="thermo-dg">
+                            <span class="thermo-label">ΔG</span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">kcal/mol</span>
+                        </div>
+                        <div class="thermo-item" id="thermo-keq">
+                            <span class="thermo-label">K<sub>eq</sub></span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit"></span>
+                        </div>
+                        <div class="thermo-item" id="thermo-ea">
+                            <span class="thermo-label">E<sub>a</sub></span>
+                            <span class="thermo-value">—</span>
+                            <span class="thermo-unit">kcal/mol</span>
+                        </div>
+                        <div class="thermo-item thermo-spontaneity" id="thermo-spont">
+                            <span class="thermo-label">Spontaneous?</span>
+                            <span class="thermo-value">—</span>
+                        </div>
+                    </div>
+                    <canvas id="energy-diagram" class="energy-diagram" width="260" height="160"></canvas>
+                </div>
+            </div>
+
+            <!-- Equation Balancer -->
+            <div class="balancer" id="balancer-section" style="display:none;">
+                <h3>⚖ Balance the Equation</h3>
+                <div id="balance-terms">
+                    <!-- Populated by JS -->
+                </div>
+                <button class="check-btn" id="btn-check">Check Balance</button>
+                <div class="balance-feedback hidden" id="balance-feedback"></div>
+                <div class="score-display">
+                    Streak: <span class="score-num" id="score-num">0</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script src="shared.js"></script>
+    <script src="reaction-lab.js"></script>
+    <script src="nav.js"></script>
+    <script src="export.js"></script>
+    <script src="premium.js"></script>
+</body>
+
+</html>

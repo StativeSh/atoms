@@ -1,0 +1,275 @@
+/* ChemVerse — Titration Simulator Styles */
+.tit-layout {
+    display: flex;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+}
+
+.tit-sidebar {
+    width: 210px;
+    background: rgba(15, 15, 35, 0.95);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tit-sidebar h2 {
+    font: 700 11px/1 Outfit;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.ts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ts-section label {
+    font: 600 10px Outfit;
+    letter-spacing: 0.5px;
+    color: rgba(148, 163, 184, 0.4);
+    text-transform: uppercase;
+}
+
+.ts-section select,
+.ts-section input[type="range"] {
+    width: 100%;
+}
+
+.ts-section select {
+    padding: 6px 8px;
+    background: rgba(15, 15, 45, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 5px;
+    color: #e2e8f0;
+    font: 500 11px Inter;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.ts-section input[type="range"] {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, #6366f1, #a855f7);
+    outline: none;
+}
+
+.ts-section input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #a5b4fc;
+    cursor: pointer;
+    border: 2px solid #6366f1;
+}
+
+.ts-section span {
+    font: 600 11px Inter, monospace;
+    color: #e2e8f0;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 7px;
+    border-radius: 6px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(30, 30, 60, 0.4);
+    color: #94a3b8;
+    font: 600 11px Inter;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 6px;
+}
+
+.action-btn:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #e2e8f0;
+}
+
+.tit-viewport {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.tit-top-row {
+    display: flex;
+    gap: 12px;
+}
+
+.flask-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+#flask-canvas {
+    border-radius: 8px;
+    background: rgba(10, 10, 30, 0.5);
+}
+
+.flask-controls {
+    display: flex;
+    gap: 4px;
+}
+
+.drop-btn {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    background: rgba(30, 30, 60, 0.5);
+    color: #a5b4fc;
+    font: 600 10px Inter;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.drop-btn:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.curve-area {
+    flex: 1;
+}
+
+#ph-canvas {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background: rgba(10, 10, 30, 0.5);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.tit-readouts {
+    display: flex;
+    gap: 8px;
+}
+
+.readout {
+    flex: 1;
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 8px;
+    padding: 6px 10px;
+    text-align: center;
+}
+
+.r-label {
+    display: block;
+    font: 700 9px Outfit;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.4);
+    text-transform: uppercase;
+}
+
+.r-value {
+    display: block;
+    font: 700 18px Inter;
+    color: #a5b4fc;
+    margin-top: 2px;
+}
+
+.tit-info {
+    width: 200px;
+    background: rgba(15, 15, 35, 0.95);
+    border-left: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tit-info h2 {
+    font: 700 11px/1 Outfit;
+    letter-spacing: 2px;
+    color: rgba(148, 163, 184, 0.5);
+    margin: 0;
+}
+
+.info-card {
+    background: rgba(30, 30, 60, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.08);
+    border-radius: 6px;
+    padding: 6px 8px;
+}
+
+.info-label {
+    font: 700 9px Outfit;
+    letter-spacing: 1px;
+    color: rgba(148, 163, 184, 0.4);
+    text-transform: uppercase;
+}
+
+.info-value {
+    font: 600 13px Inter;
+    color: #a5b4fc;
+    margin-top: 2px;
+}
+
+.ph-scale {
+    margin-top: auto;
+}
+
+.ph-scale h3 {
+    font: 700 10px Outfit;
+    letter-spacing: 1.5px;
+    color: rgba(148, 163, 184, 0.4);
+    margin: 0 0 6px;
+}
+
+.scale-bar {
+    height: 16px;
+    border-radius: 8px;
+    background: linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #8b5cf6);
+    position: relative;
+}
+
+.scale-needle {
+    position: absolute;
+    top: -3px;
+    width: 3px;
+    height: 22px;
+    background: #fff;
+    border-radius: 2px;
+    left: 50%;
+    transition: left 0.3s;
+}
+
+.scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font: 500 9px Inter;
+    color: rgba(148, 163, 184, 0.4);
+    margin-top: 2px;
+}
+
+@media(max-width:900px) {
+    .tit-layout {
+        flex-direction: column;
+    }
+
+    .tit-sidebar,
+    .tit-info {
+        width: 100%;
+        max-height: 180px;
+    }
+
+    .tit-top-row {
+        flex-direction: column;
+    }
+}
