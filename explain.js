@@ -85,7 +85,13 @@ const ChemExplain = (function () {
         const data = items.get(el);
         if (!data) return;
 
-        tooltipEl.innerHTML = `<h4>💡 ${data.title}</h4>${data.content}`;
+        tooltipEl.innerHTML = '';
+        const h4 = document.createElement('h4');
+        h4.textContent = '💡 ' + data.title;
+        const body = document.createElement('div');
+        body.innerHTML = data.content; // Static developer-controlled HTML only
+        tooltipEl.appendChild(h4);
+        tooltipEl.appendChild(body);
 
         // Positioning
         const pad = +15;
