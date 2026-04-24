@@ -144,6 +144,10 @@ const ChemExport = (function () {
         return new Promise((resolve, reject) => {
             const s = document.createElement('script');
             s.src = src;
+            if (src === 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js') {
+                s.integrity = 'sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==';
+                s.crossOrigin = 'anonymous';
+            }
             s.onload = resolve;
             s.onerror = reject;
             document.head.appendChild(s);
