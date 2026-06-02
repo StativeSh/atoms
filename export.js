@@ -95,7 +95,7 @@ const ChemExport = (function () {
         try {
             // Ensure html2canvas is loaded
             if (typeof html2canvas === 'undefined') {
-                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', { integrity: 'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H' });
             }
 
             // Hide UI elements we don't want in export
@@ -140,10 +140,14 @@ const ChemExport = (function () {
         }
     }
 
-    function loadScript(src) {
+    function loadScript(src, options = {}) {
         return new Promise((resolve, reject) => {
             const s = document.createElement('script');
             s.src = src;
+            if (options.integrity) {
+                s.integrity = options.integrity;
+                s.crossOrigin = options.crossOrigin || 'anonymous';
+            }
             s.onload = resolve;
             s.onerror = reject;
             document.head.appendChild(s);
