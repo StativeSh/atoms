@@ -93,9 +93,13 @@ const ChemExport = (function () {
         overlay.classList.add('show');
 
         try {
-            // Ensure html2canvas is loaded
+            // Ensure html2canvas is loaded securely with SRI
             if (typeof html2canvas === 'undefined') {
-                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+                await loadScript({
+                    src: 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+                    integrity: 'sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H',
+                    crossOrigin: 'anonymous'
+                });
             }
 
             // Hide UI elements we don't want in export
@@ -140,10 +144,19 @@ const ChemExport = (function () {
         }
     }
 
-    function loadScript(src) {
+    function loadScript(options) {
         return new Promise((resolve, reject) => {
             const s = document.createElement('script');
-            s.src = src;
+            // Support both old string format and new object format for backward compatibility if needed internally
+            if (typeof options === 'string') {
+                s.src = options;
+            } else {
+                s.src = options.src;
+                if (options.integrity) {
+                    s.integrity = options.integrity;
+                    s.crossOrigin = options.crossOrigin || 'anonymous';
+                }
+            }
             s.onload = resolve;
             s.onerror = reject;
             document.head.appendChild(s);
