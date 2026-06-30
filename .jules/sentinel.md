@@ -2,3 +2,8 @@
 **Vulnerability:** A DOM-based Cross-Site Scripting (XSS) vulnerability existed in `premium.js` where link interception logic failed to securely block malicious URIs. Specifically, `href.startsWith('javascript')` could be bypassed using whitespace (e.g., ` javascript:alert(1)`), and `data:` URIs were not blocked at all. Furthermore, the check didn't call `e.preventDefault()`, allowing the browser to natively execute the payload.
 **Learning:** Simple string prefix checks (like `startsWith`) are insufficient for validating URLs because browsers are lenient and will strip leading whitespace before executing protocol handlers. Additionally, security checks must explicitly block execution (via `e.preventDefault()`) rather than just exiting the custom script logic.
 **Prevention:** Always use rigorous regular expressions (e.g., `/^\s*(javascript|data)\s*:/i`) to validate user-controlled or intercepted URLs against potentially executable schemes. Separate security intercept logic from normal control flow, ensuring that malicious attempts are actively stopped (`e.preventDefault()`) before returning.
+
+## 2024-05-18 - Dynamically Loaded Script Lacks SRI
+**Vulnerability:** A third-party library (`html2canvas`) was dynamically loaded using `document.createElement('script')` without Subresource Integrity (SRI) attributes (`integrity` and `crossOrigin`).
+**Learning:** Even dynamically injected scripts loading external resources from CDNs require SRI protection to prevent malicious script execution if the CDN is compromised.
+**Prevention:** Extend script loading utility functions (e.g., `loadScript`) to accept and apply `integrity` and `crossOrigin` attributes, and ensure all remote dependencies specify these when requested.
