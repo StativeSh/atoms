@@ -123,10 +123,13 @@ const ChemPremium = (function () {
             if (!link) return;
             const href = link.getAttribute('href');
 
-            // XSS Prevention: Block javascript: and data: URIs (even with whitespace)
-            if (/^\s*(javascript|data)\s*:/i.test(href)) {
-                e.preventDefault();
-                return;
+            // XSS Prevention: Block javascript: and data: URIs (stripping whitespace and control chars)
+            if (href) {
+                const sanitizedHref = href.replace(/[\s\x00-\x1F]/g, '').toLowerCase();
+                if (sanitizedHref.startsWith('javascript:') || sanitizedHref.startsWith('data:')) {
+                    e.preventDefault();
+                    return;
+                }
             }
 
             // Bailout for normal links that shouldn't be animated
