@@ -2,3 +2,8 @@
 **Vulnerability:** A DOM-based Cross-Site Scripting (XSS) vulnerability existed in `premium.js` where link interception logic failed to securely block malicious URIs. Specifically, `href.startsWith('javascript')` could be bypassed using whitespace (e.g., ` javascript:alert(1)`), and `data:` URIs were not blocked at all. Furthermore, the check didn't call `e.preventDefault()`, allowing the browser to natively execute the payload.
 **Learning:** Simple string prefix checks (like `startsWith`) are insufficient for validating URLs because browsers are lenient and will strip leading whitespace before executing protocol handlers. Additionally, security checks must explicitly block execution (via `e.preventDefault()`) rather than just exiting the custom script logic.
 **Prevention:** Always use rigorous regular expressions (e.g., `/^\s*(javascript|data)\s*:/i`) to validate user-controlled or intercepted URLs against potentially executable schemes. Separate security intercept logic from normal control flow, ensuring that malicious attempts are actively stopped (`e.preventDefault()`) before returning.
+
+## 2026-09-02 - [XSS Bypass via Control Characters]
+**Vulnerability:** Link interception logic intended to block malicious URIs (`javascript:`, `data:`) was bypassed by inserting a null byte control character (`\x00`) before the protocol. The validation only checked for whitespace `\s*`.
+**Learning:** Browsers natively strip control characters (`\x00-\x1F`) before interpreting protocol schemes. Standard regex patterns like `\s*` do not account for these, leading to bypasses in client-side URL validation.
+**Prevention:** Always explicitly strip both whitespace and control characters `[\s\x00-\x1F]` from URLs before performing validation for malicious schemes.
