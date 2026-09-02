@@ -123,8 +123,11 @@ const ChemPremium = (function () {
             if (!link) return;
             const href = link.getAttribute('href');
 
-            // XSS Prevention: Block javascript: and data: URIs (even with whitespace)
-            if (/^\s*(javascript|data)\s*:/i.test(href)) {
+            // Sanitize control characters and whitespace to prevent bypasses
+            const cleanHref = href ? href.replace(/[\s\x00-\x1F]/g, '') : '';
+
+            // XSS Prevention: Block javascript: and data: URIs
+            if (/^(javascript|data):/i.test(cleanHref)) {
                 e.preventDefault();
                 return;
             }
