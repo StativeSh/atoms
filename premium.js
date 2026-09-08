@@ -123,14 +123,15 @@ const ChemPremium = (function () {
             if (!link) return;
             const href = link.getAttribute('href');
 
-            // XSS Prevention: Block javascript: and data: URIs (even with whitespace)
-            if (/^\s*(javascript|data)\s*:/i.test(href)) {
+            // Bailout for normal links that shouldn't be animated
+            if (!href || href.startsWith('#') || href.startsWith('http')) return;
+
+            // XSS Prevention: Sanitize whitespace and control characters before validation
+            const sanitizedHref = href.replace(/[\s\x00-\x1F]/g, '');
+            if (/^(javascript|data):/i.test(sanitizedHref)) {
                 e.preventDefault();
                 return;
             }
-
-            // Bailout for normal links that shouldn't be animated
-            if (!href || href.startsWith('#') || href.startsWith('http')) return;
 
             e.preventDefault();
             const overlay = document.getElementById('page-transition');
