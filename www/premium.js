@@ -122,6 +122,15 @@ const ChemPremium = (function () {
             const link = e.target.closest('a[href]');
             if (!link) return;
             const href = link.getAttribute('href');
+
+            // XSS Prevention: Block javascript:, data:, and vbscript: URIs
+            // Strip whitespace and control characters to prevent bypasses
+            const sanitizedHref = href ? href.replace(/[\s\x00-\x1F]/g, '') : '';
+            if (/^(javascript|data|vbscript):/i.test(sanitizedHref)) {
+                e.preventDefault();
+                return;
+            }
+
             if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('javascript')) return;
 
             e.preventDefault();
