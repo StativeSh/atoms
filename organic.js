@@ -270,8 +270,21 @@
         if (bondOfOrder(3, 'C', 'N')) fgs.push({ name: 'Nitrile (C≡N)', color: '#8b5cf6' });
 
         const el = document.getElementById('fg-detected');
-        if (fgs.length === 0) { el.innerHTML = '<span style="color:rgba(148,163,184,0.4)">None detected</span>'; return; }
-        el.innerHTML = fgs.map(f => `<div class="fg-tag2" style="border-left-color:${f.color}">${f.name}</div>`).join('');
+        el.innerHTML = ''; // Clear previous content safely
+        if (fgs.length === 0) {
+            const span = document.createElement('span');
+            span.style.color = 'rgba(148,163,184,0.4)';
+            span.textContent = 'None detected';
+            el.appendChild(span);
+            return;
+        }
+        fgs.forEach(f => {
+            const div = document.createElement('div');
+            div.className = 'fg-tag2';
+            div.style.borderLeftColor = f.color;
+            div.textContent = f.name;
+            el.appendChild(div);
+        });
     }
 
     // ─── Init ───
