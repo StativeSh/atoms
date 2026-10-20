@@ -7,3 +7,7 @@
 **Vulnerability:** A Cross-Site Scripting (XSS) vulnerability existed where a malicious URI could bypass the interception logic for links, as previous checks only verified `\s` (whitespace) characters, and missed control characters (like `\x00-\x1F`).
 **Learning:** Browsers natively strip all whitespace and control characters `\x00-\x1F` when processing protocol schemes (e.g. `javascript:`, `data:`). This allows attackers to embed control characters between the protocol and the body in URIs, bypassing simple regex checks.
 **Prevention:** Links should be explicitly sanitized by removing all whitespace and control characters using `href.replace(/[\s\x00-\x1F]/g, '')` prior to validating the URI protocol for safety.
+
+**Vulnerability:** DOM-based XSS via innerHTML in Bond Tooltip
+**Fix:** Implemented an `escapeHTML` helper function to safely encode `<`, `>`, `&`, `'`, and `"` into HTML entities for user-controlled fields (`hit.userData.type`, `hit.userData.order`) before interpolating them into HTML template strings passed to `innerHTML`.
+**Prevention:** Avoid using `innerHTML` with dynamic string construction unless absolutely necessary; if required, mandate rigorous HTML entity encoding via helper functions (e.g., `escapeHTML`) or robust sanitization libraries (e.g., DOMPurify) on all variable inputs prior to DOM injection.

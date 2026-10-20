@@ -1460,9 +1460,26 @@ renderer.domElement.addEventListener('click', (event) => {
         } else if (hit.userData.isBond) {
             const orderNames = { 1: 'Single', 2: 'Double', 3: 'Triple' };
             const typeNames = { covalent: 'Covalent', polar: 'Polar Covalent', ionic: 'Ionic' };
-            info = `<strong>${orderNames[hit.userData.order] || ''} ${typeNames[hit.userData.type] || ''} Bond</strong><br>
-                    Bond Order: ${hit.userData.order}<br>
-                    Type: ${typeNames[hit.userData.type] || hit.userData.type}`;
+
+            const escapeHTML = (str) => {
+                return String(str).replace(/[&<>'"]/g,
+                    tag => ({
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        "'": '&#39;',
+                        '"': '&quot;'
+                    }[tag] || tag)
+                );
+            };
+
+            const safeOrder = escapeHTML(hit.userData.order);
+            const safeType = escapeHTML(hit.userData.type);
+            const displayType = typeNames[hit.userData.type] ? escapeHTML(typeNames[hit.userData.type]) : safeType;
+
+            info = `<strong>${orderNames[hit.userData.order] || ''} ${displayType || ''} Bond</strong><br>
+                    Bond Order: ${safeOrder}<br>
+                    Type: ${displayType}`;
         }
 
         if (info) {
