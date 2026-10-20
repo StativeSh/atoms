@@ -152,7 +152,23 @@
     MECHANISMS.forEach((m, i) => {
         const btn = document.createElement('button');
         btn.className = 'mech-btn';
-        btn.innerHTML = `<span class="mech-btn-name">${m.name}</span><span class="mech-btn-type">${m.type}</span><span class="mech-btn-badge badge-${m.badge}">${m.type}</span>`;
+
+        const spanName = document.createElement('span');
+        spanName.className = 'mech-btn-name';
+        spanName.textContent = m.name;
+
+        const spanType = document.createElement('span');
+        spanType.className = 'mech-btn-type';
+        spanType.textContent = m.type;
+
+        const spanBadge = document.createElement('span');
+        spanBadge.className = `mech-btn-badge badge-${m.badge}`;
+        spanBadge.textContent = m.type;
+
+        btn.appendChild(spanName);
+        btn.appendChild(spanType);
+        btn.appendChild(spanBadge);
+
         btn.addEventListener('click', () => selectMech(i));
         mechList.appendChild(btn);
     });
