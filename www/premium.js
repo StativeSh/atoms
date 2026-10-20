@@ -122,7 +122,17 @@ const ChemPremium = (function () {
             const link = e.target.closest('a[href]');
             if (!link) return;
             const href = link.getAttribute('href');
-            if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('javascript')) return;
+            if (!href) return;
+
+            // XSS Prevention: Strip all whitespace and control characters, then check
+            const sanitizedHref = href.replace(/[\s\x00-\x1F]/g, '');
+            if (/^(javascript|data):/i.test(sanitizedHref)) {
+                e.preventDefault();
+                return;
+            }
+
+            // Bailout for normal links that shouldn't be animated
+            if (href.startsWith('#') || href.startsWith('http')) return;
 
             e.preventDefault();
             const overlay = document.getElementById('page-transition');
