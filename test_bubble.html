@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+<a href="javascript:alert('XSS')" id="xss">Click me</a>
+<script>
+document.addEventListener('click', e => {
+    e.preventDefault();
+});
+</script>
+</body>
+</html>
