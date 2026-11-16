@@ -496,14 +496,15 @@
             overflow: hidden;
             min-height: 560px;
             border-radius: 32px;
-            background: var(--night);
-            box-shadow: 0 30px 80px rgba(17, 24, 39, 0.22);
+            background: var(--card);
+            border: 1px solid var(--card-edge);
+            box-shadow: 0 30px 80px rgba(17, 24, 39, 0.10);
         }
 
         .showcase .aura {
             inset: 0;
             opacity: 0.5;
-            filter: blur(70px) saturate(170%);
+            filter: blur(60px) saturate(170%);
         }
 
         .showcase-media {
@@ -526,7 +527,7 @@
         }
 
         .caption .kicker {
-            color: var(--night-accent);
+            color: var(--accent);
         }
 
         .caption h2 {
@@ -535,22 +536,22 @@
             font-weight: 600;
             line-height: 1.12;
             letter-spacing: -0.02em;
-            color: #fff;
+            color: var(--ink);
         }
 
         .caption p {
             font-size: 15px;
-            color: var(--night-muted);
+            color: var(--muted-strong);
         }
 
         .caption .mono {
             display: block;
             margin-top: 16px;
             padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.14);
+            border-top: 1px solid var(--hairline);
             font-size: 13px;
             line-height: 1.6;
-            color: var(--night-text);
+            color: var(--ink);
         }
 
         @media (max-width: 859px) {
@@ -660,7 +661,7 @@
             height: 300px;
             object-fit: cover;
             border-radius: 14px;
-            background: var(--night);
+            background: var(--chip);
         }
 
         .chip {
@@ -752,10 +753,10 @@
         .feature img {
             width: 100%;
             height: auto;
-            aspect-ratio: 2 / 1;
+            aspect-ratio: 1600 / 757;
             object-fit: cover;
             border-radius: 18px;
-            background: var(--night);
+            background: var(--chip);
         }
 
         /* ───────────── 7. Proof band ───────────── */
@@ -1091,7 +1092,7 @@
                     <source src="media/showcase-bcc.mp4" type="video/mp4">
                     <source src="media/showcase-bcc.webm" type="video/webm">
                 </video>
-                <figcaption class="caption glass-dark">
+                <figcaption class="caption glass">
                     <span class="kicker">Crystal Structures</span>
                     <h2>Turn any lattice in 3D</h2>
                     <p>Drag to rotate simple cubic, body-centred, face-centred, hexagonal close-packed and diamond
@@ -1236,7 +1237,7 @@
                     <a class="tile wide" href="electrochem.html">
                         <figure>
                             <div class="tile-media" style="--ar:2.3">
-                                <img src="media/electrochemistry.webp" width="1600" height="687" loading="lazy"
+                                <img src="media/electrochemistry.webp" width="1600" height="767" loading="lazy"
                                     alt="A zinc and copper galvanic cell with a glowing blue zinc electrode, an orange copper electrode and a voltmeter reading 1.10 volts.">
                                 <span class="chip glass">Nernst equation</span>
                             </div>
@@ -1292,7 +1293,7 @@
                             <path d="M3 8h10M9 4l4 4-4 4" />
                         </svg></a>
                 </div>
-                <img src="media/feature-organic.webp" width="1600" height="800" loading="lazy"
+                <img src="media/feature-organic.webp" width="1600" height="757" loading="lazy"
                     alt="Acetic acid drawn on the Organic Builder canvas, with its IUPAC name, ethanoic acid, its formula C2H4O2 and its weight of 60.05 grams per mole shown beside it.">
             </div>
         </section>
