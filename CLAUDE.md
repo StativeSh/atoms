@@ -43,6 +43,10 @@ npx cap build android
 - `premium.js` — Premium feature gating logic.
 - `explain.js` — Shared educational explanation popups (D3 explain mode).
 
+### Landing page
+- `index.html` is a **self-contained** single-page site (inline CSS, no `shared.css`/`nav.js`/`premium.js`) with its own light design tokens. Its images live in `media/` (real screenshots of the tools, a looping lattice video, and blurred "aura" copies). Don't apply the dark module design system to it.
+- To refresh a screenshot, re-capture the tool page (Playwright, 1440x900 at 2x) and re-crop it to the same aspect ratio as the file it replaces.
+
 ### Module Pattern
 Each chemistry tool is a **self-contained HTML + JS + CSS triplet** (e.g., `reaction-lab.html`, `reaction-lab.js`, `reaction-lab.css`). Modules share `shared.js` for data but manage their own state entirely in local JS variables.
 

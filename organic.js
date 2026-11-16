@@ -222,10 +222,46 @@
         detectFG();
     }
 
+    // Ring detection over the carbon skeleton (C-C bonds only)
+    function carbonRingInfo() {
+        const adj = new Map();
+        atoms.forEach((a, i) => { if (a.el === 'C') adj.set(i, []); });
+        bonds.forEach(b => {
+            if (adj.has(b.a) && adj.has(b.b)) { adj.get(b.a).push({ to: b.b, order: b.order }); adj.get(b.b).push({ to: b.a, order: b.order }); }
+        });
+        // cycle exists if the C-C graph has a union-find collision
+        const parent = [...adj.keys()].reduce((m, k) => m.set(k, k), new Map());
+        const find = x => { while (parent.get(x) !== x) { parent.set(x, parent.get(parent.get(x))); x = parent.get(x); } return x; };
+        let cyclic = false;
+        bonds.forEach(b => {
+            if (!adj.has(b.a) || !adj.has(b.b)) return;
+            const ra = find(b.a), rb = find(b.b);
+            if (ra === rb) cyclic = true; else parent.set(ra, rb);
+        });
+        // aromatic: a six-membered carbon ring whose bonds alternate double / single
+        let aromatic = false;
+        const walk = (start, cur, path, orders) => {
+            if (aromatic) return;
+            if (path.length === 6) {
+                const closing = adj.get(cur).find(e => e.to === start);
+                if (closing) {
+                    const o = orders.concat(closing.order);
+                    if (o.every((v, i) => v === (i % 2 === 0 ? o[0] : 3 - o[0])) && (o[0] === 1 || o[0] === 2)) aromatic = true;
+                }
+                return;
+            }
+            adj.get(cur).forEach(e => { if (!path.includes(e.to)) walk(start, e.to, path.concat(e.to), orders.concat(e.order)); });
+        };
+        if (cyclic) [...adj.keys()].forEach(k => walk(k, k, [k], []));
+        return { cyclic, aromatic };
+    }
+
     function getIUPAC() {
         const nC = atoms.filter(a => a.el === 'C').length;
         if (nC === 0 || nC > 10) return atoms.length > 0 ? 'Complex molecule' : '—';
-        const base = CHAIN_NAMES[nC] || 'complex';
+        const ring = carbonRingInfo();
+        if (ring.aromatic) return atoms.every(a => a.el === 'C' || a.el === 'H') && nC === 6 ? 'benzene' : 'Substituted benzene';
+        const base = (ring.cyclic ? 'cyclo' : '') + (CHAIN_NAMES[nC] || 'complex');
         const hasDouble = bonds.some(b => b.order === 2 && atoms[b.a].el === 'C' && atoms[b.b].el === 'C');
         const hasTriple = bonds.some(b => b.order === 3 && atoms[b.a].el === 'C' && atoms[b.b].el === 'C');
         const hasOH = atoms.some((a, i) => a.el === 'O' && bonds.some(b => (b.a === i || b.b === i) && b.order === 1 && atoms[b.a === i ? b.b : b.a].el === 'H'));
@@ -233,6 +269,8 @@
         const hasNH = atoms.some(a => a.el === 'N');
         const hasCOOH = hasCO && hasOH;
 
+        // ring systems with these groups need "…carboxylic acid" style names the builder can't produce yet
+        if (ring.cyclic && (hasCOOH || hasNH)) return 'Complex molecule';
         if (hasCOOH) return base + 'anoic acid';
         if (hasCO && !hasOH) {
             // Check if aldehyde or ketone
@@ -241,6 +279,7 @@
                 const cIdx = atoms[bonds[coIdx].a].el === 'C' ? bonds[coIdx].a : bonds[coIdx].b;
                 const cBonds = bonds.filter(b => (b.a === cIdx || b.b === cIdx) && b !== bonds[coIdx]);
                 const hBonded = cBonds.some(b => atoms[b.a === cIdx ? b.b : b.a].el === 'H');
+                if (hBonded && ring.cyclic) return 'Complex molecule';
                 return hBonded ? base + 'anal' : base + 'anone';
             }
         }
