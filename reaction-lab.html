@@ -7,28 +7,19 @@
     <title>ChemVerse — Reaction Lab</title>
     <meta name="description"
         content="Chemistry-accurate reaction simulator backed by Pauling's bond energies, electronegativity, and VSEPR geometry.">
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="reaction-lab.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="bg-gradient"></div>
-
+    <div class="page-aura" aria-hidden="true"></div>
     <!-- Navigation -->
-    <nav class="chemverse-nav">
-        <a href="index.html" class="chemverse-logo">
-            <span class="logo-icon">⚛</span>
-            <span class="logo-text">CHEMVERSE</span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.html">🧪 Periodic Table</a></li>
-            <li><a href="viewer.html">⚛ Atomic Viewer</a></li>
-            <li><a href="reaction-lab.html" class="active">🔬 Reaction Lab</a></li>
-            <li><a href="mol3d.html">🧬 3D Viewer</a></li>
-            <li><a href="spectroscopy.html">📊 Spectroscopy</a></li>
-        </ul>
-    </nav>
+    <nav class="top-nav"></nav>
 
+    <h1 class="sr-only">Reaction Lab</h1>
     <div class="lab-layout">
         <!-- Left: Element Palette -->
         <aside class="palette">
@@ -44,9 +35,9 @@
         <!-- Center: Reaction Canvas -->
         <main class="canvas-area">
             <div class="canvas-toolbar">
-                <button class="toolbar-btn" id="btn-clear" title="Clear canvas">🗑 Clear</button>
-                <button class="toolbar-btn react-btn" id="btn-react" title="Trigger reaction">⚡ React!</button>
-                <button class="toolbar-btn" id="btn-undo" title="Undo last action">↩ Undo</button>
+                <button class="toolbar-btn" id="btn-clear" title="Clear canvas">Clear</button>
+                <button class="toolbar-btn react-btn" id="btn-react" title="Trigger reaction">React</button>
+                <button class="toolbar-btn" id="btn-undo" title="Undo last action">Undo</button>
             </div>
             <canvas id="lab-canvas" class="lab-canvas"></canvas>
 
@@ -61,8 +52,7 @@
                 </div>
             </div>
 
-            <div class="canvas-hint">Drag elements from the palette • Drop atoms near each other to form bonds •
-                Right-click to delete</div>
+            <div class="canvas-hint">Drag elements from the palette. Drop atoms near each other to form bonds. Right-click to delete.</div>
         </main>
 
         <!-- Right: Panels -->
@@ -101,7 +91,7 @@
 
             <!-- Thermodynamics Dashboard -->
             <div class="panel-section thermo-section" id="thermo-section" style="display:none;">
-                <h3>🔥 Thermodynamics</h3>
+                <h3>Thermodynamics</h3>
                 <div class="thermo-card">
                     <div class="thermo-temp-control">
                         <label>Temperature</label>
@@ -145,7 +135,7 @@
 
             <!-- Equation Balancer -->
             <div class="balancer" id="balancer-section" style="display:none;">
-                <h3>⚖ Balance the Equation</h3>
+                <h3>Balance the equation</h3>
                 <div id="balance-terms">
                     <!-- Populated by JS -->
                 </div>
@@ -162,7 +152,6 @@
     <script src="reaction-lab.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

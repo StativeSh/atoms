@@ -17,7 +17,7 @@
         // "All" button
         const allBtn = document.createElement('div');
         allBtn.className = 'legend-item active';
-        allBtn.innerHTML = '<span class="legend-dot" style="background: var(--accent-gradient)"></span> All';
+        allBtn.innerHTML = '<span class="legend-dot" style="background: var(--accent)"></span> All';
         allBtn.addEventListener('click', () => {
             activeCategory = null;
             document.querySelectorAll('.legend-item').forEach(li => li.classList.remove('active'));
@@ -29,7 +29,6 @@
         Object.entries(ELEMENT_CATEGORIES).forEach(([key, cat]) => {
             const item = document.createElement('div');
             item.className = 'legend-item';
-            item.style.color = cat.color;
             item.innerHTML = `<span class="legend-dot" style="background: ${cat.color}"></span> ${cat.label}`;
             item.addEventListener('click', () => {
                 activeCategory = activeCategory === key ? null : key;
@@ -183,11 +182,10 @@
 
         const badge = document.getElementById('hc-badge');
         badge.textContent = cat.label;
-        badge.style.background = cat.glow;
         badge.style.color = cat.color;
 
         const cta = document.getElementById('hc-cta');
-        cta.textContent = canView ? 'Click to view 3D orbitals →' : 'Orbital view coming soon';
+        cta.textContent = canView ? 'Open orbitals in 3D' : 'Orbital view coming soon';
         cta.style.opacity = canView ? 1 : 0.4;
 
         hoverCard.classList.add('visible');

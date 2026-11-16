@@ -6,29 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChemVerse — Organic Molecule Builder</title>
     <meta name="description" content="Build organic molecules, detect functional groups, and get IUPAC names.">
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="organic.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
-        <div class="nav-links">
-            <a href="index.html">🧪 Periodic Table</a>
-            <a href="reaction-lab.html">⚡ Reaction Lab</a>
-            <a href="mol3d.html">🔬 3D Viewer</a>
-            <a href="spectroscopy.html">📊 Spectroscopy</a>
-            <a href="electrochem.html">🔋 Electrochemistry</a>
-            <a href="mechanisms.html">🧬 Mechanisms</a>
-            <a href="organic.html" class="active">🧱 Organic Builder</a>
-        </div>
-    </nav>
+    <div class="page-aura" aria-hidden="true"></div>
+    <nav class="top-nav"></nav>
+    <h1 class="sr-only">Organic Molecule Builder</h1>
     <div class="org-layout">
         <aside class="org-sidebar">
-            <h2>TOOLS</h2>
+            <h2>Tools</h2>
             <div class="tool-section">
                 <h3>Add Atom</h3>
                 <div class="atom-btns">
@@ -66,8 +57,8 @@
                 </div>
             </div>
             <div class="tool-section">
-                <button class="action-btn" id="btn-clear">🗑 Clear</button>
-                <button class="action-btn" id="btn-add-h">➕ Auto-add H</button>
+                <button class="action-btn" id="btn-clear">Clear</button>
+                <button class="action-btn" id="btn-add-h">Auto-add H</button>
             </div>
         </aside>
         <main class="org-viewport">
@@ -80,7 +71,7 @@
             </div>
         </main>
         <aside class="org-info">
-            <h2>MOLECULE INFO</h2>
+            <h2>Molecule info</h2>
             <div class="info-card">
                 <div class="info-label">IUPAC Name</div>
                 <div class="info-value" id="iupac-name">—</div>
@@ -98,7 +89,7 @@
                 <div class="info-value" id="dou">—</div>
             </div>
             <div class="fg-section">
-                <h3>FUNCTIONAL GROUPS</h3>
+                <h3>Functional groups</h3>
                 <div id="fg-detected">—</div>
             </div>
         </aside>
@@ -107,7 +98,6 @@
     <script src="organic.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

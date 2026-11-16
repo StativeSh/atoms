@@ -3,10 +3,10 @@
     'use strict';
 
     const ATOM_DATA = {
-        C: { color: '#94a3b8', r: 16, valence: 4, mass: 12.011 }, O: { color: '#ef4444', r: 14, valence: 2, mass: 15.999 },
-        N: { color: '#3b82f6', r: 14, valence: 3, mass: 14.007 }, S: { color: '#eab308', r: 15, valence: 2, mass: 32.06 },
-        Cl: { color: '#22c55e', r: 14, valence: 1, mass: 35.45 }, Br: { color: '#a855f7', r: 15, valence: 1, mass: 79.904 },
-        F: { color: '#06b6d4', r: 12, valence: 1, mass: 18.998 }, H: { color: '#e2e8f0', r: 8, valence: 1, mass: 1.008 }
+        C: { color: '#6E6E73', r: 16, valence: 4, mass: 12.011 }, O: { color: '#D92D3A', r: 14, valence: 2, mass: 15.999 },
+        N: { color: '#2F5BEA', r: 14, valence: 3, mass: 14.007 }, S: { color: '#C98A00', r: 15, valence: 2, mass: 32.06 },
+        Cl: { color: '#1E9E5A', r: 14, valence: 1, mass: 35.45 }, Br: { color: '#A64BC9', r: 15, valence: 1, mass: 79.904 },
+        F: { color: '#0E9F95', r: 12, valence: 1, mass: 18.998 }, H: { color: '#9A9AA2', r: 8, valence: 1, mass: 1.008 }
     };
 
     const CHAIN_NAMES = ['', 'meth', 'eth', 'prop', 'but', 'pent', 'hex', 'hept', 'oct', 'non', 'dec'];
@@ -144,7 +144,7 @@
         const w = canvas.width, h = canvas.height;
         ctx.clearRect(0, 0, w, h);
         const bg = ctx.createLinearGradient(0, 0, 0, h);
-        bg.addColorStop(0, 'rgba(6,6,25,0.95)'); bg.addColorStop(1, 'rgba(15,15,45,0.95)');
+        bg.addColorStop(0, '#FFFFFF'); bg.addColorStop(1, '#F6F6F9');
         ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
 
         // Bonds
@@ -152,7 +152,7 @@
             const aa = atoms[b.a], bb = atoms[b.b];
             const dx = bb.x - aa.x, dy = bb.y - aa.y, len = Math.sqrt(dx * dx + dy * dy) || 1;
             const nx = -dy / len * 3, ny = dx / len * 3;
-            ctx.strokeStyle = 'rgba(148,163,184,0.5)'; ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(29,29,31,0.45)'; ctx.lineWidth = 2;
             if (b.order === 1) { ctx.beginPath(); ctx.moveTo(aa.x, aa.y); ctx.lineTo(bb.x, bb.y); ctx.stroke(); }
             else if (b.order === 2) {
                 ctx.beginPath(); ctx.moveTo(aa.x + nx, aa.y + ny); ctx.lineTo(bb.x + nx, bb.y + ny); ctx.stroke();
@@ -170,15 +170,15 @@
             ctx.beginPath(); ctx.arc(a.x, a.y, d.r, 0, Math.PI * 2);
             ctx.fillStyle = i === selectedAtom ? d.color + '88' : d.color + '33';
             ctx.fill();
-            ctx.strokeStyle = i === selectedAtom ? '#fbbf24' : d.color;
+            ctx.strokeStyle = i === selectedAtom ? '#2F5BEA' : d.color;
             ctx.lineWidth = i === selectedAtom ? 2.5 : 1.5;
             ctx.stroke();
-            ctx.fillStyle = d.color; ctx.font = `600 ${d.r > 12 ? 12 : 9}px Inter`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillStyle = d.color; ctx.font = `600 ${d.r > 12 ? 14 : 11}px Inter, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
             ctx.fillText(a.el, a.x, a.y);
         });
 
         if (atoms.length === 0) {
-            ctx.fillStyle = 'rgba(148,163,184,0.3)'; ctx.font = '500 14px Outfit'; ctx.textAlign = 'center';
+            ctx.fillStyle = '#8A8A90'; ctx.font = '500 16px "Inter Tight", Inter, sans-serif'; ctx.textAlign = 'center';
             ctx.fillText('Click to place atoms • Click two atoms to bond them', w / 2, h / 2);
         }
     }
@@ -189,7 +189,7 @@
     function updateInfo() {
         if (atoms.length === 0) {
             ['iupac-name', 'mol-formula2', 'mol-weight', 'dou'].forEach(id => document.getElementById(id).textContent = '—');
-            document.getElementById('fg-detected').innerHTML = '<span style="color:rgba(148,163,184,0.4)">No molecule</span>';
+            document.getElementById('fg-detected').innerHTML = '<span style="color:#8A8A90">No molecule</span>';
             document.getElementById('mol-formula').textContent = '—'; document.getElementById('mol-mw').textContent = '—';
             return;
         }
@@ -295,24 +295,24 @@
         const hasEl = (el) => atoms.some(a => a.el === el);
         const bondOfOrder = (o, e1, e2) => bonds.some(b => b.order === o && ((atoms[b.a].el === e1 && atoms[b.b].el === e2) || (atoms[b.a].el === e2 && atoms[b.b].el === e1)));
 
-        if (bondOfOrder(2, 'C', 'O')) fgs.push({ name: 'Carbonyl (C=O)', color: '#f59e0b' });
+        if (bondOfOrder(2, 'C', 'O')) fgs.push({ name: 'Carbonyl (C=O)', color: '#C77700' });
         const hasOH = atoms.some((a, i) => a.el === 'O' && bonds.some(b => (b.a === i || b.b === i) && b.order === 1 && atoms[b.a === i ? b.b : b.a].el === 'H'));
-        if (hasOH && bondOfOrder(2, 'C', 'O')) fgs.push({ name: 'Carboxylic Acid (-COOH)', color: '#ef4444' });
-        else if (hasOH) fgs.push({ name: 'Hydroxyl (-OH)', color: '#ef4444' });
-        if (bondOfOrder(2, 'C', 'C')) fgs.push({ name: 'Alkene (C=C)', color: '#22c55e' });
-        if (bondOfOrder(3, 'C', 'C')) fgs.push({ name: 'Alkyne (C≡C)', color: '#06b6d4' });
-        if (hasEl('N')) fgs.push({ name: 'Amine (-NH₂)', color: '#3b82f6' });
-        if (hasEl('Cl')) fgs.push({ name: 'Chloro (-Cl)', color: '#22c55e' });
-        if (hasEl('Br')) fgs.push({ name: 'Bromo (-Br)', color: '#a855f7' });
-        if (hasEl('F')) fgs.push({ name: 'Fluoro (-F)', color: '#06b6d4' });
-        if (hasEl('S')) fgs.push({ name: 'Thiol (-SH)', color: '#eab308' });
-        if (bondOfOrder(3, 'C', 'N')) fgs.push({ name: 'Nitrile (C≡N)', color: '#8b5cf6' });
+        if (hasOH && bondOfOrder(2, 'C', 'O')) fgs.push({ name: 'Carboxylic Acid (-COOH)', color: '#D92D3A' });
+        else if (hasOH) fgs.push({ name: 'Hydroxyl (-OH)', color: '#D92D3A' });
+        if (bondOfOrder(2, 'C', 'C')) fgs.push({ name: 'Alkene (C=C)', color: '#1E9E5A' });
+        if (bondOfOrder(3, 'C', 'C')) fgs.push({ name: 'Alkyne (C≡C)', color: '#0E9F95' });
+        if (hasEl('N')) fgs.push({ name: 'Amine (-NH₂)', color: '#2F5BEA' });
+        if (hasEl('Cl')) fgs.push({ name: 'Chloro (-Cl)', color: '#1E9E5A' });
+        if (hasEl('Br')) fgs.push({ name: 'Bromo (-Br)', color: '#A64BC9' });
+        if (hasEl('F')) fgs.push({ name: 'Fluoro (-F)', color: '#0E9F95' });
+        if (hasEl('S')) fgs.push({ name: 'Thiol (-SH)', color: '#C98A00' });
+        if (bondOfOrder(3, 'C', 'N')) fgs.push({ name: 'Nitrile (C≡N)', color: '#7A4FD6' });
 
         const el = document.getElementById('fg-detected');
         el.innerHTML = ''; // Clear previous content safely
         if (fgs.length === 0) {
             const span = document.createElement('span');
-            span.style.color = 'rgba(148,163,184,0.4)';
+            span.style.color = '#8A8A90';
             span.textContent = 'None detected';
             el.appendChild(span);
             return;
@@ -320,8 +320,11 @@
         fgs.forEach(f => {
             const div = document.createElement('div');
             div.className = 'fg-tag2';
-            div.style.borderLeftColor = f.color;
-            div.textContent = f.name;
+            const dot = document.createElement('i');
+            dot.className = 'fg-dot';
+            dot.style.background = f.color;
+            div.appendChild(dot);
+            div.appendChild(document.createTextNode(f.name));
             el.appendChild(div);
         });
     }
@@ -332,8 +335,8 @@
 })();
 
     // ─── Explain Mode Hooks ───
-    if (window.ChemExplain) {
+    if (typeof ChemExplain !== 'undefined') {
         ChemExplain.register('#org-canvas', 'Molecular Structure', '<b>Carbon (C)</b> forms 4 bonds.<br><b>Nitrogen (N)</b> forms 3 bonds.<br><b>Oxygen (O)</b> forms 2 bonds.<br><b>Hydrogen (H)</b> forms 1 bond.<br>Lines represent shared electron pairs.');
-        ChemExplain.register('.org-info-card:nth-child(2)', 'IUPAC Naming', 'The standard systematic method of naming chemical compounds based on the longest carbon chain and functional group priorities.');
-        ChemExplain.register('.org-info-card:nth-child(5)', 'Degree of Unsaturation', 'Also known as the Index of Hydrogen Deficiency (IHD).<br>Indicates the total number of rings and/pi bonds.<br><span class="tt-formula">DoU = C + 1 - H/2 + N/2 - X/2</span>');
+        ChemExplain.register('.org-info .info-card:nth-child(2)', 'IUPAC Naming', 'The standard systematic method of naming chemical compounds based on the longest carbon chain and functional group priorities.');
+        ChemExplain.register('.org-info .info-card:nth-child(5)', 'Degree of Unsaturation', 'Also known as the Index of Hydrogen Deficiency (IHD).<br>Indicates the total number of rings and/pi bonds.<br><span class="tt-formula">DoU = C + 1 - H/2 + N/2 - X/2</span>');
     }

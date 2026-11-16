@@ -36,15 +36,14 @@ npx cap build android
 - Never edit files inside `www/` directly — they are overwritten on each build.
 
 ### Shared Layer
-- `shared.js` — Single source of truth for all 118 elements (properties, electronegativity, covalent radii, bond energies, reduction potentials, categories). Loaded by every module.
-- `shared.css` — Full design system: dark theme, glassmorphism utilities, element category colors, fluid typography (`clamp()`).
-- `nav.js` — Navigation bar component injected into every page.
-- `export.js` — Cross-module export (SVG/image/canvas download).
-- `premium.js` — Premium feature gating logic.
-- `explain.js` — Shared educational explanation popups (D3 explain mode).
+- `shared.js` — Single source of truth for all 118 elements (properties, electronegativity, covalent radii, bond energies, reduction potentials, categories). Loaded by every module that needs element data (`mol3d.html` too).
+- `ui.css` — The one design system for every page except the landing page: light tokens, liquid-glass classes, nav pill, form controls, panel/stage primitives. Each tool's own `*.css` only handles its layout and uses these tokens.
+- `nav.js` — Injects the glass navigation pill (brand, page name, Tools menu, Home) into `.top-nav`; creates the element if a page lacks one.
+- `export.js` — Cross-module export (image download); adds the Export button to the nav.
+- `explain.js` — Shared explain mode (the "Explain" pill and tooltips). Tools register elements with `ChemExplain.register(selector, title, html)`; guard with `typeof ChemExplain !== 'undefined'` (it is a top-level `const`, so it is not on `window`).
 
 ### Landing page
-- `index.html` is a **self-contained** single-page site (inline CSS, no `shared.css`/`nav.js`/`premium.js`) with its own light design tokens. Its images live in `media/` (real screenshots of the tools, a looping lattice video, and blurred "aura" copies). Don't apply the dark module design system to it.
+- `index.html` is a **self-contained** single-page site (inline CSS, no `ui.css`/`nav.js`) with the same light design tokens as `ui.css`. Its images live in `media/` (real screenshots of the tools, a looping lattice video, and blurred "aura" copies).
 - To refresh a screenshot, re-capture the tool page (Playwright, 1440x900 at 2x) and re-crop it to the same aspect ratio as the file it replaces.
 
 ### Module Pattern
@@ -58,21 +57,22 @@ Each chemistry tool is a **self-contained HTML + JS + CSS triplet** (e.g., `reac
 | Reaction Lab | `reaction-lab` | Canvas 2D drag-drop, Pauling ΔH |
 | Spectroscopy | `spectroscopy` | Canvas chart, IR/UV-Vis databases |
 | Organic Builder | `organic` | Canvas 2D, IUPAC naming, VSEPR |
-| Crystal Viewer | `crystal` | Three.js, BCC/FCC/HCP/Diamond |
-| Mechanisms | `mechanisms` | Canvas 2D, SN1/SN2/E1/E2 arrows |
+| Crystal Viewer | `crystal` | Canvas 2D, SC/BCC/FCC/HCP/Diamond |
+| Mechanisms | `mechanisms` | Canvas 2D, 6 mechanisms (SN1/SN2/E1/E2, addition, esterification) |
 | Titration | `titration` | Canvas chart, Ka/Kb, pH curves |
 | Electrochemistry | `electrochem` | Canvas animation, Nernst equation |
 
 ### Rendering
-- **Three.js** (CDN `<script>` tag) for all 3D modules (`mol3d`, `crystal`).
+- **Three.js** (CDN import map) for the 3D modules (`mol3d`, `viewer`/`main.js`).
 - **HTML5 Canvas 2D** + `requestAnimationFrame` for all 2D modules.
 - No server backend — all chemistry calculations run in the browser.
 
-### Design System (shared.css)
-- Dark theme with indigo/purple/magenta accent palette.
-- Glassmorphism: `backdrop-filter: blur()` on panels/cards.
-- Fonts: `Outfit` (headers), `Inter` (body), `JetBrains Mono` (code), `Orbitron` (tech labels).
-- Element categories each have a dedicated CSS color variable.
+### Design System (ui.css)
+- Light, calm, one accent hue (`--accent` #2F5BEA). No dark mode. Tools sit in white framed "stage" cards; controls are white panels; glass (`.glass`, `.glass-dark`) floats over soft colour.
+- Fonts: `Inter Tight` (headings), `Inter` (body), `JetBrains Mono` (code and data).
+- Canvas and WebGL colours are hard-coded in each tool's JS and use the same palette (ink `#1D1D1F`, muted `#6E6E73`, accent `#2F5BEA`). Canvas `font` strings need a generic fallback (`, sans-serif`) or they render serif until the web font loads.
+- Chemistry data colours (`--data-*`, `--cat-*`) are for dots, bars and tiles. For small *text* use the `--text-*` variants (>= 4.5:1).
+- The orbital viewer uses normal (not additive) blending with a light-ground density ramp; the old dark "premium" theme (`premium.js`/`premium.css`) was removed.
 
 ## Capacitor / Android
 - App ID: `com.stativesh.chemverse`

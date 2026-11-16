@@ -11,7 +11,7 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 
 // ─── CPK Color Map (standard chemistry colors) ───
 const CPK_COLORS = {
-    1: 0xFFFFFF,   // H — white
+    1: 0xD3D3DA,   // H — light gray
     6: 0x333333,   // C — dark gray
     7: 0x3050F8,   // N — blue
     8: 0xFF0D0D,   // O — red
@@ -19,7 +19,7 @@ const CPK_COLORS = {
     11: 0xAB5CF2,  // Na — purple
     12: 0x8AFF00,  // Mg — bright green
     15: 0xFF8000,  // P — orange
-    16: 0xFFFF30,  // S — yellow
+    16: 0xE6C400,  // S — yellow
     17: 0x1FF01F,  // Cl — green
     19: 0x8F40D4,  // K — violet
     20: 0x3DFF00,  // Ca — green
@@ -219,8 +219,8 @@ let W = container.clientWidth, H = container.clientHeight;
 
 // Scene
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x060a14);
-scene.fog = new THREE.FogExp2(0x060a14, 0.04);
+scene.background = new THREE.Color(0xF6F6F9);
+scene.fog = new THREE.FogExp2(0xF6F6F9, 0.03);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 1000);
@@ -255,7 +255,7 @@ controls.minDistance = 2;
 controls.maxDistance = 30;
 
 // Lighting
-const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
 scene.add(ambientLight);
 
 const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
@@ -263,16 +263,16 @@ keyLight.position.set(5, 8, 5);
 keyLight.castShadow = true;
 scene.add(keyLight);
 
-const fillLight = new THREE.DirectionalLight(0x6366f1, 0.4);
+const fillLight = new THREE.DirectionalLight(0xdfe6ff, 0.35);
 fillLight.position.set(-5, 3, -3);
 scene.add(fillLight);
 
-const rimLight = new THREE.DirectionalLight(0xec4899, 0.3);
+const rimLight = new THREE.DirectionalLight(0xfff0e6, 0.25);
 rimLight.position.set(0, -3, 5);
 scene.add(rimLight);
 
 // Ground grid (subtle)
-const gridHelper = new THREE.GridHelper(20, 40, 0x1a1a3e, 0x0d0d2b);
+const gridHelper = new THREE.GridHelper(20, 40, 0xD6D6DD, 0xE9E9EE);
 gridHelper.position.y = -3;
 scene.add(gridHelper);
 
@@ -372,11 +372,11 @@ function buildMolecule(mol) {
             div.className = 'atom-label-3d';
             div.textContent = getSymbol(z);
             div.style.cssText = `
-                color: #fff;
-                font-size: 11px;
+                color: #1D1D1F;
+                font-size: 14px;
                 font-weight: 700;
                 font-family: Inter, sans-serif;
-                text-shadow: 0 0 4px rgba(0,0,0,0.8);
+                text-shadow: 0 0 3px #fff, 0 0 6px #fff;
                 pointer-events: none;
             `;
             const label = new CSS2DObject(div);

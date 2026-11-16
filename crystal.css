@@ -1,134 +1,125 @@
-/* ChemVerse — Crystal Structure Viewer Styles */
+/* ChemVerse — Crystal Structure Viewer (light UI) */
 .crys-layout {
-    display: flex;
-    height: calc(100vh - 56px);
-    overflow: hidden;
+    width: min(var(--tool-width), 100% - 48px);
+    margin: 20px auto 56px;
+    display: grid;
+    grid-template-columns: minmax(210px, 250px) minmax(0, 1fr) minmax(230px, 290px);
+    gap: 20px;
+    align-items: start;
 }
 
-.crys-sidebar {
-    width: 200px;
-    background: rgba(15, 15, 35, 0.95);
-    border-right: 1px solid rgba(99, 102, 241, 0.1);
-    padding: 14px;
-    overflow-y: auto;
+.crys-sidebar,
+.crys-info {
+    background: var(--card);
+    border: 1px solid var(--card-edge);
+    border-radius: var(--radius-card);
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
 }
 
-.crys-sidebar h2 {
-    font: 700 11px/1 Outfit;
-    letter-spacing: 2px;
-    color: rgba(148, 163, 184, 0.5);
-    margin: 0;
+.crys-sidebar h2,
+.crys-info h2,
+.crys-controls h3 {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
 }
 
 .crys-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .crys-btn {
-    padding: 8px 10px;
-    border-radius: 6px;
-    border: 1px solid rgba(99, 102, 241, 0.1);
-    background: rgba(30, 30, 60, 0.4);
-    color: #e2e8f0;
-    font: 600 12px Outfit;
-    cursor: pointer;
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: 16px;
+    border: 1px solid var(--card-edge);
+    background: var(--chip);
+    color: var(--ink);
+    font: 600 15px/1.25 var(--font-body);
     text-align: left;
-    transition: all 0.2s;
 }
 
 .crys-btn:hover {
-    background: rgba(99, 102, 241, 0.12);
-    border-color: rgba(99, 102, 241, 0.25);
+    background: #E9E9EE;
 }
 
 .crys-btn.active {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: #6366f1;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+    background: var(--accent-soft);
+    border-color: rgba(47, 91, 234, 0.4);
+    color: var(--accent);
 }
 
 .crys-btn .crys-sub {
-    font: 400 9px Inter;
-    color: rgba(148, 163, 184, 0.5);
     display: block;
     margin-top: 1px;
+    font: 400 12px var(--font-body);
+    color: var(--muted);
+}
+
+.crys-btn.active .crys-sub {
+    color: var(--muted-strong);
 }
 
 .crys-controls {
-    margin-top: auto;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-}
-
-.crys-controls h3 {
-    font: 700 10px Outfit;
-    letter-spacing: 1.5px;
-    color: rgba(148, 163, 184, 0.4);
-    margin: 0;
-    text-transform: uppercase;
+    gap: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--hairline);
 }
 
 .crys-controls label {
-    font: 500 11px Inter;
-    color: #94a3b8;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 10px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--ink);
     cursor: pointer;
-}
-
-.crys-controls input[type="checkbox"] {
-    accent-color: #6366f1;
 }
 
 .zoom-row {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font: 500 10px Inter;
-    color: rgba(148, 163, 184, 0.5);
+    gap: 12px;
+    font-size: 15px;
+    color: var(--ink);
 }
 
 .zoom-row input {
     flex: 1;
-    appearance: none;
-    -webkit-appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: linear-gradient(to right, #6366f1, #a855f7);
 }
 
-.zoom-row input::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #a5b4fc;
-    cursor: pointer;
-    border: 2px solid #6366f1;
-}
-
+/* Stage: the lattice sits on a white framed card */
 .crys-viewport {
-    flex: 1;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px;
-    position: relative;
+    min-height: 620px;
+    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--card-edge);
+    border-radius: var(--radius-stage);
+    box-shadow: 0 30px 80px rgba(17, 24, 39, 0.08);
 }
 
 #crys-canvas {
-    border-radius: 12px;
-    background: rgba(6, 6, 25, 0.9);
-    border: 1px solid rgba(99, 102, 241, 0.1);
+    width: 100%;
+    max-width: 700px;
+    height: auto;
+    aspect-ratio: 700 / 550;
+    border-radius: 22px;
+    background: var(--ground);
     cursor: grab;
 }
 
@@ -137,64 +128,54 @@
 }
 
 .crys-hint {
-    font: 400 10px Inter;
-    color: rgba(148, 163, 184, 0.3);
-    margin-top: 6px;
-}
-
-.crys-info {
-    width: 220px;
-    background: rgba(15, 15, 35, 0.95);
-    border-left: 1px solid rgba(99, 102, 241, 0.1);
-    padding: 14px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.crys-info h2 {
-    font: 700 11px/1 Outfit;
-    letter-spacing: 2px;
-    color: rgba(148, 163, 184, 0.5);
-    margin: 0;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
 }
 
 .info-card {
-    background: rgba(30, 30, 60, 0.4);
-    border: 1px solid rgba(99, 102, 241, 0.08);
-    border-radius: 6px;
-    padding: 6px 8px;
+    background: var(--chip);
+    border-radius: 16px;
+    padding: 12px 14px;
 }
 
 .info-label {
-    font: 700 9px Outfit;
-    letter-spacing: 1px;
-    color: rgba(148, 163, 184, 0.4);
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
 }
 
 .info-value {
-    font: 600 13px Inter;
-    color: #a5b4fc;
     margin-top: 2px;
+    font: 600 16px/1.3 var(--font-display);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
 }
 
 .crys-notes {
-    font: 400 11px Inter;
-    color: rgba(148, 163, 184, 0.4);
-    line-height: 1.5;
-    margin-top: auto;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--muted);
 }
 
-@media(max-width:900px) {
+@media (max-width: 1080px) {
     .crys-layout {
-        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .crys-sidebar,
-    .crys-info {
-        width: 100%;
-        max-height: 170px;
+    .crys-viewport {
+        order: -1;
+        min-height: 0;
+    }
+
+    .crys-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .crys-btn {
+        flex: 1 1 200px;
     }
 }

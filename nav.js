@@ -1,83 +1,87 @@
-// ChemVerse — Navigation Overhaul
+// ChemVerse — shared navigation (light UI). Injects a glass pill nav into .top-nav
 (function () {
     'use strict';
 
-    const navContent = `
-        <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">⚛️ CHEMVERSE</a>
-        
-        <div class="dropdown">
-            <button class="dropbtn">📚 Fundamentals ▾</button>
-            <div class="dropdown-content">
-                <a href="periodic-table.html" data-page="periodic-table">🧪 Periodic Table</a>
-                <a href="spectroscopy.html" data-page="spectroscopy">📊 Spectroscopy</a>
-            </div>
-        </div>
+    const GROUPS = [
+        {
+            name: 'Fundamentals', links: [
+                ['periodic-table', 'Periodic Table'],
+                ['viewer', 'Atomic Orbitals'],
+                ['spectroscopy', 'Spectroscopy'],
+            ]
+        },
+        {
+            name: 'Build & React', links: [
+                ['organic', 'Organic Builder'],
+                ['mol3d', '3D Molecular Viewer'],
+                ['reaction-lab', 'Reaction Lab'],
+            ]
+        },
+        {
+            name: 'Simulations', links: [
+                ['titration', 'Titration Simulator'],
+                ['electrochem', 'Electrochemistry'],
+                ['mechanisms', 'Reaction Mechanisms'],
+                ['crystal', 'Crystal Structures'],
+            ]
+        },
+    ];
 
-        <div class="dropdown">
-            <button class="dropbtn">🏗 Build & React ▾</button>
-            <div class="dropdown-content">
-                <a href="organic.html" data-page="organic">⚗️ Organic Builder</a>
-                <a href="reaction-lab.html" data-page="reaction-lab">⚡️ Reaction Lab</a>
-            </div>
-        </div>
+    const LOGO = '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">' +
+        '<circle cx="16" cy="16" r="2.4" fill="currentColor" stroke="none"/>' +
+        '<ellipse cx="16" cy="16" rx="13" ry="5.2"/>' +
+        '<ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(60 16 16)"/>' +
+        '<ellipse cx="16" cy="16" rx="13" ry="5.2" transform="rotate(120 16 16)"/></svg>';
+    const CHEVRON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>';
 
-        <div class="dropdown">
-            <button class="dropbtn">🔬 Simulations ▾</button>
-            <div class="dropdown-content">
-                <a href="titration.html" data-page="titration">⚗️ Titration</a>
-                <a href="electrochem.html" data-page="electrochem">🔋 Electrochemistry</a>
-                <a href="mechanisms.html" data-page="mechanisms">🧬 Mechanisms</a>
-                <a href="crystal.html" data-page="crystal">💎 Crystals</a>
-            </div>
-        </div>
-    `;
+    function currentPage() {
+        const p = window.location.pathname.split('/').pop().replace('.html', '');
+        return p || 'index';
+    }
 
-    function initNav() {
-        const topNav = document.querySelector('.top-nav');
-        if (!topNav) return;
+    function build(topNav) {
+        const page = currentPage();
+        let pageName = '';
+        const cols = GROUPS.map(g => {
+            const links = g.links.map(([id, label]) => {
+                const active = id === page;
+                if (active) pageName = label;
+                return '<a href="' + id + '.html"' + (active ? ' class="active" aria-current="page"' : '') + '>' + label + '</a>';
+            }).join('');
+            return '<div class="nav-col"><span class="kicker">' + g.name + '</span>' + links + '</div>';
+        }).join('');
 
-        // Save export button if it was already injected
-        const exportBtn = document.getElementById('export-btn');
+        topNav.setAttribute('aria-label', 'Primary');
+        topNav.innerHTML =
+            '<a class="brand" href="index.html">' + LOGO + 'ChemVerse</a>' +
+            (pageName ? '<span class="page-name">' + pageName + '</span>' : '') +
+            '<div class="nav-actions">' +
+            '<div class="nav-menu">' +
+            '<button class="nav-trigger" type="button" aria-haspopup="true" aria-expanded="false">Tools' + CHEVRON + '</button>' +
+            '<div class="nav-panel glass">' + cols + '</div>' +
+            '</div>' +
+            '<a class="nav-solid" href="index.html">Home</a>' +
+            '</div>';
 
-        // Replace content
-        topNav.innerHTML = navContent;
+        const menu = topNav.querySelector('.nav-menu');
+        const trigger = topNav.querySelector('.nav-trigger');
+        const setOpen = (open) => { menu.classList.toggle('open', open); menu.classList.toggle('suppress', !open && menu.matches(':hover')); trigger.setAttribute('aria-expanded', String(open)); };
+        menu.addEventListener('mouseleave', () => menu.classList.remove('suppress'));
+        trigger.addEventListener('click', (e) => { e.stopPropagation(); setOpen(!menu.classList.contains('open')); });
+        document.addEventListener('click', (e) => { if (!menu.contains(e.target)) setOpen(false); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setOpen(false); trigger.focus(); } });
+    }
 
-        // Restore export button
-        if (exportBtn) {
-            topNav.appendChild(exportBtn);
+    function init() {
+        let topNav = document.querySelector('.top-nav');
+        if (!topNav) {
+            topNav = document.createElement('nav');
+            topNav.className = 'top-nav';
+            document.body.insertBefore(topNav, document.body.firstChild);
         }
-
-        // Highlight active link
-        let currentPath = window.location.pathname.split('/').pop().replace('.html', '');
-        if (!currentPath || currentPath === '') currentPath = 'index';
-
-        const links = topNav.querySelectorAll('.dropdown-content a');
-        links.forEach(link => {
-            if (link.dataset.page === currentPath) {
-                link.classList.add('active');
-                const parentBtn = link.closest('.dropdown').querySelector('.dropbtn');
-                if (parentBtn) parentBtn.classList.add('active');
-            }
-        });
+        build(topNav);
     }
 
-    // Inject CSS
-    function injectCSS() {
-        if (!document.querySelector('link[href*="nav.css"]')) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'nav.css';
-            document.head.appendChild(link);
-        }
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            injectCSS();
-            initNav();
-        });
-    } else {
-        injectCSS();
-        initNav();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 })();

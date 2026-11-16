@@ -22,8 +22,12 @@ const ChemExplain = (function () {
         toggleBtn = document.createElement('div');
         toggleBtn.id = 'explain-toggle';
         toggleBtn.className = 'explain-toggle';
-        toggleBtn.innerHTML = '💡';
-        toggleBtn.title = 'Toggle Explain Mode';
+        toggleBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 11.5h5M6.2 13.5h3.6M8 2a4 4 0 0 0-2.3 7.3c.4.3.6.7.6 1.2h3.4c0-.5.2-.9.6-1.2A4 4 0 0 0 8 2z"/></svg><span>Explain</span>';
+        toggleBtn.setAttribute('role', 'button');
+        toggleBtn.setAttribute('tabindex', '0');
+        toggleBtn.setAttribute('aria-pressed', 'false');
+        toggleBtn.title = 'Toggle explain mode';
+        toggleBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
         document.body.appendChild(toggleBtn);
 
         // Create tooltip element
@@ -43,9 +47,11 @@ const ChemExplain = (function () {
         isActive = !isActive;
         if (isActive) {
             toggleBtn.classList.add('active');
+            toggleBtn.setAttribute('aria-pressed', 'true');
             document.body.classList.add('explain-mode-active');
         } else {
             toggleBtn.classList.remove('active');
+            toggleBtn.setAttribute('aria-pressed', 'false');
             document.body.classList.remove('explain-mode-active');
             hideTooltip();
         }
@@ -85,7 +91,7 @@ const ChemExplain = (function () {
         const data = items.get(el);
         if (!data) return;
 
-        tooltipEl.innerHTML = `<h4>💡 ${data.title}</h4>${data.content}`;
+        tooltipEl.innerHTML = `<h4>${data.title}</h4>${data.content}`;
 
         // Positioning
         const pad = +15;

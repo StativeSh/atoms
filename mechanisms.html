@@ -7,31 +7,21 @@
     <title>ChemVerse — Reaction Mechanism Animator</title>
     <meta name="description"
         content="Step-by-step arrow-pushing animations for SN1, SN2, E1, E2 and other organic reaction mechanisms.">
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="mechanisms.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
-        <div class="nav-links">
-            <a href="index.html">🧪 Periodic Table</a>
-            <a href="viewer.html">⚛ Atomic Viewer</a>
-            <a href="reaction-lab.html">⚡ Reaction Lab</a>
-            <a href="mol3d.html">🔬 3D Viewer</a>
-            <a href="spectroscopy.html">📊 Spectroscopy</a>
-            <a href="electrochem.html">🔋 Electrochemistry</a>
-            <a href="mechanisms.html" class="active">🧬 Mechanisms</a>
-        </div>
-    </nav>
+    <div class="page-aura" aria-hidden="true"></div>
+    <nav class="top-nav"></nav>
 
     <div class="mech-layout">
         <!-- Left: Mechanism Picker -->
         <aside class="mech-sidebar">
-            <h2>MECHANISMS</h2>
+            <h2>Mechanisms</h2>
             <div class="mech-list" id="mech-list">
                 <!-- Populated by JS -->
             </div>
@@ -47,9 +37,9 @@
                 <canvas id="mech-canvas" width="900" height="450"></canvas>
             </div>
             <div class="playback-controls">
-                <button class="ctrl-btn" id="btn-prev" title="Previous step">⏮</button>
-                <button class="ctrl-btn play-btn" id="btn-play" title="Play/Pause">▶</button>
-                <button class="ctrl-btn" id="btn-next" title="Next step">⏭</button>
+                <button class="ctrl-btn" id="btn-prev" title="Previous step" aria-label="Previous step"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M3 3h2v10H3zM13 3v10L6 8z"/></svg></button>
+                <button class="ctrl-btn play-btn" id="btn-play" title="Play or pause" aria-label="Play or pause"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3v10l8-5z"/></svg></button>
+                <button class="ctrl-btn" id="btn-next" title="Next step" aria-label="Next step"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11 3h2v10h-2zM3 3v10l7-5z"/></svg></button>
                 <div class="step-indicator">
                     <span id="step-current">0</span> / <span id="step-total">0</span>
                 </div>
@@ -60,19 +50,19 @@
 
         <!-- Right: Step Details -->
         <aside class="mech-info">
-            <h2>STEP DETAILS</h2>
+            <h2>Step details</h2>
             <div class="step-card" id="step-card">
                 <div class="step-name" id="step-name">—</div>
                 <div class="step-desc" id="step-desc">Select a mechanism to begin</div>
             </div>
             <div class="mech-notes">
-                <h3>KEY CONCEPTS</h3>
+                <h3>Key concepts</h3>
                 <div id="mech-concepts">
                     <!-- Populated by JS -->
                 </div>
             </div>
             <div class="mech-summary">
-                <h3>SUMMARY</h3>
+                <h3>Summary</h3>
                 <div id="mech-summary-text">—</div>
             </div>
         </aside>
@@ -82,7 +72,6 @@
     <script src="mechanisms.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

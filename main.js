@@ -79,36 +79,36 @@ function configToString(config) {
 const ORBITAL_COLORS = {
     quantum: {
         name: 'Quantum',
-        s: 0x60a5fa,  // Blue
-        p: 0x34d399,  // Green
-        d: 0xfbbf24,  // Amber/Orange
-        f: 0xf87171,  // Red
-        proton: 0xff6b6b,
-        neutron: 0x94a3b8,
-        nucleus_glow: 0xff4444,
-        bg: 0x0a0e1a,
+        s: 0x2F5BEA,  // Blue
+        p: 0x1E9E5A,  // Green
+        d: 0xC98A00,  // Amber
+        f: 0xD92D3A,  // Red
+        proton: 0xD92D3A,
+        neutron: 0x8A8A90,
+        nucleus_glow: 0xD92D3A,
+        bg: 0xF6F6F9,
     },
     classic: {
         name: 'Classic',
-        s: 0x3b82f6,
-        p: 0x22c55e,
-        d: 0xeab308,
-        f: 0xef4444,
-        proton: 0xe74c3c,
-        neutron: 0x7f8c8d,
-        nucleus_glow: 0xe74c3c,
-        bg: 0x0d1117,
+        s: 0x1D4ED8,
+        p: 0x15803D,
+        d: 0xA16207,
+        f: 0xB91C1C,
+        proton: 0xC0392B,
+        neutron: 0x6B7280,
+        nucleus_glow: 0xC0392B,
+        bg: 0xF6F6F9,
     },
     neon: {
         name: 'Neon',
-        s: 0x00ccff,
-        p: 0x00ff88,
-        d: 0xffff00,
-        f: 0xff00ff,
-        proton: 0xff3366,
-        neutron: 0x66ffcc,
-        nucleus_glow: 0xff3366,
-        bg: 0x050510,
+        s: 0x0099CC,
+        p: 0x00B35C,
+        d: 0xD9A300,
+        f: 0xCC00CC,
+        proton: 0xE0245E,
+        neutron: 0x2BB38F,
+        nucleus_glow: 0xE0245E,
+        bg: 0xF6F6F9,
     },
 };
 
@@ -135,14 +135,13 @@ const state = {
 // ─── Three.js Setup ──────────────────────────────────────────────
 const container = document.getElementById('canvas-container');
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(60, (container.clientWidth || 1) / (container.clientHeight || 1), 0.1, 1000);
 camera.position.set(14, 10, 14);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(container.clientWidth || 1, container.clientHeight || 1);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.2;
+renderer.toneMapping = THREE.NoToneMapping;
 container.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -153,14 +152,14 @@ controls.maxDistance = 60;
 controls.enablePan = true;
 
 // ─── Lighting ────────────────────────────────────────────────────
-scene.add(new THREE.AmbientLight(0x404060, 0.6));
-const light1 = new THREE.PointLight(0x6366f1, 1.5, 60);
+scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+const light1 = new THREE.PointLight(0xffffff, 1.4, 60);
 light1.position.set(10, 10, 10);
 scene.add(light1);
-const light2 = new THREE.PointLight(0xec4899, 0.8, 40);
+const light2 = new THREE.PointLight(0xffe3d1, 0.6, 40);
 light2.position.set(-10, -5, -10);
 scene.add(light2);
-const light3 = new THREE.PointLight(0x14b8a6, 0.5, 30);
+const light3 = new THREE.PointLight(0xdce6ff, 0.5, 30);
 light3.position.set(0, 15, 0);
 scene.add(light3);
 
@@ -179,8 +178,7 @@ function createStarfield() {
         color: 0xffffff, size: 0.15, transparent: true, opacity: 0.5, sizeAttenuation: true,
     }));
 }
-const starfield = createStarfield();
-scene.add(starfield);
+const starfield = createStarfield(); // kept for the animation loop, intentionally not added to the light scene
 
 // ─── Atom Group ──────────────────────────────────────────────────
 const atomGroup = new THREE.Group();
@@ -198,8 +196,8 @@ dotCanvas.height = 64;
 const dotCtx = dotCanvas.getContext('2d');
 const gradient = dotCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
 gradient.addColorStop(0, 'rgba(255,255,255,1)');
-gradient.addColorStop(0.3, 'rgba(255,255,255,0.8)');
-gradient.addColorStop(0.6, 'rgba(255,255,255,0.3)');
+gradient.addColorStop(0.55, 'rgba(255,255,255,0.95)');
+gradient.addColorStop(0.8, 'rgba(255,255,255,0.5)');
 gradient.addColorStop(1, 'rgba(255,255,255,0)');
 dotCtx.fillStyle = gradient;
 dotCtx.fillRect(0, 0, 64, 64);
@@ -207,41 +205,27 @@ const dotTexture = new THREE.CanvasTexture(dotCanvas);
 
 /**
  * Heatmap color ramp: maps a normalized density (0–1) to a
- * purple → magenta → orange → white gradient, matching the
+ * periwinkle → violet → magenta → orange → deep red gradient (readable on a light ground), matching the
  * kavan010 reference visualization style.
  * @param {number} t - normalized density (0 = sparse, 1 = peak)
  * @returns {THREE.Color}
  */
 function densityToHeatmap(t) {
-    // Clamp
     t = Math.max(0, Math.min(1, t));
-    let r, g, b;
-    if (t < 0.25) {
-        // deep purple → magenta
-        const s = t / 0.25;
-        r = 0.15 + s * 0.55;  // 0.15 → 0.7
-        g = 0.0 + s * 0.0;   // 0 → 0
-        b = 0.3 + s * 0.4;   // 0.3 → 0.7
-    } else if (t < 0.5) {
-        // magenta → orange
-        const s = (t - 0.25) / 0.25;
-        r = 0.7 + s * 0.3;   // 0.7 → 1.0
-        g = 0.0 + s * 0.45;  // 0 → 0.45
-        b = 0.7 - s * 0.6;   // 0.7 → 0.1
-    } else if (t < 0.75) {
-        // orange → yellow
-        const s = (t - 0.5) / 0.25;
-        r = 1.0;
-        g = 0.45 + s * 0.45;  // 0.45 → 0.9
-        b = 0.1 - s * 0.05;  // 0.1 → 0.05
-    } else {
-        // yellow → white
-        const s = (t - 0.75) / 0.25;
-        r = 1.0;
-        g = 0.9 + s * 0.1;   // 0.9 → 1.0
-        b = 0.05 + s * 0.95;  // 0.05 → 1.0
+    const stops = [
+        [0.00, 0.58, 0.66, 1.00],   // periwinkle (sparse, outer cloud)
+        [0.25, 0.48, 0.31, 0.84],   // violet
+        [0.50, 0.84, 0.26, 0.56],   // magenta
+        [0.75, 0.91, 0.47, 0.06],   // orange
+        [1.00, 0.70, 0.12, 0.10],   // deep red (peak density)
+    ];
+    for (let i = 1; i < stops.length; i++) {
+        if (t <= stops[i][0]) {
+            const a = stops[i - 1], b = stops[i], k = (t - a[0]) / (b[0] - a[0]);
+            return new THREE.Color(a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3] + (b[3] - a[3]) * k);
+        }
     }
-    return new THREE.Color(r, g, b);
+    return new THREE.Color(0.70, 0.12, 0.10);
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -677,13 +661,13 @@ function buildOrbitalCloud(n, l, ml, electronCount, densityMultiplier) {
     geo.setAttribute('color', new THREE.BufferAttribute(colArray, 3));
 
     const mat = new THREE.PointsMaterial({
-        size: 0.065,
+        size: 0.12,
         map: dotTexture,
         vertexColors: true,
         transparent: true,
-        opacity: 0.85,
+        opacity: 0.95,
         sizeAttenuation: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         depthWrite: false,
     });
 
@@ -963,13 +947,13 @@ function buildBondCloud(posA, posB, order) {
     geo.setAttribute('color', new THREE.BufferAttribute(colArray, 3));
 
     const mat = new THREE.PointsMaterial({
-        size: 0.07,
+        size: 0.11,
         map: dotTexture,
         vertexColors: true,
         transparent: true,
         opacity: 0.8,
         sizeAttenuation: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         depthWrite: false,
     });
 
@@ -1051,7 +1035,7 @@ function rebuildMolecule() {
         // Atom label
         if (state.showLabels) {
             const labelPos = offset.clone().add(new THREE.Vector3(0, -1.5, 0));
-            const label = createLabel(element.symbol, labelPos, '#e2e8f0');
+            const label = createLabel(element.symbol, labelPos, '#1D1D1F');
             atomGroup.add(label);
             labelSprites.push(label);
         }
@@ -1125,7 +1109,7 @@ function rebuildAtom() {
         const nLabel = createLabel(
             `${element.z}p  ${element.neutrons}n`,
             new THREE.Vector3(0, -1.6 * state.nucleusScale, 0),
-            '#94a3b8'
+            '#6E6E73'
         );
         atomGroup.add(nLabel);
         labelSprites.push(nLabel);
@@ -1299,7 +1283,7 @@ function updateEnergyDiagram(config) {
     const levelHeight = Math.min(26, usableH / config.length);
 
     // Energy arrow
-    ctx.strokeStyle = '#475569';
+    ctx.strokeStyle = 'rgba(29,29,31,0.5)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(20, H - padding.bottom);
@@ -1311,8 +1295,8 @@ function updateEnergyDiagram(config) {
     ctx.lineTo(20, padding.top - 8);
     ctx.lineTo(24, padding.top + 2);
     ctx.fill();
-    ctx.fillStyle = '#64748b';
-    ctx.font = '10px Inter, sans-serif';
+    ctx.fillStyle = '#6E6E73';
+    ctx.font = '12px Inter, sans-serif';
     ctx.save();
     ctx.translate(10, H / 2);
     ctx.rotate(-Math.PI / 2);
@@ -1329,7 +1313,7 @@ function updateEnergyDiagram(config) {
         const isActive = state.highlightSubshell === 'all' || state.highlightSubshell === sub.label;
 
         // Level line
-        ctx.strokeStyle = isActive ? color : '#334155';
+        ctx.strokeStyle = isActive ? color : 'rgba(29,29,31,0.28)';
         ctx.lineWidth = isActive ? 2.5 : 1;
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -1344,7 +1328,7 @@ function updateEnergyDiagram(config) {
 
         for (let m = 0; m < numOrbitals; m++) {
             const bx = boxStartX + m * (boxW + 4);
-            ctx.strokeStyle = isActive ? color : '#334155';
+            ctx.strokeStyle = isActive ? color : 'rgba(29,29,31,0.28)';
             ctx.lineWidth = 1;
             ctx.strokeRect(bx, y - 10, boxW, 12);
 
@@ -1352,7 +1336,7 @@ function updateEnergyDiagram(config) {
             const eInBox = Math.min(electronsLeft, 2);
             electronsLeft -= eInBox;
 
-            ctx.fillStyle = isActive ? color : '#475569';
+            ctx.fillStyle = isActive ? color : '#6E6E73';
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'center';
             if (eInBox >= 1) ctx.fillText('↑', bx + boxW / 2 - 4, y - 1);
@@ -1360,7 +1344,7 @@ function updateEnergyDiagram(config) {
         }
 
         // Label
-        ctx.fillStyle = isActive ? '#e2e8f0' : '#475569';
+        ctx.fillStyle = isActive ? '#1D1D1F' : '#6E6E73';
         ctx.font = `${isActive ? 'bold' : 'normal'} 11px Inter, sans-serif`;
         ctx.textAlign = 'left';
         ctx.fillText(sub.label, x + 2, y + 3);
@@ -1407,7 +1391,7 @@ function animate() {
         cloud.points.geometry.attributes.position.needsUpdate = true;
 
         // Subtle opacity pulse
-        const opacityBase = (state.highlightSubshell === 'all' || state.highlightSubshell === cloud.label) ? 0.7 : 0.12;
+        const opacityBase = (state.highlightSubshell === 'all' || state.highlightSubshell === cloud.label) ? 0.9 : 0.14;
         cloud.points.material.opacity = opacityBase + Math.sin(phase * 0.5) * 0.08;
     });
 
@@ -1429,8 +1413,9 @@ const tooltip = document.getElementById('info-tooltip');
 const tooltipContent = document.getElementById('tooltip-content');
 
 renderer.domElement.addEventListener('click', (event) => {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    const rectC = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rectC.left) / rectC.width) * 2 - 1;
+    mouse.y = -((event.clientY - rectC.top) / rectC.height) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
 
     const intersects = raycaster.intersectObjects(atomGroup.children, true);
@@ -1612,11 +1597,14 @@ document.getElementById('panel-toggle').addEventListener('click', () => {
 // RESIZE & INIT
 // ═══════════════════════════════════════════════════════════════
 
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
+function fitToContainer() {
+    const w = container.clientWidth || 1, h = container.clientHeight || 1;
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
+    renderer.setSize(w, h);
+}
+window.addEventListener('resize', fitToContainer);
+if (window.ResizeObserver) new ResizeObserver(fitToContainer).observe(container);
 
 scene.background = new THREE.Color(ORBITAL_COLORS[state.colorScheme].bg);
 

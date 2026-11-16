@@ -5,27 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChemVerse — Crystal Structure Viewer</title>
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="crystal.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
-        <div class="nav-links">
-            <a href="index.html">🧪 Periodic Table</a>
-            <a href="reaction-lab.html">⚡ Reaction Lab</a>
-            <a href="spectroscopy.html">📊 Spectroscopy</a>
-            <a href="electrochem.html">🔋 Electrochemistry</a>
-            <a href="mechanisms.html">🧬 Mechanisms</a>
-            <a href="organic.html">🧱 Organic Builder</a>
-            <a href="titration.html">🧫 Titration</a>
-            <a href="crystal.html" class="active">💎 Crystals</a>
-        </div>
-    </nav>
+    <div class="page-aura" aria-hidden="true"></div>
+    <nav class="top-nav"></nav>
+    <h1 class="sr-only">Crystal Structures</h1>
     <div class="crys-layout">
         <aside class="crys-sidebar">
             <h2>CRYSTAL STRUCTURES</h2>
@@ -44,7 +34,7 @@
         </aside>
         <main class="crys-viewport">
             <canvas id="crys-canvas" width="700" height="550"></canvas>
-            <div class="crys-hint">Click & drag to rotate</div>
+            <div class="crys-hint">Drag to rotate, scroll to zoom</div>
         </main>
         <aside class="crys-info">
             <h2>PROPERTIES</h2>
@@ -79,7 +69,6 @@
     <script src="explain.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

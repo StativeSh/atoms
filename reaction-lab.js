@@ -150,7 +150,7 @@
                 <div class="pi-info">
                     <div class="pi-name">${el.name}</div>
                     <div class="pi-stats">
-                        <span title="Max bonds">⚡${props.maxBonds}</span>
+                        <span title="Maximum bonds">${props.maxBonds} bonds</span>
                         <span title="Electronegativity">EN ${en.toFixed(1)}</span>
                         <span title="Covalent radius">r ${r.toFixed(2)}Å</span>
                     </div>
@@ -420,10 +420,10 @@
             spontVal.textContent = 'At Equilibrium';
             spontVal.className = 'thermo-value equilibrium';
         } else if (dG < 0) {
-            spontVal.textContent = '✓ Yes';
+            spontVal.textContent = 'Yes';
             spontVal.className = 'thermo-value spontaneous';
         } else {
-            spontVal.textContent = '✗ No';
+            spontVal.textContent = 'No';
             spontVal.className = 'thermo-value non-spontaneous';
         }
 
@@ -453,13 +453,13 @@
 
         // Background gradient
         const grad = ctx.createLinearGradient(0, 0, 0, h);
-        grad.addColorStop(0, 'rgba(99, 102, 241, 0.05)');
-        grad.addColorStop(1, 'rgba(10, 10, 30, 0.3)');
+        grad.addColorStop(0, '#FFFFFF');
+        grad.addColorStop(1, '#F6F6F9');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
 
         // Axes
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.10)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(pad, pad);
@@ -485,9 +485,9 @@
         ctx.lineTo(pX + 20, pY);
 
         const pathGrad = ctx.createLinearGradient(rX, 0, pX, 0);
-        pathGrad.addColorStop(0, '#6366f1');
-        pathGrad.addColorStop(0.5, '#ec4899');
-        pathGrad.addColorStop(1, dH < 0 ? '#f97316' : '#3b82f6');
+        pathGrad.addColorStop(0, '#2F5BEA');
+        pathGrad.addColorStop(0.5, '#D6428F');
+        pathGrad.addColorStop(1, dH < 0 ? '#E8770F' : '#2F5BEA');
         ctx.strokeStyle = pathGrad;
         ctx.lineWidth = 2.5;
         ctx.stroke();
@@ -497,7 +497,7 @@
         ctx.lineWidth = 1;
 
         // Reactant line
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+        ctx.strokeStyle = 'rgba(47, 91, 234, 0.4)';
         ctx.beginPath();
         ctx.moveTo(rX - 20, rY);
         ctx.lineTo(pX + 20, rY);
@@ -506,7 +506,7 @@
         ctx.setLineDash([]);
 
         // Ea arrow
-        ctx.strokeStyle = '#ec4899';
+        ctx.strokeStyle = '#D6428F';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(tX + 25, rY);
@@ -520,7 +520,7 @@
         ctx.stroke();
 
         // ΔH arrow
-        ctx.strokeStyle = dH < 0 ? '#f97316' : '#3b82f6';
+        ctx.strokeStyle = dH < 0 ? '#E8770F' : '#2F5BEA';
         ctx.beginPath();
         ctx.moveTo(pX + 5, rY);
         ctx.lineTo(pX + 5, pY);
@@ -532,24 +532,24 @@
         ctx.stroke();
 
         // Labels
-        ctx.font = '600 9px Inter, sans-serif';
-        ctx.fillStyle = '#e2e8f0';
+        ctx.font = '600 12px Inter, sans-serif';
+        ctx.fillStyle = '#1D1D1F';
         ctx.textAlign = 'center';
         ctx.fillText('Reactants', rX, rY + 14);
         ctx.fillText('Products', pX, pY + (dH < 0 ? 14 : -6));
 
-        ctx.fillStyle = '#ec4899';
+        ctx.fillStyle = '#D6428F';
         ctx.fillText('Eₐ', tX + 35, (rY + tY) / 2 + 3);
 
-        ctx.fillStyle = dH < 0 ? '#f97316' : '#3b82f6';
+        ctx.fillStyle = dH < 0 ? '#E8770F' : '#2F5BEA';
         ctx.fillText('ΔH', pX + 18, (rY + pY) / 2 + 3);
 
-        ctx.fillStyle = '#818cf8';
+        ctx.fillStyle = '#2F5BEA';
         ctx.fillText('‡', tX, tY - 6);
 
         // Axis labels
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-        ctx.font = '500 8px Inter, sans-serif';
+        ctx.fillStyle = '#6E6E73';
+        ctx.font = '500 11px Inter, sans-serif';
         ctx.save();
         ctx.translate(10, h / 2);
         ctx.rotate(-Math.PI / 2);
@@ -732,11 +732,11 @@
 
         if (deltaH < 0) {
             fill.className = 'energy-bar-fill exothermic';
-            typeEl.textContent = '🔥 Exothermic — Energy Released';
+            typeEl.textContent = 'Exothermic: energy released';
             typeEl.className = 'energy-type exo';
         } else {
             fill.className = 'energy-bar-fill endothermic';
-            typeEl.textContent = '❄️ Endothermic — Energy Absorbed';
+            typeEl.textContent = 'Endothermic: energy absorbed';
             typeEl.className = 'energy-type endo';
         }
     }
@@ -756,8 +756,8 @@
                 life: 60 + Math.random() * 40,
                 maxLife: 100,
                 color: isExo
-                    ? `hsl(${20 + Math.random() * 30}, 100%, ${50 + Math.random() * 30}%)`
-                    : `hsl(${200 + Math.random() * 40}, 80%, ${60 + Math.random() * 30}%)`,
+                    ? `hsl(${20 + Math.random() * 30}, 90%, ${45 + Math.random() * 15}%)`
+                    : `hsl(${200 + Math.random() * 40}, 75%, ${45 + Math.random() * 15}%)`,
                 size: 2 + Math.random() * 3
             });
         }
@@ -796,8 +796,8 @@
                         <span class="bond-tag order">${orderStr}</span>
                     </div>
                     <div class="bond-numbers">
-                        <span title="Bond energy">⚡ ${Math.round(b.energy || 0)} kcal</span>
-                        <span title="Ionic character">⊕ ${b.ionicPct || 0}%</span>
+                        <span title="Bond energy">${Math.round(b.energy || 0)} kcal</span>
+                        <span title="Ionic character">${b.ionicPct || 0}% ionic</span>
                     </div>
                 </div>
             `;
@@ -811,7 +811,7 @@
                 const shape = getMolecularShape(a);
                 if (shape) {
                     const el = getElementInfo(a.z);
-                    html += `<div class="vsepr-label">📐 ${el.symbol}: ${shape.shape} (${shape.angle}°)</div>`;
+                    html += `<div class="vsepr-label">${el.symbol}: ${shape.shape} (${shape.angle}°)</div>`;
                 }
             }
         });
@@ -870,8 +870,8 @@
         dhEl.textContent = `ΔH = ${preset.deltaH} kcal/mol`;
         dhEl.className = 'equation-dh ' + (preset.deltaH < 0 ? 'exo' : 'endo');
 
-        document.getElementById('eq-geometry').textContent = '📐 ' + (preset.geometry || '');
-        document.getElementById('eq-hybrid').textContent = '🔬 ' + (preset.hybridization || '');
+        document.getElementById('eq-geometry').textContent = preset.geometry || '';
+        document.getElementById('eq-hybrid').textContent = preset.hybridization || '';
 
         document.getElementById('energy-overlay').style.display = 'none';
 
@@ -891,7 +891,7 @@
         ctx.clearRect(0, 0, w, h);
 
         // Grid dots
-        ctx.fillStyle = 'rgba(99,102,241,0.03)';
+        ctx.fillStyle = 'rgba(29,29,31,0.07)';
         for (let gx = 0; gx < w; gx += 40) {
             for (let gy = 0; gy < h; gy += 40) {
                 ctx.beginPath();
@@ -913,7 +913,7 @@
             if (type === 'ionic') {
                 // Ionic: animated dashed golden line
                 ctx.setLineDash([4, 6]);
-                ctx.strokeStyle = 'rgba(255,200,100,0.5)';
+                ctx.strokeStyle = 'rgba(201,138,0,0.7)';
                 ctx.lineWidth = 2.5;
                 ctx.beginPath();
                 ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
@@ -921,13 +921,13 @@
                 ctx.setLineDash([]);
 
                 // Ionic % label
-                ctx.font = '8px Inter, sans-serif';
-                ctx.fillStyle = 'rgba(255,200,100,0.6)';
+                ctx.font = '11px Inter, sans-serif';
+                ctx.fillStyle = '#9A6A00';
                 ctx.textAlign = 'center';
                 ctx.fillText(`${bond.ionicPct}% ionic`, (a.x + b.x) / 2, (a.y + b.y) / 2 - 10);
             } else {
-                const bondColor = type === 'polar' ? 'rgba(100,170,255,0.7)' : 'rgba(148,163,184,0.6)';
-                const glowColor = type === 'polar' ? 'rgba(80,140,241,0.12)' : 'rgba(99,102,241,0.1)';
+                const bondColor = type === 'polar' ? 'rgba(47,91,234,0.7)' : 'rgba(29,29,31,0.50)';
+                const glowColor = type === 'polar' ? 'rgba(47,91,234,0.14)' : 'rgba(29,29,31,0.07)';
 
                 for (let i = 0; i < order; i++) {
                     const offset = (i - (order - 1) / 2) * 6;
@@ -946,25 +946,25 @@
                 // Polarity labels
                 if (type === 'polar') {
                     const en_a = getEN(a.z), en_b = getEN(b.z);
-                    ctx.font = '9px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.font = '12px Inter, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     if (en_a > en_b) {
-                        ctx.fillStyle = 'rgba(100,180,255,0.6)'; ctx.fillText('δ⁻', a.x + nx * 16, a.y + ny * 16);
-                        ctx.fillStyle = 'rgba(255,150,100,0.6)'; ctx.fillText('δ⁺', b.x - nx * 16, b.y - ny * 16);
+                        ctx.fillStyle = '#2F5BEA'; ctx.fillText('δ⁻', a.x + nx * 16, a.y + ny * 16);
+                        ctx.fillStyle = '#C2570C'; ctx.fillText('δ⁺', b.x - nx * 16, b.y - ny * 16);
                     } else {
-                        ctx.fillStyle = 'rgba(100,180,255,0.6)'; ctx.fillText('δ⁻', b.x + nx * 16, b.y + ny * 16);
-                        ctx.fillStyle = 'rgba(255,150,100,0.6)'; ctx.fillText('δ⁺', a.x - nx * 16, a.y - ny * 16);
+                        ctx.fillStyle = '#2F5BEA'; ctx.fillText('δ⁻', b.x + nx * 16, b.y + ny * 16);
+                        ctx.fillStyle = '#C2570C'; ctx.fillText('δ⁺', a.x - nx * 16, a.y - ny * 16);
                     }
 
                     // % ionic on polar bonds
-                    ctx.font = '7px Inter, sans-serif';
-                    ctx.fillStyle = 'rgba(148,163,184,0.5)';
+                    ctx.font = '10px Inter, sans-serif';
+                    ctx.fillStyle = '#6E6E73';
                     ctx.fillText(`${bond.ionicPct}%`, (a.x + b.x) / 2, (a.y + b.y) / 2 - 10);
                 }
 
                 // Bond energy label (subtle)
                 if (bond.energy && !reacting) {
-                    ctx.font = '7px Inter, sans-serif';
-                    ctx.fillStyle = 'rgba(148,163,184,0.3)';
+                    ctx.font = '10px Inter, sans-serif';
+                    ctx.fillStyle = '#8A8A90';
                     ctx.textAlign = 'center';
                     ctx.fillText(`${Math.round(bond.energy)}`, (a.x + b.x) / 2, (a.y + b.y) / 2 + 10);
                 }
@@ -1004,8 +1004,8 @@
             ctx.fillText(el.symbol, atom.x, atom.y - 1);
 
             // Atomic number
-            ctx.fillStyle = 'rgba(148,163,184,0.35)';
-            ctx.font = '8px Inter, sans-serif';
+            ctx.fillStyle = '#8A8A90';
+            ctx.font = '11px Inter, sans-serif';
             ctx.fillText(atom.z, atom.x, atom.y + r * 0.55);
 
             // Lone pairs (Lewis dots)
@@ -1069,7 +1069,7 @@
                 const chargeStr = atom.charge > 0
                     ? (atom.charge === 1 ? '⁺' : `${atom.charge}⁺`)
                     : (atom.charge === -1 ? '⁻' : `${Math.abs(atom.charge)}⁻`);
-                ctx.fillStyle = atom.charge > 0 ? '#ff9966' : '#66bbff';
+                ctx.fillStyle = atom.charge > 0 ? '#E8770F' : '#2F5BEA';
                 ctx.font = 'bold 11px Inter, sans-serif';
                 ctx.textAlign = 'left'; ctx.textBaseline = 'top';
                 ctx.fillText(chargeStr, atom.x + r - 6, atom.y - r - 6);
@@ -1079,7 +1079,7 @@
             if (isHovered && atom.bonds.length >= 2) {
                 const shape = getMolecularShape(atom);
                 if (shape) {
-                    ctx.fillStyle = 'rgba(200,220,255,0.85)';
+                    ctx.fillStyle = '#515154';
                     ctx.font = 'bold 10px Inter, sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillText(`${shape.shape} ${shape.angle}°`, atom.x, atom.y - r - 14);
@@ -1098,13 +1098,13 @@
                     if (dist < BOND_DIST * 1.5) {
                         const bondType = determineBondType(dragging.z, other.z);
                         ctx.setLineDash([4, 4]);
-                        ctx.strokeStyle = bondType === 'ionic' ? 'rgba(255,200,100,0.25)' : 'rgba(99,102,241,0.25)';
+                        ctx.strokeStyle = bondType === 'ionic' ? 'rgba(201,138,0,0.40)' : 'rgba(47,91,234,0.30)';
                         ctx.lineWidth = 1;
                         ctx.beginPath(); ctx.moveTo(dragging.x, dragging.y); ctx.lineTo(other.x, other.y); ctx.stroke();
                         ctx.setLineDash([]);
 
-                        ctx.font = '8px Inter, sans-serif';
-                        ctx.fillStyle = 'rgba(148,163,184,0.5)';
+                        ctx.font = '11px Inter, sans-serif';
+                        ctx.fillStyle = '#6E6E73';
                         ctx.textAlign = 'center';
                         ctx.fillText(bondType, (dragging.x + other.x) / 2, (dragging.y + other.y) / 2 - 8);
                     }
@@ -1195,11 +1195,11 @@
             fb.classList.remove('hidden', 'correct', 'incorrect');
             if (correct) {
                 fb.classList.add('correct');
-                fb.textContent = '✅ Perfectly Balanced!';
+                fb.textContent = 'Perfectly balanced';
                 score++;
             } else {
                 fb.classList.add('incorrect');
-                fb.textContent = '❌ Not quite — check atom counts!';
+                fb.textContent = 'Not quite: check the atom counts';
                 score = Math.max(0, score - 1);
             }
             document.getElementById('score-num').textContent = score;
