@@ -1118,6 +1118,7 @@
             p.x += p.vx; p.y += p.vy;
             p.vy += 0.02; // gravity
             p.life--;
+            if (p.life <= 0) { particles.splice(i, 1); continue; } // life is fractional: drop it before alpha can go negative
             const alpha = p.life / p.maxLife;
             ctx.globalAlpha = alpha;
             ctx.fillStyle = p.color;
@@ -1125,7 +1126,6 @@
             ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
             ctx.fill();
             ctx.globalAlpha = 1;
-            if (p.life <= 0) particles.splice(i, 1);
         }
     }
 
