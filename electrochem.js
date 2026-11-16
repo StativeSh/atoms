@@ -436,7 +436,7 @@
         ctx.fillStyle = '#1D1D1F';
         ctx.font = '600 15px "Inter Tight", Inter, sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText(cellType === 'galvanic' ? 'Galvanic cell' : 'Electrolytic cell', 20, 28);
+        ctx.fillText(cellType === 'galvanic' ? 'Galvanic cell' : 'Electrolytic cell', 24, 36);
 
         animFrame = requestAnimationFrame(drawCell);
     }

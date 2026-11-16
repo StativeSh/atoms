@@ -331,18 +331,23 @@
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(x, y);
-            ctx.lineTo(x, y - 20);
+            ctx.lineTo(x, y - 22);
             ctx.stroke();
             ctx.setLineDash([]);
 
             // Label
-            ctx.fillStyle = p.color;
-            ctx.font = '600 12px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(p.group, x, y - 24);
-            ctx.fillStyle = '#6E6E73';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = 'rgba(255,255,255,0.92)';   // halo keeps labels legible over the curve
+            ctx.lineWidth = 4;
+            ctx.font = '600 12px Inter, sans-serif';
+            ctx.strokeText(p.group, x, y - 42);
+            ctx.fillStyle = p.color;
+            ctx.fillText(p.group, x, y - 42);
             ctx.font = '400 13px Inter, sans-serif';
-            ctx.fillText(p.peak + ' cm⁻¹', x, y - 14);
+            ctx.strokeText(p.peak + ' cm⁻¹', x, y - 26);
+            ctx.fillStyle = '#515154';
+            ctx.fillText(p.peak + ' cm⁻¹', x, y - 26);
 
             // Dot at peak
             ctx.beginPath();
