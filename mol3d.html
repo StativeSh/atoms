@@ -7,55 +7,43 @@
     <title>ChemVerse — 3D Molecular Viewer</title>
     <meta name="description"
         content="Rotate, zoom, and explore molecules in real-time 3D with ball-and-stick, space-filling, and wireframe modes.">
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="mol3d.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <div class="bg-gradient"></div>
-
+    <div class="page-aura" aria-hidden="true"></div>
     <!-- Navigation -->
-    <nav class="chemverse-nav">
-        <a href="index.html" class="chemverse-logo">
-            <span class="logo-icon">⚛</span>
-            <span class="logo-text">CHEMVERSE</span>
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.html">🧪 Periodic Table</a></li>
-            <li><a href="viewer.html">⚛ Atomic Viewer</a></li>
-            <li><a href="reaction-lab.html">🔬 Reaction Lab</a></li>
-            <li><a href="mol3d.html" class="active">🧬 3D Viewer</a></li>
-            <li><a href="spectroscopy.html">📊 Spectroscopy</a></li>
-        </ul>
-    </nav>
+    <nav class="top-nav"></nav>
 
+    <h1 class="sr-only">3D Molecular Viewer</h1>
     <div class="mol3d-layout">
         <!-- Left: Molecule Picker -->
         <aside class="mol3d-sidebar">
             <div class="sidebar-section">
-                <h3>Preset Molecules</h3>
+                <h3>Preset molecules</h3>
                 <div class="molecule-grid" id="molecule-grid">
                     <!-- Populated by JS -->
                 </div>
             </div>
 
             <div class="sidebar-section">
-                <h3>View Mode</h3>
+                <h3>View mode</h3>
                 <div class="mode-toggles">
-                    <button class="mode-btn active" data-mode="ball-stick" id="mode-ball-stick">
-                        <span class="mode-icon">⚛</span> Ball & Stick
+                    <button class="mode-btn active" data-mode="ball-stick" id="mode-ball-stick"> Ball &amp; stick
                     </button>
-                    <button class="mode-btn" data-mode="space-fill" id="mode-space-fill">
-                        <span class="mode-icon">🔵</span> Space Filling
+                    <button class="mode-btn" data-mode="space-fill" id="mode-space-fill"> Space filling
                     </button>
-                    <button class="mode-btn" data-mode="wireframe" id="mode-wireframe">
-                        <span class="mode-icon">🔗</span> Wireframe
+                    <button class="mode-btn" data-mode="wireframe" id="mode-wireframe"> Wireframe
                     </button>
                 </div>
             </div>
 
             <div class="sidebar-section">
-                <h3>Display Options</h3>
+                <h3>Display options</h3>
                 <label class="toggle-label">
                     <input type="checkbox" id="show-labels" checked>
                     <span>Atom Labels</span>
@@ -75,7 +63,7 @@
             </div>
 
             <div class="sidebar-section">
-                <h3>Color Scheme</h3>
+                <h3>Colour scheme</h3>
                 <div class="mode-toggles">
                     <button class="color-btn active" data-color="element" id="color-element">Element (CPK)</button>
                     <button class="color-btn" data-color="electronegativity" id="color-en">Electronegativity</button>
@@ -87,10 +75,9 @@
         <!-- Center: 3D Viewport -->
         <main class="viewport-area">
             <div class="viewport-toolbar">
-                <button class="toolbar-btn" id="btn-reset-view" title="Reset camera">🔄 Reset View</button>
-                <button class="toolbar-btn" id="btn-screenshot" title="Save screenshot">📸 Screenshot</button>
-                <span class="viewport-info" id="viewport-info">Drag to rotate • Scroll to zoom • Shift+drag to
-                    pan</span>
+                <button class="toolbar-btn" id="btn-reset-view" title="Reset camera">Reset view</button>
+                <button class="toolbar-btn" id="btn-screenshot" title="Save screenshot">Save screenshot</button>
+                <span class="viewport-info" id="viewport-info">Drag to rotate, scroll to zoom, shift-drag to pan</span>
             </div>
             <div class="viewport-container" id="viewport-container">
                 <!-- Three.js canvas injected here -->
@@ -126,6 +113,7 @@
         </aside>
     </div>
 
+    <script src="shared.js"></script>
     <script type="importmap">
     {
         "imports": {
@@ -137,7 +125,6 @@
     <script type="module" src="mol3d.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

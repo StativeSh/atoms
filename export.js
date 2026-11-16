@@ -5,73 +5,47 @@ const ChemExport = (function () {
     let isExporting = false;
 
     function init() {
-        // Add Export button to the navbar
+        // Add the export button to the navigation actions
         const nav = document.querySelector('.top-nav');
         if (nav && !document.getElementById('export-btn')) {
             const btn = document.createElement('a');
             btn.href = '#';
             btn.id = 'export-btn';
             btn.className = 'export-btn';
-            btn.innerHTML = '📸 Export Image';
+            btn.setAttribute('aria-label', 'Export image');
+            btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 6.5 8 10l3.5-3.5M3 13h10"/></svg><span>Export image</span>';
             btn.onclick = (e) => {
                 e.preventDefault();
                 exportView();
             };
-            nav.appendChild(btn);
+            const host = nav.querySelector('.nav-actions') || nav;
+            host.insertBefore(btn, host.firstChild);
         }
 
-        // Add CSS for export button and overlay
+        // Overlay shown while the capture runs (button styles live in ui.css)
         if (!document.getElementById('chem-export-css')) {
             const style = document.createElement('style');
             style.id = 'chem-export-css';
             style.textContent = `
-                .export-btn {
-                    margin-left: auto;
-                    color: #fff !important;
-                    background: #4f46e5;
-                    padding: 6px 12px !important;
-                    border-radius: 6px;
-                    font-weight: 500;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    transition: all 0.2s;
-                    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
-                }
-                .export-btn:hover {
-                    background: #4338ca;
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.6);
-                }
                 .exporting-overlay {
                     position: fixed;
-                    top: 0; left: 0; right: 0; bottom: 0;
-                    background: rgba(15, 15, 30, 0.8);
-                    backdrop-filter: blur(4px);
+                    inset: 0;
+                    background: rgba(251, 251, 253, 0.72);
+                    -webkit-backdrop-filter: blur(8px);
+                    backdrop-filter: blur(8px);
                     z-index: 99999;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: #fff;
-                    font-family: 'Outfit', sans-serif;
+                    color: #1D1D1F;
+                    font-family: 'Inter Tight', 'Inter', sans-serif;
                     font-size: 24px;
                     font-weight: 600;
                     opacity: 0;
-                    transition: opacity 0.3s;
                     pointer-events: none;
                 }
                 .exporting-overlay.show {
                     opacity: 1;
-                }
-                .exporting-overlay span {
-                    display: inline-block;
-                    animation: pulse-dot 1.4s infinite ease-in-out both;
-                }
-                .exporting-overlay span:nth-child(1) { animation-delay: -0.32s; }
-                .exporting-overlay span:nth-child(2) { animation-delay: -0.16s; }
-                @keyframes pulse-dot {
-                    0%, 80%, 100% { transform: scale(0); }
-                    40% { transform: scale(1); }
                 }
             `;
             document.head.appendChild(style);
@@ -85,7 +59,7 @@ const ChemExport = (function () {
         // Show overlay
         const overlay = document.createElement('div');
         overlay.className = 'exporting-overlay';
-        overlay.innerHTML = 'Capturing View<span>.</span><span>.</span><span>.</span>';
+        overlay.textContent = 'Capturing view…';
         document.body.appendChild(overlay);
 
         // Force reflow
@@ -112,7 +86,7 @@ const ChemExport = (function () {
             await new Promise(r => setTimeout(r, 100));
 
             const canvas = await html2canvas(target, {
-                backgroundColor: '#0a0a0a',
+                backgroundColor: '#FBFBFD',
                 scale: 2, // High-res
                 logging: false,
                 ignoreElements: (el) => {

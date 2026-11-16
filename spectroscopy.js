@@ -181,8 +181,7 @@
         peaks.forEach(p => {
             const tag = document.createElement('div');
             tag.className = 'fg-tag';
-            tag.style.borderLeftColor = p.color;
-            tag.innerHTML = `<span>${p.group}</span><span class="fg-range">${p.range[0]}–${p.range[1]} cm⁻¹</span>`;
+            tag.innerHTML = `<span class="fg-name"><i class="fg-dot" style="background:${p.color}"></i>${p.group}</span><span class="fg-range">${p.range[0]}–${p.range[1]} cm⁻¹</span>`;
             fgList.appendChild(tag);
         });
 
@@ -224,13 +223,13 @@
 
         // Background
         const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-        bgGrad.addColorStop(0, 'rgba(6, 6, 25, 0.9)');
-        bgGrad.addColorStop(1, 'rgba(15, 15, 45, 0.9)');
+        bgGrad.addColorStop(0, '#FFFFFF');
+        bgGrad.addColorStop(1, '#F6F6F9');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, w, h);
 
         // Grid
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.08)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.07)';
         ctx.lineWidth = 0.5;
         for (let wn = 500; wn <= 4000; wn += 500) {
             const x = xOf(wn);
@@ -248,7 +247,7 @@
         }
 
         // Axes
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.28)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(pad.left, pad.top);
@@ -257,8 +256,8 @@
         ctx.stroke();
 
         // Axis labels
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-        ctx.font = '500 10px Inter, sans-serif';
+        ctx.fillStyle = '#6E6E73';
+        ctx.font = '500 13px Inter, sans-serif';
         ctx.textAlign = 'center';
         for (let wn = 500; wn <= 4000; wn += 500) {
             ctx.fillText(wn, xOf(wn), h - pad.bottom + 16);
@@ -303,20 +302,20 @@
         }
 
         const lineGrad = ctx.createLinearGradient(pad.left, 0, w - pad.right, 0);
-        lineGrad.addColorStop(0, '#6366f1');
-        lineGrad.addColorStop(0.5, '#a855f7');
-        lineGrad.addColorStop(1, '#ec4899');
+        lineGrad.addColorStop(0, '#2F5BEA');
+        lineGrad.addColorStop(0.5, '#2F5BEA');
+        lineGrad.addColorStop(1, '#2F5BEA');
         ctx.strokeStyle = lineGrad;
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Fill under curve
-        ctx.lineTo(xOf(xMin), yOf(0));
-        ctx.lineTo(xOf(xMax), yOf(0));
+        ctx.lineTo(xOf(points[points.length - 1].wn), yOf(0));
+        ctx.lineTo(xOf(points[0].wn), yOf(0));
         ctx.closePath();
         const fillGrad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
-        fillGrad.addColorStop(0, 'rgba(99, 102, 241, 0.02)');
-        fillGrad.addColorStop(1, 'rgba(99, 102, 241, 0.08)');
+        fillGrad.addColorStop(0, 'rgba(47, 91, 234, 0.02)');
+        fillGrad.addColorStop(1, 'rgba(47, 91, 234, 0.12)');
         ctx.fillStyle = fillGrad;
         ctx.fill();
 
@@ -338,11 +337,11 @@
 
             // Label
             ctx.fillStyle = p.color;
-            ctx.font = '600 9px Inter, sans-serif';
+            ctx.font = '600 12px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText(p.group, x, y - 24);
-            ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-            ctx.font = '400 8px Inter, sans-serif';
+            ctx.fillStyle = '#6E6E73';
+            ctx.font = '400 13px Inter, sans-serif';
             ctx.fillText(p.peak + ' cm⁻¹', x, y - 14);
 
             // Dot at peak
@@ -353,8 +352,8 @@
         });
 
         // Title
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '600 12px Outfit, sans-serif';
+        ctx.fillStyle = '#1D1D1F';
+        ctx.font = '600 15px "Inter Tight", Inter, sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText('IR Spectrum — ' + mol.name, pad.left + 5, pad.top - 10);
     }
@@ -377,8 +376,8 @@
 
         // Background
         const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-        bgGrad.addColorStop(0, 'rgba(6, 6, 25, 0.9)');
-        bgGrad.addColorStop(1, 'rgba(15, 15, 45, 0.9)');
+        bgGrad.addColorStop(0, '#FFFFFF');
+        bgGrad.addColorStop(1, '#F6F6F9');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, w, h);
 
@@ -390,7 +389,7 @@
         }
 
         // Grid
-        ctx.strokeStyle = 'rgba(99, 102, 241, 0.08)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.07)';
         ctx.lineWidth = 0.5;
         for (let nm = 200; nm <= 800; nm += 100) {
             const x = xOf(nm);
@@ -401,7 +400,7 @@
         }
 
         // Axes
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.28)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(pad.left, pad.top);
@@ -410,8 +409,8 @@
         ctx.stroke();
 
         // Axis labels
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.5)';
-        ctx.font = '500 10px Inter, sans-serif';
+        ctx.fillStyle = '#6E6E73';
+        ctx.font = '500 13px Inter, sans-serif';
         ctx.textAlign = 'center';
         for (let nm = 200; nm <= 800; nm += 100) {
             ctx.fillText(nm + ' nm', xOf(nm), h - pad.bottom + 16);
@@ -446,9 +445,9 @@
             }
 
             const lineGrad = ctx.createLinearGradient(pad.left, 0, w - pad.right, 0);
-            lineGrad.addColorStop(0, '#818cf8');
-            lineGrad.addColorStop(0.5, '#c084fc');
-            lineGrad.addColorStop(1, '#f472b6');
+            lineGrad.addColorStop(0, '#2F5BEA');
+            lineGrad.addColorStop(0.5, '#2F5BEA');
+            lineGrad.addColorStop(1, '#2F5BEA');
             ctx.strokeStyle = lineGrad;
             ctx.lineWidth = 2;
             ctx.stroke();
@@ -458,8 +457,8 @@
             ctx.lineTo(xOf(xMin), yOf(0));
             ctx.closePath();
             const fillGrad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
-            fillGrad.addColorStop(0, 'rgba(168, 85, 247, 0.15)');
-            fillGrad.addColorStop(1, 'rgba(168, 85, 247, 0.02)');
+            fillGrad.addColorStop(0, 'rgba(47, 91, 234, 0.16)');
+            fillGrad.addColorStop(1, 'rgba(47, 91, 234, 0.02)');
             ctx.fillStyle = fillGrad;
             ctx.fill();
 
@@ -468,7 +467,7 @@
             const ly = yOf(1);
 
             ctx.setLineDash([4, 3]);
-            ctx.strokeStyle = '#c084fc88';
+            ctx.strokeStyle = '#2F5BEA88';
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(lx, ly);
@@ -477,32 +476,32 @@
             ctx.setLineDash([]);
 
             // λmax label
-            ctx.fillStyle = '#c084fc';
-            ctx.font = '700 12px Inter, sans-serif';
+            ctx.fillStyle = '#2F5BEA';
+            ctx.font = '700 13px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('λmax = ' + mol.uvLambda + ' nm', lx, ly - 10);
 
             // Dot
             ctx.beginPath();
             ctx.arc(lx, ly, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#c084fc';
+            ctx.fillStyle = '#2F5BEA';
             ctx.fill();
             ctx.strokeStyle = '#fff';
             ctx.lineWidth = 1.5;
             ctx.stroke();
         } else {
             // No significant UV absorption
-            ctx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-            ctx.font = '500 14px Outfit, sans-serif';
+            ctx.fillStyle = '#8A8A90';
+            ctx.font = '500 16px "Inter Tight", Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('No significant UV-Vis absorption', w / 2, h / 2 - 20);
-            ctx.font = '400 11px Inter, sans-serif';
+            ctx.font = '400 13px Inter, sans-serif';
             ctx.fillText(mol.uvDesc || '', w / 2, h / 2 + 5);
         }
 
         // Title
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '600 12px Outfit, sans-serif';
+        ctx.fillStyle = '#1D1D1F';
+        ctx.font = '600 15px "Inter Tight", Inter, sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText('UV-Vis Spectrum — ' + mol.name, pad.left + 5, pad.top - 10);
 
@@ -585,7 +584,7 @@
             table.innerHTML = `
                 <div class="uv-info">
                     <div class="uv-label">λmax</div>
-                    <div class="uv-lambda" style="color: rgba(148,163,184,0.4)">—</div>
+                    <div class="uv-lambda" style="color: #8A8A90">—</div>
                     <div class="peak-desc" style="margin-top:6px">${mol.uvDesc || 'No significant absorption'}</div>
                 </div>
             `;
@@ -653,10 +652,10 @@
 
     // ─── Init ───
     // Draw empty canvas
-    ctx.fillStyle = 'rgba(6, 6, 25, 0.9)';
+    ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-    ctx.font = '500 16px Outfit, sans-serif';
+    ctx.fillStyle = '#8A8A90';
+    ctx.font = '500 16px "Inter Tight", Inter, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('Select a molecule to view its spectrum', canvas.width / 2, canvas.height / 2);
 

@@ -103,19 +103,19 @@
         // E°cell
         const ecellVal = document.getElementById('ecell-value');
         ecellVal.textContent = `${Ecell.toFixed(2)} V`;
-        ecellVal.style.color = Ecell > 0 ? '#22c55e' : Ecell < 0 ? '#ef4444' : '#94a3b8';
+        ecellVal.style.color = Ecell > 0 ? '#17784A' : Ecell < 0 ? '#BF1F2C' : '#6E6E73';
 
         const spontEl = document.getElementById('ecell-spont');
         if (cellType === 'galvanic') {
-            spontEl.textContent = Ecell > 0 ? '✓ Spontaneous' : '✗ Non-spontaneous';
+            spontEl.textContent = Ecell > 0 ? 'Spontaneous' : 'Non-spontaneous';
             spontEl.className = 'result-spontaneity ' + (Ecell > 0 ? 'spontaneous' : 'non-spontaneous');
         } else {
-            spontEl.textContent = '🔌 Requires external voltage';
+            spontEl.textContent = 'Requires external voltage';
             spontEl.className = 'result-spontaneity non-spontaneous';
         }
 
         // Props
-        document.getElementById('prop-type').textContent = cellType === 'galvanic' ? '⚡ Galvanic' : '🔌 Electrolytic';
+        document.getElementById('prop-type').textContent = cellType === 'galvanic' ? 'Galvanic' : 'Electrolytic';
         document.getElementById('prop-anode').textContent = `${anode.metal} (oxidized)`;
         document.getElementById('prop-cathode').textContent = `${cathode.metal} (reduced)`;
         document.getElementById('prop-ecell').textContent = `${Ecell.toFixed(2)} V`;
@@ -166,7 +166,7 @@
 
         const nernstVal = document.getElementById('nernst-ecell');
         nernstVal.textContent = `${E.toFixed(4)} V`;
-        nernstVal.style.color = E > 0 ? '#22c55e' : '#ef4444';
+        nernstVal.style.color = E > 0 ? '#17784A' : '#BF1F2C';
     }
 
     function lcm(a, b) {
@@ -224,8 +224,8 @@
 
         // Background
         const bg = ctx.createLinearGradient(0, 0, 0, h);
-        bg.addColorStop(0, 'rgba(6, 6, 25, 0.95)');
-        bg.addColorStop(1, 'rgba(15, 15, 45, 0.95)');
+        bg.addColorStop(0, '#FFFFFF');
+        bg.addColorStop(1, '#F6F6F9');
         ctx.fillStyle = bg;
         ctx.fillRect(0, 0, w, h);
 
@@ -235,9 +235,9 @@
         const beakerY = 200;
 
         // Anode beaker
-        drawBeaker(anodeX, beakerY, beakerW, beakerH, 'rgba(99, 102, 241, 0.08)', anode.color + '15');
+        drawBeaker(anodeX, beakerY, beakerW, beakerH, 'transparent', anode.color + '26');
         // Cathode beaker
-        drawBeaker(cathodeX, beakerY, beakerW, beakerH, 'rgba(168, 85, 247, 0.08)', cathode.color + '15');
+        drawBeaker(cathodeX, beakerY, beakerW, beakerH, 'transparent', cathode.color + '26');
 
         // Electrode rods
         const anodeRodX = anodeX + beakerW / 2;
@@ -246,19 +246,23 @@
         // Anode electrode
         ctx.fillStyle = anode.metalColor;
         ctx.shadowColor = anode.color;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 6;
         ctx.fillRect(anodeRodX - 8, beakerY - 30, 16, beakerH + 20);
         ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.40)'; ctx.lineWidth = 1.5;
+        ctx.strokeRect(anodeRodX - 8, beakerY - 30, 16, beakerH + 20);
 
         // Cathode electrode
         ctx.fillStyle = cathode.metalColor;
         ctx.shadowColor = cathode.color;
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 6;
         ctx.fillRect(cathodeRodX - 8, beakerY - 30, 16, beakerH + 20);
         ctx.shadowBlur = 0;
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.40)'; ctx.lineWidth = 1.5;
+        ctx.strokeRect(cathodeRodX - 8, beakerY - 30, 16, beakerH + 20);
 
         // ─── Wire (top) ───
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.45)';
         ctx.lineWidth = 3;
         ctx.beginPath();
         ctx.moveTo(anodeRodX, beakerY - 30);
@@ -273,37 +277,37 @@
             // Voltmeter
             ctx.beginPath();
             ctx.arc(midX, 60, 22, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(30, 30, 60, 0.8)';
+            ctx.fillStyle = '#FFFFFF';
             ctx.fill();
-            ctx.strokeStyle = '#6366f1';
+            ctx.strokeStyle = '#2F5BEA';
             ctx.lineWidth = 2;
             ctx.stroke();
-            ctx.fillStyle = '#a5b4fc';
-            ctx.font = '700 10px Inter, sans-serif';
+            ctx.fillStyle = '#2F5BEA';
+            ctx.font = '700 13px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('V', midX, 55);
-            ctx.font = '600 9px Inter, monospace';
+            ctx.font = '600 12px Inter, monospace';
             ctx.fillText(Ecell.toFixed(2), midX, 68);
         } else {
             // Battery
-            ctx.fillStyle = 'rgba(30, 30, 60, 0.8)';
-            ctx.strokeStyle = '#ef4444';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.strokeStyle = '#D92D3A';
             ctx.lineWidth = 2;
             ctx.fillRect(midX - 25, 42, 50, 36);
             ctx.strokeRect(midX - 25, 42, 50, 36);
-            ctx.fillStyle = '#ef4444';
-            ctx.font = '700 10px Inter, sans-serif';
+            ctx.fillStyle = '#D92D3A';
+            ctx.font = '700 13px Inter, sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText('⚡ DC', midX, 55);
-            ctx.font = '600 9px Inter, sans-serif';
+            ctx.fillText('DC', midX, 55);
+            ctx.font = '600 14px Inter, sans-serif';
             ctx.fillText('Source', midX, 68);
         }
 
         // ─── Salt Bridge ───
         const sbY = beakerY + 40;
         const sbH = 30;
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.15)';
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.3)';
+        ctx.fillStyle = 'rgba(29, 29, 31, 0.06)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.25)';
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(anodeX + beakerW - 5, sbY);
@@ -315,8 +319,8 @@
         ctx.stroke();
 
         // Salt bridge label
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
-        ctx.font = '500 9px Inter, sans-serif';
+        ctx.fillStyle = '#6E6E73';
+        ctx.font = '500 12px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('Salt Bridge (KCl/KNO₃)', midX, sbY + sbH / 2 + 3);
 
@@ -326,7 +330,7 @@
             const sy = sbY + 5 + Math.sin(time * 3 + i * 0.8) * 8;
             ctx.beginPath();
             ctx.arc(sx, sy, 2, 0, Math.PI * 2);
-            ctx.fillStyle = i % 2 === 0 ? '#22c55e88' : '#ef444488';
+            ctx.fillStyle = i % 2 === 0 ? '#1E9E5A99' : '#D92D3A99';
             ctx.fill();
         }
 
@@ -357,9 +361,9 @@
 
             ctx.beginPath();
             ctx.arc(ex, ey, 3, 0, Math.PI * 2);
-            ctx.fillStyle = '#fbbf24';
+            ctx.fillStyle = '#E8A400';
             ctx.fill();
-            ctx.shadowColor = '#fbbf24';
+            ctx.shadowColor = '#E8A400';
             ctx.shadowBlur = 6;
             ctx.fill();
             ctx.shadowBlur = 0;
@@ -391,48 +395,48 @@
         });
 
         // ─── Labels ───
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '700 14px Outfit, sans-serif';
+        ctx.fillStyle = '#1D1D1F';
+        ctx.font = '700 16px "Inter Tight", Inter, sans-serif';
         ctx.textAlign = 'center';
 
         // Anode label
         ctx.fillText('Anode (−)', anodeRodX, beakerY - 45);
         ctx.fillStyle = anode.color;
-        ctx.font = '600 12px Inter, sans-serif';
-        ctx.fillText(anode.metal, anodeRodX, beakerY - 60);
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
-        ctx.font = '400 9px Inter, sans-serif';
+        ctx.font = '600 14px Inter, sans-serif';
+        ctx.fillText(anode.metal, anodeRodX, beakerY - 68);
+        ctx.fillStyle = '#6E6E73';
+        ctx.font = '400 12px Inter, sans-serif';
         ctx.fillText('Oxidation', anodeRodX, beakerY + beakerH + 20);
 
         // Cathode label
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '700 14px Outfit, sans-serif';
+        ctx.fillStyle = '#1D1D1F';
+        ctx.font = '700 16px "Inter Tight", Inter, sans-serif';
         ctx.fillText('Cathode (+)', cathodeRodX, beakerY - 45);
         ctx.fillStyle = cathode.color;
-        ctx.font = '600 12px Inter, sans-serif';
-        ctx.fillText(cathode.metal, cathodeRodX, beakerY - 60);
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.4)';
-        ctx.font = '400 9px Inter, sans-serif';
+        ctx.font = '600 14px Inter, sans-serif';
+        ctx.fillText(cathode.metal, cathodeRodX, beakerY - 68);
+        ctx.fillStyle = '#6E6E73';
+        ctx.font = '400 12px Inter, sans-serif';
         ctx.fillText('Reduction', cathodeRodX, beakerY + beakerH + 20);
 
         // Electron flow arrow
-        ctx.fillStyle = '#fbbf24';
-        ctx.font = '500 10px Inter, sans-serif';
+        ctx.fillStyle = '#E8A400';
+        ctx.font = '500 13px Inter, sans-serif';
         ctx.fillText('e⁻ →', midX, 45);
 
         // Solution labels
         ctx.fillStyle = anode.color + 'aa';
-        ctx.font = '500 11px Inter, sans-serif';
+        ctx.font = '500 13px Inter, sans-serif';
         ctx.fillText(anode.ion + '(aq)', anodeRodX, beakerY + beakerH + 35);
 
         ctx.fillStyle = cathode.color + 'aa';
         ctx.fillText(cathode.ion + '(aq)', cathodeRodX, beakerY + beakerH + 35);
 
         // Title
-        ctx.fillStyle = '#e2e8f0';
-        ctx.font = '600 13px Outfit, sans-serif';
+        ctx.fillStyle = '#1D1D1F';
+        ctx.font = '600 15px "Inter Tight", Inter, sans-serif';
         ctx.textAlign = 'left';
-        ctx.fillText(cellType === 'galvanic' ? '⚡ Galvanic Cell' : '🔌 Electrolytic Cell', 20, 28);
+        ctx.fillText(cellType === 'galvanic' ? 'Galvanic cell' : 'Electrolytic cell', 20, 28);
 
         animFrame = requestAnimationFrame(drawCell);
     }
@@ -443,7 +447,7 @@
         ctx.fillRect(x, y + 30, w, h - 30);
 
         // Beaker outline
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.30)';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -453,7 +457,7 @@
         ctx.stroke();
 
         // Solution level line
-        ctx.strokeStyle = 'rgba(148, 163, 184, 0.15)';
+        ctx.strokeStyle = 'rgba(29, 29, 31, 0.12)';
         ctx.lineWidth = 1;
         ctx.setLineDash([4, 4]);
         ctx.beginPath();
@@ -470,9 +474,9 @@
 })();
 
     // ─── Explain Mode Hooks ───
-    if (window.ChemExplain) {
-        ChemExplain.register('.ec-result', 'Cell Potential (E°cell)', 'The standard electromotive force of the cell.<br><strong>E°cell > 0:</strong> Spontaneous (Galvanic).<br><strong>E°cell < 0:</strong> Non-spontaneous (Electrolytic).<br><span class="tt-formula">E°cell = E°cathode - E°anode</span>');
-        ChemExplain.register('.ec-nernst', 'Nernst Equation', 'Calculates the actual cell potential under non-standard conditions (different concentrations/temperature).<br><span class="tt-formula">E = E° - (RT/nF)ln(Q)</span>');
-        ChemExplain.register('.ec-dg', 'Gibbs Free Energy (ΔG°)', 'The maximum reversible work that may be performed by the system.<br><strong>Negative:</strong> Spontaneous reaction.<br><span class="tt-formula">ΔG° = -nFE°</span>');
-        ChemExplain.register('#ec-canvas', 'Electrochemical Cell', '<b>Anode (Left):</b> Oxidation occurs here. Electrons are lost and flow through the wire.<br><b>Cathode (Right):</b> Reduction occurs here. Electrons are gained.<br><b>Salt Bridge:</b> Maintains electrical neutrality by allowing ion flow.');
+    if (typeof ChemExplain !== 'undefined') {
+        ChemExplain.register('.cell-result', 'Cell Potential (E°cell)', 'The standard electromotive force of the cell.<br><strong>E°cell > 0:</strong> Spontaneous (Galvanic).<br><strong>E°cell < 0:</strong> Non-spontaneous (Electrolytic).<br><span class="tt-formula">E°cell = E°cathode - E°anode</span>');
+        ChemExplain.register('.nernst-section', 'Nernst Equation', 'Calculates the actual cell potential under non-standard conditions (different concentrations/temperature).<br><span class="tt-formula">E = E° - (RT/nF)ln(Q)</span>');
+        ChemExplain.register('#cell-props .prop-item:nth-child(5)', 'Gibbs Free Energy (ΔG°)', 'The maximum reversible work that may be performed by the system.<br><strong>Negative:</strong> Spontaneous reaction.<br><span class="tt-formula">ΔG° = -nFE°</span>');
+        ChemExplain.register('#cell-canvas', 'Electrochemical Cell', '<b>Anode (Left):</b> Oxidation occurs here. Electrons are lost and flow through the wire.<br><b>Cathode (Right):</b> Reduction occurs here. Electrons are gained.<br><b>Salt Bridge:</b> Maintains electrical neutrality by allowing ion flow.');
     }

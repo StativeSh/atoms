@@ -1,329 +1,285 @@
-/* ═══════════════════════════════════════════════
-   ChemVerse — Reaction Mechanism Animator Styles
-   ═══════════════════════════════════════════════ */
-
+/* ChemVerse — Reaction Mechanism Animator (light UI) */
 .mech-layout {
-    display: flex;
-    height: calc(100vh - 56px);
-    overflow: hidden;
+    width: min(var(--tool-width), 100% - 48px);
+    margin: 20px auto 56px;
+    display: grid;
+    grid-template-columns: minmax(230px, 270px) minmax(0, 1fr) minmax(250px, 300px);
+    gap: 20px;
+    align-items: start;
 }
 
-/* ─── Sidebar ─── */
-.mech-sidebar {
-    width: 220px;
-    background: rgba(15, 15, 35, 0.95);
-    border-right: 1px solid rgba(99, 102, 241, 0.1);
-    padding: 16px;
-    overflow-y: auto;
+.mech-sidebar,
+.mech-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
+    background: var(--card);
+    border: 1px solid var(--card-edge);
+    border-radius: var(--radius-card);
+    padding: 20px;
 }
 
-.mech-sidebar h2 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: rgba(148, 163, 184, 0.5);
-    margin: 0;
+.mech-sidebar h2,
+.mech-info h2,
+.mech-notes h3,
+.mech-summary h3 {
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+}
+
+.mech-notes h3,
+.mech-summary h3 {
+    margin-bottom: 10px;
 }
 
 .mech-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 
 .mech-btn {
-    background: rgba(30, 30, 60, 0.4);
-    border: 1px solid rgba(99, 102, 241, 0.1);
-    border-radius: 8px;
-    padding: 10px;
-    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2px 8px;
+    min-height: 56px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 16px;
+    background: transparent;
+    color: var(--ink);
     text-align: left;
-    transition: all 0.2s;
-    color: #e2e8f0;
 }
 
 .mech-btn:hover {
-    background: rgba(99, 102, 241, 0.12);
-    border-color: rgba(99, 102, 241, 0.25);
+    background: var(--chip);
 }
 
 .mech-btn.active {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: #6366f1;
-    box-shadow: 0 0 12px rgba(99, 102, 241, 0.15);
+    background: var(--accent-soft);
+    border-color: rgba(47, 91, 234, 0.35);
 }
 
-.mech-btn .mech-btn-name {
-    font-family: 'Outfit', sans-serif;
+.mech-btn-name {
+    font: 600 16px var(--font-display);
+}
+
+.mech-btn.active .mech-btn-name {
+    color: var(--accent);
+}
+
+.mech-btn-type {
+    grid-column: 1;
     font-size: 13px;
+    color: var(--muted);
+}
+
+.mech-btn-badge {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 2px 10px;
+    border-radius: 980px;
+    background: var(--chip);
+    font-size: 11px;
     font-weight: 600;
-    display: block;
-}
-
-.mech-btn .mech-btn-type {
-    font-size: 10px;
-    color: rgba(148, 163, 184, 0.5);
-    display: block;
-    margin-top: 2px;
-}
-
-.mech-btn .mech-btn-badge {
-    display: inline-block;
-    font-size: 8px;
-    font-weight: 700;
-    padding: 1px 5px;
-    border-radius: 3px;
-    margin-top: 4px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.04em;
+    color: var(--muted-strong);
 }
 
 .badge-substitution {
-    background: rgba(99, 102, 241, 0.2);
-    color: #818cf8;
+    color: var(--text-blue);
 }
 
 .badge-elimination {
-    background: rgba(168, 85, 247, 0.2);
-    color: #c084fc;
+    color: var(--text-red);
 }
 
 .badge-addition {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
+    color: var(--text-green);
 }
 
 .badge-acyl {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
+    color: var(--text-amber);
 }
 
-/* ─── Viewport ─── */
+/* Stage */
 .mech-viewport {
-    flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    padding: 16px 20px;
-    overflow-y: auto;
-    gap: 10px;
+    gap: 18px;
+    padding: 28px;
+    background: var(--card);
+    border: 1px solid var(--card-edge);
+    border-radius: var(--radius-stage);
+    box-shadow: 0 30px 80px rgba(17, 24, 39, 0.08);
 }
 
 .mech-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
-    gap: 12px;
+    gap: 6px 14px;
 }
 
 .mech-header h1 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 20px;
+    font-size: clamp(28px, 3.4vw, 40px);
     font-weight: 700;
-    color: #e2e8f0;
-    margin: 0;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
 }
 
 .mech-type {
-    font-size: 12px;
-    color: #818cf8;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
+    font-size: 16px;
+    color: var(--muted);
 }
 
 .canvas-container {
-    background: rgba(10, 10, 30, 0.6);
-    border: 1px solid rgba(99, 102, 241, 0.12);
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 22px;
+    overflow: hidden;
+    border: 1px solid var(--card-edge);
+    background: var(--ground);
 }
 
 #mech-canvas {
+    display: block;
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    aspect-ratio: 900 / 450;
 }
 
-/* ─── Playback Controls ─── */
 .playback-controls {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    background: rgba(15, 15, 45, 0.6);
-    border: 1px solid rgba(99, 102, 241, 0.12);
-    border-radius: 10px;
-    padding: 8px 14px;
+    gap: 10px 14px;
+    padding: 10px 14px;
+    background: var(--chip);
+    border-radius: 980px;
 }
 
 .ctrl-btn {
-    background: rgba(30, 30, 60, 0.6);
-    border: 1px solid rgba(99, 102, 241, 0.15);
-    color: #e2e8f0;
-    font-size: 16px;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--card-edge);
+    border-radius: 50%;
+    background: var(--card);
+    color: var(--ink);
+}
+
+.ctrl-btn svg {
+    width: 16px;
+    height: 16px;
 }
 
 .ctrl-btn:hover {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: #6366f1;
+    background: var(--accent-soft);
+    color: var(--accent);
 }
 
-.play-btn {
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
-    background: rgba(99, 102, 241, 0.25);
-    border-color: #6366f1;
+.ctrl-btn.play-btn {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
 }
 
-.play-btn.playing {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: #ef4444;
+.ctrl-btn.play-btn:hover {
+    background: var(--accent-hover);
+    color: #fff;
 }
 
 .step-indicator {
-    font-family: 'Inter', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    color: #a5b4fc;
-    margin-left: 8px;
+    font: 500 15px var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-strong);
 }
 
 .speed-slider {
-    width: 80px;
+    flex: 1;
+    min-width: 120px;
+    max-width: 240px;
     margin-left: auto;
-    appearance: none;
-    -webkit-appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: linear-gradient(to right, #6366f1, #a855f7);
-    outline: none;
-}
-
-.speed-slider::-webkit-slider-thumb {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #a5b4fc;
-    cursor: pointer;
-    border: 2px solid #6366f1;
 }
 
 .speed-label {
-    font-family: 'Inter', monospace;
-    font-size: 11px;
-    color: rgba(148, 163, 184, 0.5);
-    min-width: 24px;
+    min-width: 36px;
+    font: 500 14px var(--font-mono);
+    color: var(--muted-strong);
 }
 
-/* ─── Info Panel ─── */
-.mech-info {
-    width: 240px;
-    background: rgba(15, 15, 35, 0.95);
-    border-left: 1px solid rgba(99, 102, 241, 0.1);
-    padding: 16px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.mech-info h2,
-.mech-info h3 {
-    font-family: 'Outfit', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    color: rgba(148, 163, 184, 0.5);
-    margin: 0;
-}
-
+/* Right panel */
 .step-card {
-    background: rgba(30, 30, 60, 0.4);
-    border: 1px solid rgba(99, 102, 241, 0.12);
-    border-radius: 10px;
-    padding: 12px;
+    padding: 16px;
+    border-radius: 18px;
+    background: var(--chip);
 }
 
 .step-name {
-    font-family: 'Outfit', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: #a5b4fc;
-    margin-bottom: 6px;
+    font: 600 18px/1.25 var(--font-display);
 }
 
 .step-desc {
-    font-size: 12px;
-    color: #94a3b8;
-    line-height: 1.5;
-}
-
-.mech-notes {
-    background: rgba(30, 30, 60, 0.3);
-    border: 1px solid rgba(99, 102, 241, 0.08);
-    border-radius: 8px;
-    padding: 10px;
+    margin-top: 6px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--muted-strong);
 }
 
 #mech-concepts {
-    margin-top: 6px;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 .concept-tag {
-    font-size: 10px;
-    color: #94a3b8;
-    padding: 3px 6px;
-    background: rgba(99, 102, 241, 0.06);
-    border-radius: 4px;
-    border-left: 3px solid #6366f1;
-}
-
-.mech-summary {
-    margin-top: auto;
+    padding: 6px 12px;
+    border-radius: 980px;
+    background: var(--accent-soft);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
 }
 
 #mech-summary-text {
-    font-size: 11px;
-    color: rgba(148, 163, 184, 0.5);
-    line-height: 1.5;
-    margin-top: 6px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--muted-strong);
 }
 
-/* ─── Scrollbar ─── */
-.mech-sidebar::-webkit-scrollbar,
-.mech-info::-webkit-scrollbar {
-    width: 4px;
+.mech-summary {
+    padding-top: 14px;
+    border-top: 1px solid var(--hairline);
 }
 
-.mech-sidebar::-webkit-scrollbar-thumb,
-.mech-info::-webkit-scrollbar-thumb {
-    background: rgba(99, 102, 241, 0.2);
-    border-radius: 4px;
-}
-
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
     .mech-layout {
-        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
     }
 
-    .mech-sidebar,
-    .mech-info {
-        width: 100%;
-        max-height: 200px;
+    .mech-viewport {
+        order: -1;
+        padding: 16px;
+    }
+
+    .mech-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .mech-btn {
+        flex: 1 1 200px;
+    }
+
+    .speed-slider {
+        margin-left: 0;
     }
 }

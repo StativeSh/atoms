@@ -4,17 +4,17 @@
 // ============================================
 
 const ELEMENT_CATEGORIES = {
-    'alkali-metal': { label: 'Alkali Metal', color: '#ff6b6b', glow: 'rgba(255,107,107,0.3)' },
-    'alkaline-earth': { label: 'Alkaline Earth', color: '#ffa94d', glow: 'rgba(255,169,77,0.3)' },
-    'transition-metal': { label: 'Transition Metal', color: '#4dabf7', glow: 'rgba(77,171,247,0.3)' },
-    'post-transition': { label: 'Post-Transition', color: '#69db7c', glow: 'rgba(105,219,124,0.3)' },
-    'metalloid': { label: 'Metalloid', color: '#845ef7', glow: 'rgba(132,94,247,0.3)' },
-    'nonmetal': { label: 'Reactive Nonmetal', color: '#ffd43b', glow: 'rgba(255,212,59,0.3)' },
-    'halogen': { label: 'Halogen', color: '#38d9a9', glow: 'rgba(56,217,169,0.3)' },
-    'noble-gas': { label: 'Noble Gas', color: '#74c0fc', glow: 'rgba(116,192,252,0.3)' },
-    'lanthanide': { label: 'Lanthanide', color: '#f783ac', glow: 'rgba(247,131,172,0.3)' },
-    'actinide': { label: 'Actinide', color: '#da77f2', glow: 'rgba(218,119,242,0.3)' },
-    'unknown': { label: 'Unknown', color: '#868e96', glow: 'rgba(134,142,150,0.3)' },
+    'alkali-metal': { label: 'Alkali Metal', color: '#E5484D', glow: 'rgba(229,72,77,0.14)' },
+    'alkaline-earth': { label: 'Alkaline Earth', color: '#E8770F', glow: 'rgba(232,119,15,0.14)' },
+    'transition-metal': { label: 'Transition Metal', color: '#2F7DD6', glow: 'rgba(47,125,214,0.14)' },
+    'post-transition': { label: 'Post-Transition', color: '#2E9D57', glow: 'rgba(46,157,87,0.14)' },
+    'metalloid': { label: 'Metalloid', color: '#7A4FD6', glow: 'rgba(122,79,214,0.14)' },
+    'nonmetal': { label: 'Reactive Nonmetal', color: '#C98A00', glow: 'rgba(201,138,0,0.14)' },
+    'halogen': { label: 'Halogen', color: '#0E9F95', glow: 'rgba(14,159,149,0.14)' },
+    'noble-gas': { label: 'Noble Gas', color: '#3B8FC4', glow: 'rgba(59,143,196,0.14)' },
+    'lanthanide': { label: 'Lanthanide', color: '#D6428F', glow: 'rgba(214,66,143,0.14)' },
+    'actinide': { label: 'Actinide', color: '#A64BC9', glow: 'rgba(166,75,201,0.14)' },
+    'unknown': { label: 'Unknown', color: '#8A8A90', glow: 'rgba(138,138,144,0.14)' },
 };
 
 // Full 118-element dataset

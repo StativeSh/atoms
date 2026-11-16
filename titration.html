@@ -5,29 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChemVerse — pH Titration Simulator</title>
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="titration.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
-        <div class="nav-links">
-            <a href="index.html">🧪 Periodic Table</a>
-            <a href="reaction-lab.html">⚡ Reaction Lab</a>
-            <a href="spectroscopy.html">📊 Spectroscopy</a>
-            <a href="electrochem.html">🔋 Electrochemistry</a>
-            <a href="mechanisms.html">🧬 Mechanisms</a>
-            <a href="organic.html">🧱 Organic Builder</a>
-            <a href="titration.html" class="active">🧫 Titration</a>
-        </div>
-    </nav>
+    <div class="page-aura" aria-hidden="true"></div>
+    <nav class="top-nav"></nav>
+    <h1 class="sr-only">Titration Simulator</h1>
     <div class="tit-layout">
         <aside class="tit-sidebar">
-            <h2>SETUP</h2>
+            <h2>Setup</h2>
             <div class="ts-section">
                 <label>Analyte (in flask)</label>
                 <select id="analyte-select">
@@ -68,7 +59,7 @@
                     <option value="universal">Universal Indicator</option>
                 </select>
             </div>
-            <button class="action-btn" id="btn-reset">🔄 Reset</button>
+            <button class="action-btn" id="btn-reset">Reset</button>
         </aside>
 
         <main class="tit-viewport">
@@ -76,7 +67,7 @@
                 <div class="flask-area">
                     <canvas id="flask-canvas" width="300" height="350"></canvas>
                     <div class="flask-controls">
-                        <button class="drop-btn" id="btn-add-drop">💧 Add Drop</button>
+                        <button class="drop-btn" id="btn-add-drop">Add drop</button>
                         <button class="drop-btn" id="btn-add-5">+5 mL</button>
                         <button class="drop-btn" id="btn-add-1">+1 mL</button>
                         <button class="drop-btn" id="btn-add-01">+0.1 mL</button>
@@ -98,7 +89,7 @@
         </main>
 
         <aside class="tit-info">
-            <h2>ANALYSIS</h2>
+            <h2>Analysis</h2>
             <div class="info-card">
                 <div class="info-label">Reaction Type</div>
                 <div class="info-value" id="rxn-type">—</div>
@@ -116,7 +107,7 @@
                 <div class="info-value" id="pka-val">—</div>
             </div>
             <div class="ph-scale">
-                <h3>pH SCALE</h3>
+                <h3>pH scale</h3>
                 <div class="scale-bar" id="ph-scale-bar">
                     <div class="scale-needle" id="ph-needle"></div>
                 </div>
@@ -128,7 +119,6 @@
     <script src="titration.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

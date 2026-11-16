@@ -7,31 +7,23 @@
     <title>ChemVerse — Electrochemistry Cell Builder</title>
     <meta name="description"
         content="Build galvanic and electrolytic cells, calculate E°cell, and explore the Nernst equation.">
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="electrochem.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <div class="page-aura" aria-hidden="true"></div>
     <!-- ─── Navigation ─── -->
-    <nav class="top-nav">
-        <a href="index.html" class="nav-brand">⚛ <span>CHEMVERSE</span></a>
-        <div class="nav-links">
-            <a href="index.html">🧪 Periodic Table</a>
-            <a href="viewer.html">⚛ Atomic Viewer</a>
-            <a href="reaction-lab.html">⚡ Reaction Lab</a>
-            <a href="mol3d.html">🔬 3D Viewer</a>
-            <a href="spectroscopy.html">📊 Spectroscopy</a>
-            <a href="electrochem.html" class="active">🔋 Electrochemistry</a>
-        </div>
-    </nav>
+    <nav class="top-nav"></nav>
 
+    <h1 class="sr-only">Electrochemistry Cell Builder</h1>
     <div class="ec-layout">
         <!-- Left: Half-Cell Picker -->
         <aside class="ec-sidebar">
-            <h2>HALF-CELL PICKER</h2>
+            <h2>Half-cell picker</h2>
 
             <div class="hc-section">
                 <label class="hc-label">Anode (Oxidation)</label>
@@ -62,8 +54,8 @@
             </div>
 
             <div class="cell-type-toggle">
-                <button class="type-btn active" id="btn-galvanic" data-type="galvanic">⚡ Galvanic</button>
-                <button class="type-btn" id="btn-electrolytic" data-type="electrolytic">🔌 Electrolytic</button>
+                <button class="type-btn active" id="btn-galvanic" data-type="galvanic">Galvanic</button>
+                <button class="type-btn" id="btn-electrolytic" data-type="electrolytic">Electrolytic</button>
             </div>
 
             <div class="preset-cells">
@@ -83,7 +75,7 @@
 
             <!-- Nernst Equation Section -->
             <div class="nernst-section">
-                <h3>📐 Nernst Equation</h3>
+                <h3>Nernst equation</h3>
                 <div class="nernst-formula">E = E° − (RT / nF) ln Q</div>
                 <div class="nernst-controls">
                     <div class="nernst-slider">
@@ -111,7 +103,7 @@
 
         <!-- Right: Info Panel -->
         <aside class="ec-info">
-            <h2>CELL PROPERTIES</h2>
+            <h2>Cell properties</h2>
             <div id="cell-props">
                 <div class="prop-item">
                     <span class="prop-label">Cell Type</span>
@@ -158,7 +150,6 @@
     <script src="electrochem.js"></script>
     <script src="nav.js"></script>
     <script src="export.js"></script>
-    <script src="premium.js"></script>
 </body>
 
 </html>

@@ -7,36 +7,40 @@
     <title>ChemVerse — Atomic Viewer</title>
     <meta name="description"
         content="Interactive 3D visualization of the quantum mechanical atomic model with probability density orbital clouds, Aufbau configuration, and s/p/d/f orbital shapes.">
-    <link rel="stylesheet" href="shared.css">
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="viewer.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
+    <div class="page-aura" aria-hidden="true"></div>
+    <nav class="top-nav"></nav>
     <div id="app">
         <!-- 3D Canvas Container -->
         <div id="canvas-container"></div>
 
         <!-- Header -->
         <header id="header">
-            <div class="logo">
-                <a href="index.html" class="back-to-table" title="Back to Periodic Table">← Table</a>
-                <span class="logo-icon">⚛</span>
+            <div class="logo glass">
+                <a href="periodic-table.html" class="back-to-table" title="Back to the periodic table">Periodic table</a>
                 <h1>Quantum Atomic Model</h1>
             </div>
-            <div class="element-display" id="element-display">
+            <div class="element-display glass" id="element-display">
                 <span class="element-symbol" id="element-symbol">C</span>
                 <span class="element-name" id="element-name">Carbon</span>
             </div>
         </header>
 
         <!-- Electron Configuration Banner -->
-        <div id="config-banner" class="config-banner">
+        <div id="config-banner" class="config-banner glass">
             <span class="config-label">Electron Configuration:</span>
             <span class="config-text" id="electron-config-text">1s² 2s² 2p²</span>
         </div>
 
         <!-- Control Panel -->
-        <aside id="control-panel">
+        <aside id="control-panel" class="glass">
             <div class="panel-header">
                 <h2>Controls</h2>
                 <button id="panel-toggle" class="panel-toggle-btn" aria-label="Toggle panel">
@@ -49,8 +53,8 @@
                 <div class="control-group">
                     <label class="control-label">Mode</label>
                     <div class="mode-toggle">
-                        <button class="mode-btn active" data-mode="atom" id="mode-atom">⚛ Atom</button>
-                        <button class="mode-btn" data-mode="molecule" id="mode-molecule">🔗 Molecule</button>
+                        <button class="mode-btn active" data-mode="atom" id="mode-atom">Atom</button>
+                        <button class="mode-btn" data-mode="molecule" id="mode-molecule">Molecule</button>
                     </div>
                 </div>
 
@@ -66,7 +70,7 @@
 
                     <!-- Highlight Subshell -->
                     <div class="control-group">
-                        <label class="control-label">Highlight Subshell</label>
+                        <label class="control-label">Highlight subshell</label>
                         <div id="subshell-buttons" class="subshell-buttons">
                             <!-- Populated by JS -->
                         </div>
@@ -129,23 +133,23 @@
 
                 <!-- Toggles -->
                 <div class="control-group">
-                    <label class="control-label">Display Options</label>
+                    <label class="control-label">Display options</label>
                     <div class="toggle-row">
-                        <span>Show Labels</span>
+                        <span>Show labels</span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="show-labels" checked>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
                     <div class="toggle-row">
-                        <span>Individual Orbitals</span>
+                        <span>Individual orbitals</span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="show-individual" checked>
                             <span class="toggle-slider"></span>
                         </label>
                     </div>
                     <div class="toggle-row">
-                        <span>Glow Effects</span>
+                        <span>Glow effects</span>
                         <label class="toggle-switch">
                             <input type="checkbox" id="glow-effects" checked>
                             <span class="toggle-slider"></span>
@@ -155,7 +159,7 @@
 
                 <!-- Color Scheme -->
                 <div class="control-group">
-                    <label class="control-label">Color Scheme</label>
+                    <label class="control-label">Colour scheme</label>
                     <div class="color-scheme-options">
                         <button class="color-btn active" data-scheme="quantum" id="scheme-quantum">Quantum</button>
                         <button class="color-btn" data-scheme="classic" id="scheme-classic">Classic</button>
@@ -165,7 +169,7 @@
 
                 <!-- Energy Level Diagram -->
                 <div class="control-group">
-                    <label class="control-label">Energy Level Diagram</label>
+                    <label class="control-label">Energy levels</label>
                     <div class="energy-diagram-container">
                         <canvas id="energy-diagram"></canvas>
                     </div>
@@ -173,7 +177,7 @@
 
                 <!-- Orbital Legend -->
                 <div class="control-group">
-                    <label class="control-label">Orbital Legend</label>
+                    <label class="control-label">Orbital legend</label>
                     <div id="orbital-legend" class="orbital-legend">
                         <!-- Populated by JS -->
                     </div>
@@ -181,30 +185,30 @@
 
                 <!-- Reset Button -->
                 <div class="control-group">
-                    <button id="reset-view" class="btn-reset">Reset View</button>
+                    <button id="reset-view" class="btn-reset">Reset view</button>
                 </div>
             </div>
         </aside>
 
         <!-- Info Tooltip -->
-        <div id="info-tooltip" class="info-tooltip hidden">
+        <div id="info-tooltip" class="info-tooltip glass-dark hidden">
             <div class="tooltip-content" id="tooltip-content"></div>
         </div>
 
         <!-- Instructions Overlay -->
         <div id="instructions" class="instructions">
-            <div class="instruction-card">
+            <div class="instruction-card glass">
                 <h3>Navigation</h3>
                 <div class="instruction-item">
-                    <span class="key">🖱 Left Drag</span>
+                    <span class="key">Left drag</span>
                     <span>Rotate</span>
                 </div>
                 <div class="instruction-item">
-                    <span class="key">🖱 Right Drag</span>
+                    <span class="key">Right drag</span>
                     <span>Pan</span>
                 </div>
                 <div class="instruction-item">
-                    <span class="key">🖱 Scroll</span>
+                    <span class="key">Scroll</span>
                     <span>Zoom</span>
                 </div>
                 <div class="instruction-item">
@@ -225,6 +229,7 @@
     }
     </script>
     <script type="module" src="main.js"></script>
+    <script src="nav.js"></script>
 </body>
 
 </html>

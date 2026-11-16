@@ -12,8 +12,15 @@
     let autoRotate = true;
 
     const COLORS = {
-        A: '#fbbf24', B: '#3b82f6', C: '#ef4444', D: '#22c55e', E: '#a855f7'
+        A: '#E8A400', B: '#2F5BEA', C: '#E5484D', D: '#1E9E5A', E: '#7A4FD6'
     };
+
+    // Darken a #rrggbb colour (for the shaded edge of each sphere)
+    function shade(hex, k) {
+        const n = parseInt(hex.slice(1), 16);
+        const r = Math.round(((n >> 16) & 255) * k), g = Math.round(((n >> 8) & 255) * k), b = Math.round((n & 255) * k);
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
 
     const CRYSTALS = [
         {
@@ -192,7 +199,7 @@
     function draw() {
         ctx.clearRect(0, 0, w, h);
         const bg = ctx.createLinearGradient(0, 0, 0, h);
-        bg.addColorStop(0, 'rgba(6,6,25,0.9)'); bg.addColorStop(1, 'rgba(15,15,35,0.95)');
+        bg.addColorStop(0, '#FFFFFF'); bg.addColorStop(1, '#F3F3F7');
         ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
 
         const showBonds = document.getElementById('show-bonds').checked;
@@ -208,7 +215,7 @@
         // Draw unit cell box (cubic only)
         if (showCell && activeCrys.lattice.includes('Cubic')) {
             const edges = [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]];
-            ctx.strokeStyle = 'rgba(99,102,241,0.2)'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(47,91,234,0.40)'; ctx.lineWidth = 1.2; ctx.setLineDash([5, 5]);
             edges.forEach(e => {
                 const p1 = project(activeCrys.nodes[e[0]].x, activeCrys.nodes[e[0]].y, activeCrys.nodes[e[0]].z);
                 const p2 = project(activeCrys.nodes[e[1]].x, activeCrys.nodes[e[1]].y, activeCrys.nodes[e[1]].z);
@@ -219,7 +226,7 @@
 
         // Draw bonds (depth sorted not strictly needed for lines, but good practice) //
         if (showBonds && activeCrys.bonds) {
-            ctx.strokeStyle = 'rgba(148,163,184,0.4)'; ctx.lineWidth = 2.5 * zoom;
+            ctx.strokeStyle = 'rgba(110,110,115,0.45)'; ctx.lineWidth = 2.5 * zoom;
             activeCrys.bonds.forEach(b => {
                 const p1 = points[b[0]], p2 = points[b[1]];
                 if (p1 && p2) {
@@ -237,20 +244,20 @@
             const radius = p.r * zoom * (1 - p.pz * 0.1);
 
             // Draw shadow/glow
-            ctx.beginPath(); ctx.arc(p.px, p.py, radius + 2, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
+            ctx.beginPath(); ctx.arc(p.px + 1, p.py + 3, radius + 1, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(17,24,39,0.12)'; ctx.fill();
 
             // Draw sphere gradient
             const grd = ctx.createRadialGradient(p.px - radius * 0.3, p.py - radius * 0.3, radius * 0.1, p.px, p.py, radius);
-            grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.3, COLORS[p.c]); grd.addColorStop(1, '#000000');
+            grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.35, COLORS[p.c]); grd.addColorStop(1, shade(COLORS[p.c], 0.62));
 
             ctx.beginPath(); ctx.arc(p.px, p.py, radius, 0, Math.PI * 2);
             ctx.fillStyle = grd; ctx.fill();
 
             // Label
             if (showLabels && p.l) {
-                ctx.fillStyle = 'rgba(255,255,255,0.8)';
-                ctx.font = '500 10px Inter'; ctx.textAlign = 'center';
+                ctx.fillStyle = '#515154';
+                ctx.font = '500 12px Inter, sans-serif'; ctx.textAlign = 'center';
                 ctx.fillText(p.l, p.px, p.py - radius - 6);
             }
         });
